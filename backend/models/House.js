@@ -25,6 +25,25 @@ const houseSchema = mongoose.Schema({
     },
     house_group:{
         type:String
+    },
+    house_type:{
+        type:String
+    },
+   
+    address:{
+        type:String
+    },
+    rent_amount:{
+        type:INT
+    },
+    images:{
+        type:[String]
+    },
+    description:{
+        type:String
+    },
+    visitor_requests:{
+        type:String
     }
    
 
