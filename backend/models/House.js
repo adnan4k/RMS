@@ -31,7 +31,9 @@ const houseSchema = mongoose.Schema({
     },
    
     address:{
-        type:String
+        kebele:{
+            type:String
+        }
     },
     rent_amount:{
         type:INT
