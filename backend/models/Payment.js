@@ -26,3 +26,4 @@ const paymentSchema = mongoose.Schema({
 
 
 })
+export default mongoose.model("Payment",paymentSchema)
