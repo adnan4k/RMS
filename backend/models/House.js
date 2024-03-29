@@ -1,5 +1,38 @@
 import mongoose from "mongoose";
 
+const addressSchema = mongoose.Schema({
+   city:{
+    type:String,
+    required:true
+   },
+   kebele:{
+    type:String,
+    required:true
+   },
+   sub_city:{
+    type:String,
+    required:true
+   },
+   woreda:{
+    type:String,
+    required:true
+   },
+   latitude:{
+    type:INT,
+    required:true
+   },
+   longitude:{
+    type:INT,
+    required:true
+   }
+})
+
+export const Address =  mongoose.model("Address",addressSchema)
+
+const houseGroupSchema = mongoose.model({
+    name:{type:String},
+    organization:{type:String}
+})
 const houseSchema = mongoose.Schema({
     owner:{
         type:String,
@@ -24,16 +57,14 @@ const houseSchema = mongoose.Schema({
         type:INT,
     },
     house_group:{
-        type:String
+        type:houseGroupSchema
     },
     house_type:{
         type:String
     },
    
     address:{
-        kebele:{
-            type:String
-        }
+       type:addressSchema
     },
     rent_amount:{
         type:INT
