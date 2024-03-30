@@ -28,7 +28,7 @@ function Signup() {
       console.log(formData, "form is here ");
       try {
         const response = await axios.post(
-          "https://groom-health-care.onrender.com/user/signup",
+          "http://localhost:4001/user/register",
           formData
         );
         console.log(
@@ -37,7 +37,8 @@ function Signup() {
           response.status,
           response.statusText
         );
-        console.log(response.status, "mama");
+        // console.log(response.status, "mama");
+        setError(response.data)
         if (response.data.status === 400) {
           setError("Your account already exists. Please sign in.");
         }
