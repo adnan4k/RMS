@@ -1,3 +1,4 @@
+import Popular from "../components/Popular";
 import SearchComponent from "../components/SearchComponent";
 import Layout from "../layout/Layout";
 
@@ -20,6 +21,12 @@ function Home() {
         </div>
         <div className="search">
           <SearchComponent />
+        </div>
+        <div>
+          <div  className="flex flex-col justify-center items-center mx-auto">
+            <h2 className="text-[#081E4A] font-bold my-5 text-3xl">Trending Listings</h2>
+          <Popular/>
+          </div>
         </div>
       </div>
     </Layout>
