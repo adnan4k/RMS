@@ -1,3 +1,4 @@
+import SearchComponent from "../components/SearchComponent";
 import Layout from "../layout/Layout";
 
 function Home() {
@@ -16,6 +17,9 @@ function Home() {
               and Discover Your Dream Home
             </p>
           </div>
+        </div>
+        <div className="search">
+          <SearchComponent />
         </div>
       </div>
     </Layout>
