@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import Layout from "../layout/Layout";
 
 function Signup() {
   const [error, setError] = useState();
@@ -57,6 +58,7 @@ function Signup() {
   };
 
   return (
+    <Layout>
     <div className="flex justify-center items-center h-screen">
       <form className="w-full max-w-md" onSubmit={handleSubmit}>
         <div className="bg-white px-6 py-8 rounded shadow-md text-black">
@@ -130,6 +132,7 @@ function Signup() {
         </div>
       </form>
     </div>
+    </Layout>
   );
 }
 
