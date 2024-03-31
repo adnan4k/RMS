@@ -40,7 +40,7 @@ function Popular() {
   return (
     <div className="grid gap-10 grid-cols-3 mx-auto">
       {datas.map((data, index) => (
-        <div key={index} className="container ">
+        <div key={index} className="container">
           <div>
             <img src={data.image} alt="home" />
           </div>
