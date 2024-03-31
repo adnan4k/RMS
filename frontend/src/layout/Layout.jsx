@@ -5,9 +5,13 @@ import Navbar from "../components/Navbar"
 function Layout({children}) {
   return (
     <div>
+        <div className="mb-10">
         <Navbar />
+        </div>
          {children}
+         <div className="mt-5">
          <Footer />
+         </div>
     </div>
   )
 }

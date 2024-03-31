@@ -59,7 +59,7 @@ function Signup() {
 
   return (
     <Layout>
-    <div className="flex justify-center items-center h-screen">
+    <div className="flex mt-20 justify-center items-center h-screen">
       <form className="w-full max-w-md" onSubmit={handleSubmit}>
         <div className="bg-white px-6 py-8 rounded shadow-md text-black">
           <h1 className="mb-8 text-3xl text-center">Sign up</h1>
