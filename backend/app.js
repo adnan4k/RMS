@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import bodyParser from "body-parser"
 import cors from 'cors'
 import dotenv from 'dotenv'
+import userRouter from "./routers/userRoutes.js";
 
 
 const app = express();
@@ -12,7 +13,22 @@ app.use(bodyParser.json());
 app.use(express.static('public'))
 dotenv.config();
 //   app.use(express.urlencoded({extended:true}));
-app.use('/images',express.static('images'))
+app.use('/images',express.static('images'));
+app.use('/user',userRouter);
+
+//error handler
+app.use((err,req,res,next) =>{
+  const errorStatus = err.status || 500;
+  const errorMessage = err.message ||" something went wrong";
+
+  return res.status(errorStatus).json({
+   status:errorStatus,
+   success:false,
+   message:errorMessage,
+   stack:err.stack
+  })
+})
+
 
 const port = process.env.PORT 
 const mongodb_url = process.env.MONGO_URL
