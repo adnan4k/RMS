@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Signup() {
   const [error, setError] = useState();
@@ -24,7 +24,7 @@ function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.password === formData.password_confirmation) {
+    if (formData.password) {
       console.log(formData, "form is here ");
       try {
         const response = await axios.post(
@@ -51,7 +51,7 @@ function Signup() {
         console.log(error);
       }
     } else {
-      setError("Passwords do not match. Please try again.");
+      setError("Enter password or email.");
     }
     console.log(formData);
   };
@@ -122,14 +122,11 @@ function Signup() {
         </div>
 
         <div className="text-grey-dark mt-6">
-          Already have an account?{" "}
-          <a
-            className="no-underline border-b border-blue text-blue"
-            href="../login/"
-          >
-            Log in
-          </a>
-          .
+          Already have an account?
+          
+          <Link       to='/login'      className="no-underline border-b border-blue text-blue">
+          Login
+          </Link>
         </div>
       </form>
     </div>
