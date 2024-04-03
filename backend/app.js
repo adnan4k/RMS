@@ -4,6 +4,8 @@ import bodyParser from "body-parser"
 import cors from 'cors'
 import dotenv from 'dotenv'
 import userRouter from "./routers/userRoutes.js";
+import tenantRouter from "./routers/tenatRoute.js";
+import houseRouter from "./routers/houseRoutes.js";
 
 
 const app = express();
@@ -15,6 +17,8 @@ dotenv.config();
 //   app.use(express.urlencoded({extended:true}));
 app.use('/images',express.static('images'));
 app.use('/user',userRouter);
+app.use('/tenant',tenantRouter);
+app.use('/house',houseRouter)
 
 //error handler
 app.use((err,req,res,next) =>{
