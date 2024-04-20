@@ -1,5 +1,5 @@
 import Tenant from "../models/Tenant.js"
-import { createError } from "../utils/CreateError";
+import { createError } from "../utils/CreateError.js";
 
 export const addTenant = async(req,res,next) =>{
     try {

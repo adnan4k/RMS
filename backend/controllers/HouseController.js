@@ -1,5 +1,5 @@
 import House from "../models/House.js"
-import { createError } from "../utils/CreateError";
+import { createError } from "../utils/CreateError.js";
 
 export const addHouse = async(req,res,next) =>{
     try {
