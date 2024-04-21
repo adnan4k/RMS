@@ -1,18 +1,23 @@
 import mongoose, { Schema } from "mongoose";
+import ContractSchema from "./commons/Contract.js";
+import { userSchema } from "./User.js";
 
 const historySchema = mongoose.Schema({
    house_id:{
     type:Schema.Types.ObjectId,
-    ref:"House"
    },
-   tenant_id:{
-    type:Schema.Types.ObjectId,
-    ref:"Tenant"
+   tenant_id: userSchema,
+   contract: ContractSchema,
+   from: {
+      type: Date,
+      required: true
    },
-   contract:{
-    type:Schema.Types.ObjectId,
-    ref:"Contract"
+   upto: {
+      type: Date,
+      required: true
    },
-
+   timetolive: {
+      type: Date,
+   }
 })
 export default mongoose.model("History", historySchema)

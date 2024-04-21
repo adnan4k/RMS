@@ -1,29 +1,31 @@
 import mongoose from "mongoose";
+import BankAccount from './commons/BankAccount.js'
 
 const paymentSchema = mongoose.Schema({
     date:{
-        type:DataTime,
-        required:true
+        type:Date,
+        required:true,
+        default: Date.now()
     },
     deadline:{
-        type:DataTime,
+        type:Date,
         required:true
     },
     paid_from:{
-        type:String,
+        type:BankAccount,
         required:true
     },
     paid_to:{
-        type:String,
+        type:BankAccount,
         required:true
     },
     house_id:{
-        type:String,
+        type:mongoose.Schema.Types.ObjectId,
+        ref: 'House'
     },
     tenant_id:{
-        type:String,
+        type:mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     }
-
-
 })
 export default mongoose.model("Payment",paymentSchema)
