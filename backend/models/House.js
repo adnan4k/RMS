@@ -3,6 +3,7 @@ import addressSchema from "./commons/Address.js";
 import BankAccountSchema from "./commons/BankAccount.js";
 import ContractSchema from "./commons/Contract.js";
 import requestSchema from "./VisitorRequest.js";
+import historySchema from "./History.js";
 
 export const HouseTypes = [
     'Villa',
@@ -18,8 +19,8 @@ export const HouseTypes = [
 //     organization:{type:String}
 // })
 
-const houseSchema = mongoose.Schema({
-    owner:{
+export const houseSchema = mongoose.Schema({
+    owner:  {
         type: mongoose.Schema.Types.ObjectId,
         required:true,
         ref: 'User'
@@ -40,7 +41,7 @@ const houseSchema = mongoose.Schema({
         type:Number,
     },
     length:{
-        type:Number,
+        type:Number, 
     },
     house_type:{
         type:String,
@@ -61,7 +62,8 @@ const houseSchema = mongoose.Schema({
     description:{
         type:String
     },
-    visitor_requests:[requestSchema]
+    visitor_requests:[requestSchema],
+    occupancy_history: [historySchema]
 })
 
 export default mongoose.model("House",houseSchema)

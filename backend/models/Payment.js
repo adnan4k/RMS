@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import BankAccount from './commons/BankAccount.js'
+import User from "./User.js";
 
 const paymentSchema = mongoose.Schema({
     date:{
