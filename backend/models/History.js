@@ -12,9 +12,6 @@ const historySchema = mongoose.Schema({
    },
    upto: {
       type: Date,
-   },
-   timetolive: {
-      type: Date,
    }
 });
 export default historySchema

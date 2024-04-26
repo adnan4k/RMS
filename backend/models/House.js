@@ -48,7 +48,7 @@ export const houseSchema = mongoose.Schema({
         enum: HouseTypes
     },
     address:{
-       type:addressSchema
+        type:addressSchema
     },
     bankaccount: [BankAccountSchema],
     rent_amount:{
@@ -62,7 +62,10 @@ export const houseSchema = mongoose.Schema({
     description:{
         type:String
     },
-    visitor_requests:[requestSchema],
+    visitor_requests:[{
+        type: requestSchema,
+        required: false
+    }],
     occupancy_history: [historySchema]
 })
 
