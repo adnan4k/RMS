@@ -1,23 +1,19 @@
 import mongoose from "mongoose";
 
 const requestSchema = mongoose.Schema({
-    name:{
-        type:String,
-        required:true
+    visitor: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     },
-  
-    emial:{
-        type:String,
-        required:true
-    },
-    phone:{
-        type:String,
-        required:true
+    house: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'House',
+        required: true
     },
     date:{
-        type:Date,
-        required:true
+        type: Date,
     }
+});
 
-})
-export default mongoose.model("Request",requestSchema)
+export default requestSchema;

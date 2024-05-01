@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
-const userSchema = mongoose.Schema({
-    name:{
+export const userSchema = mongoose.Schema({
+    firstname:{
         type:String,
         required:true
     },
@@ -9,30 +9,45 @@ const userSchema = mongoose.Schema({
         type:String,
         required:true
     },
-    email:{
+    lastname:{
         type:String,
         required:true
+    },
+    phonenumber:{
+        type: String,
+        required: true,
+        validate: {
+            validator: phone => {
+                const checker = /\+(2519|2517)\d{8}/;
+                return checker.test(phone);
+            },
+            message: 'Phone number format doesn\'t match'
+        }
+    },
+    email:{
+        type:String,
+        required:true,
+        validate: {
+            validator: email => {
+                const checker = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return checker.test(email);
+            },
+            message: 'Phone number format doesn\'t match'
+        }
+
     },
     password:{
         type:String,
         required:true
     },
-    phone:{
-          type:String,
-    },
-   
     role:{
         type:String,
-        default:"user"
+        default:"visitor",
+        enum: ['visitor', 'admin', 'owner', 'tenant']
     },
-    tenant: {
-        type: Schema.Types.ObjectId,
-        ref: 'Tenant'
-    },
-    owner: {
-        type: Schema.Types.ObjectId,
-        ref: 'Owner'
+    isActive: {
+        type: Boolean,
+        default: true,
     }
-
 })
 export default mongoose.model("User",userSchema)
