@@ -20,14 +20,15 @@ export const HouseTypes = [
 // })
 
 export const houseSchema = mongoose.Schema({
+    name: String,
     owner:{
         type: mongoose.Schema.Types.ObjectId,
         required:true,
-        ref: 'User'
+        ref: 'Owner'
     },
     tenant:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'Tenant'
     },
     no_of_rooms:{
         type:Number,
@@ -53,6 +54,9 @@ export const houseSchema = mongoose.Schema({
     bankaccounts: [BankAccountSchema],
     rent_amount:{
         type:Number
+    },
+    deadline: {
+        type:Date
     },
     images:[{
         url: String,

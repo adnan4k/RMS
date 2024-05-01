@@ -5,7 +5,7 @@ const ContractSchema = mongoose.Schema({
     photo: {
         url: String,
         path: String,
-    }
+    },
 });
 
 export default ContractSchema;

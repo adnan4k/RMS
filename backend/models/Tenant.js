@@ -1,22 +1,30 @@
 import mongoose from "mongoose";
+import addressSchema from "./commons/Address.js";
 
 const ownerSchema = mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+    unique: true
+  },
   mother_name: {
     type: String,
   },
-  kebele: {
-    type: String,
-  },
-  reference_name:{
-    type:String
-  },
-  reference_number:{
-    type:String
+  reference: {
+    type: {
+      name: String,
+      phone: String,
+      address: addressSchema
+    },
+    required: true
   },
   national_id: {
-    type: String,
-
+    type: {
+      url: String,
+      path: String,
+    },
     required: true,
   },
 });
-export default mongoose.model("Owner", ownerSchema);
+export default mongoose.model("Tenant", ownerSchema);

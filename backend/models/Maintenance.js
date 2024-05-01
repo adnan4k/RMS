@@ -4,7 +4,7 @@ const maintenanceSchema = mongoose.Schema({
     tenant_id:{
         type: mongoose.Schema.Types.ObjectId,
         required:true,
-        ref: 'User'
+        ref: 'tenant'
     },
     description:{
         type:String,
@@ -17,7 +17,8 @@ const maintenanceSchema = mongoose.Schema({
     },
     date_of_request:{
         type:Date,
-        required:true
+        required:true,
+        default: Date.now
     },
     house_id:{
         type: mongoose.Schema.Types.ObjectId,

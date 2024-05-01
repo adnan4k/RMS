@@ -15,15 +15,12 @@ const addressSchema = mongoose.Schema({
     },
     woreda:{
      type:String,
-     required:true
     },
     latitude:{
      type:Number,
-     required:true
     },
     longitude:{
      type:Number,
-     required:true
     }
 });
 

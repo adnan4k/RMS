@@ -7,7 +7,8 @@ export const userSchema = mongoose.Schema({
     },
     username:{
         type:String,
-        required:true
+        required:true,
+        unique: true
     },
     lastname:{
         type:String,
@@ -22,7 +23,8 @@ export const userSchema = mongoose.Schema({
                 return checker.test(phone);
             },
             message: 'Phone number format doesn\'t match'
-        }
+        },
+        unique: true
     },
     email:{
         type:String,
@@ -33,17 +35,18 @@ export const userSchema = mongoose.Schema({
                 return checker.test(email);
             },
             message: 'Phone number format doesn\'t match'
-        }
-
+        },
+        unique: true
     },
     password:{
         type:String,
+        minlength: 6,
         required:true
     },
     role:{
         type:String,
-        default:"visitor",
-        enum: ['visitor', 'admin', 'owner', 'tenant']
+        default:"user",
+        enum: ['user', 'admin', 'owner', 'tenant']
     },
     isActive: {
         type: Boolean,

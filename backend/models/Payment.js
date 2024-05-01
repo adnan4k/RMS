@@ -6,11 +6,15 @@ const paymentSchema = mongoose.Schema({
     date:{
         type:Date,
         required:true,
-        default: Date.now()
+        default: Date.now
     },
     deadline:{
         type:Date,
         required:true
+    },
+    amount: {
+        type: Number,
+        required: true,
     },
     paid_from:{
         type:BankAccount,
@@ -26,7 +30,7 @@ const paymentSchema = mongoose.Schema({
     },
     tenant_id:{
         type:mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'Tenant'
     }
 })
 export default mongoose.model("Payment",paymentSchema)
