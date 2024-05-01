@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import addressSchema from "./commons/Address";
+import addressSchema from "./commons/Address.js";
 
 const ownerSchema = mongoose.Schema({
     user: {

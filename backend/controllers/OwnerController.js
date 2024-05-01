@@ -1,36 +1,37 @@
-import Owner from "../models/Owner";
-import User from "../models/User";
+import Owner from "../models/Owner.js";
+import User from "../models/User.js";
+import jwt from 'jsonwebtoken';
+import { createError } from "../utils/CreateError.js";
 
 
 
 export const addOwner = async(req, res, next) => {
     try {
-        // Create a new user with the specified role
-        const newUser = new User({
-            username: req.body.username, 
-            role: req.body.role
-        });
+        let { address } = req.body;
+        address = JSON.parse(address);
+        
+        const user = await User.findById(req.user);
 
-        // Save the new user to the database
-        const savedUser = await newUser.save();
-
-        if (!savedUser) {
-            return createError(500, 'Error while creating user');
-        }
-
+        if (!user) 
+            throw createError(400, "User not found");
+        
+        user.role = 'owner';
+        await user.save();
         const newOwner = new Owner({
-            ...req.body,
-            owner: savedUser._id 
+            address,
+            user,
+            national_id : {
+                url: "uploads/"+req.file.filename,
+                path: req.file.destination
+            }
         });
-
+        
         const savedOwner = await newOwner.save();
-
-        if (!savedOwner) {
-            await User.findByIdAndDelete(savedUser._id);
-            return createError(500, 'Error while creating Owner');
-        }
-
-        return res.status(201).json(savedOwner);
+        const token = jwt.sign(
+            { id: user._id, role: user.role },
+            "secret_key"
+          );
+        return res.status(201).cookie("access_token", token, { httponly: true }).json(savedOwner);
     } catch (error) {
         next(error);
     }

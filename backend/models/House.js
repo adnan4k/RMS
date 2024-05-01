@@ -6,7 +6,7 @@ import requestSchema from "./VisitorRequest.js";
 import historySchema from "./History.js";
 
 export const HouseTypes = [
-    'Villa',
+    'villa',
     'Building',
     'L-shape',
     'Small'

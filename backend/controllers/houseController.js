@@ -1,35 +1,40 @@
-import House from "../models/House";
+import House from "../models/House.js";
 
 export const createHouse = async (req, res, next) => {
     try {    
-        const user = req.user || 'sampleid';
-        const {
+        const owner = req.user;
+        let {
             no_of_rooms, 
-            no_bath_rooms,
+            no_of_bath_rooms,
             width,
             length,
             house_type,
             bankaccounts,
+            address,
             rent_amount,
             description
         } = req.body;
 
-        const images = req.files;
-        console.log(images);
-        // const newHouse = await House.create({
-        //     owner: user,
-        //     no_of_rooms:no_of_rooms||null,
-        //     no_bath_rooms:no_bath_rooms||null,
-        //     width:width||null,
-        //     length:length||null,
-        //     house_type:house_type||null,
-        //     bankaccounts:bankaccounts||[],
-        //     rent_amount:rent_amount||null,
-        //     description: description||null,
-        // });
+        address = JSON.parse(address);
+        bankaccounts = JSON.parse(bankaccounts);
+        console.log(bankaccounts);
+        const images = req.files.map(file => ({url: 'uploads/'+file.filename, path: file.destination}));
+        console.log(no_of_bath_rooms)
+        const newHouse = await House.create({
+            owner,
+            no_of_rooms,
+            no_of_bath_rooms,
+            width,
+            length,
+            images,
+            house_type,
+            bankaccounts,
+            rent_amount,
+            description,
+            address
+        });
 
-        return res.status(200).json({msg: "Successfully Created"});
-
+        return res.status(200).json({msg: "Successfully Created", data: newHouse});
     } catch(error) {
         next(error)
     } 
