@@ -1,22 +1,19 @@
 import mongoose from "mongoose";
 
 const ownerSchema = mongoose.Schema({
-    first_name:{
+    kebele:{
         type:String,
         required:true
     },
-    last_name:{
+    reference_name:{
         type:String,
         required:true
     },
-    emial:{
+    reference_number:{
         type:String,
         required:true
     },
-    phone:{
-        type:String,
-        required:true
-    },
+ 
     national_id:{
         type:String,
         required:true

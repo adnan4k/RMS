@@ -1,18 +1,41 @@
 import Tenant from "../models/Tenant.js"
+import User from "../models/User.js";
 import { createError } from "../utils/CreateError.js";
 
-export const addTenant = async(req,res,next) =>{
-    try {
-        const newTenant = new Tenant(req.body);
-         const savedTenant = await newTenant.save();
-         if(!savedTenant) return createError(500,'error while creating')
-        
-         return res.status(201).json(savedTenant)
 
+export const addTenant = async(req, res, next) => {
+    try {
+        // Create a new user with the specified role
+        const newUser = new User({
+            username: req.body.username, 
+            role: req.body.role
+        });
+
+        // Save the new user to the database
+        const savedUser = await newUser.save();
+
+        if (!savedUser) {
+            return createError(500, 'Error while creating user');
+        }
+
+        const newTenant = new Tenant({
+            ...req.body,
+            tenant: savedUser._id 
+        });
+
+        const savedTenant = await newTenant.save();
+
+        if (!savedTenant) {
+            await User.findByIdAndDelete(savedUser._id);
+            return createError(500, 'Error while creating tenant');
+        }
+
+        return res.status(201).json(savedTenant);
     } catch (error) {
-        next(error)
+        next(error);
     }
-}
+};
+
 
 
 export const editTenant = async (req, res, next) => {
