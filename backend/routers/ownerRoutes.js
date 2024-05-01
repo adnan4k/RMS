@@ -5,6 +5,6 @@ import uploader from "../utils/fileProcessing.js"
 
 const ownerRouter  = express.Router();
 
-ownerRouter.post('/createowner', verifyToken, uploader.single('national_id'), addOwner);
+ownerRouter.post('/createowner', verifyToken("user"), uploader.single('national_id'), addOwner);
 
 export default ownerRouter;
