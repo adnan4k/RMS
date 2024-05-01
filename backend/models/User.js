@@ -38,7 +38,7 @@ export const userSchema = mongoose.Schema({
     },
     role:{
         type:String,
-        default:"user",
+        default:"visitor",
         enum: ['visitor', 'admin', 'owner', 'tenant']
     },
     isActive: {

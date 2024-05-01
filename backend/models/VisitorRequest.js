@@ -6,6 +6,11 @@ const requestSchema = mongoose.Schema({
         ref: 'User',
         required: true
     },
+    house: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'House',
+        required: true
+    },
     date:{
         type: Date,
     }
