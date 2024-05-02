@@ -1,36 +1,27 @@
+import House from "../models/House.js";
 import Tenant from "../models/Tenant.js"
 import User from "../models/User.js";
 import { createError } from "../utils/CreateError.js";
+import sendEmail from "../utils/email.js";
 
 
 export const addTenant = async(req, res, next) => {
     try {
-        // Create a new user with the specified role
-        const newUser = new User({
-            username: req.body.username, 
-            role: req.body.role
-        });
-
-        // Save the new user to the database
-        const savedUser = await newUser.save();
-
-        if (!savedUser) {
-            return createError(500, 'Error while creating user');
+        let { email, firstname, lastname, phonenumber, reference, houseId } = req.body;
+        sendEmail('imran.mohammed@gmail.com');
+        reference = JSON.parse(reference);
+        const national_id = {
+            url: 'uploads/'+req.file.filename,
+            path: req.file.destination
         }
-
-        const newTenant = new Tenant({
-            ...req.body,
-            tenant: savedUser._id 
-        });
-
-        const savedTenant = await newTenant.save();
-
-        if (!savedTenant) {
-            await User.findByIdAndDelete(savedUser._id);
-            return createError(500, 'Error while creating tenant');
-        }
-
-        return res.status(201).json(savedTenant);
+        
+        const user = await User.create({ email, firstname, lastname, phonenumber, password: 'password', isActive: false});
+        const tenant = await Tenant.create({ user, reference, national_id });
+        const house = await House.findById(houseId);
+        house.tenant = user;
+        sendEmail(user.email);
+        await house.save();
+        return res.status(200).json({msg: 'Successfully registre', data: tenant})
     } catch (error) {
         next(error);
     }

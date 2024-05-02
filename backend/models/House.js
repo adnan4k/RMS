@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import addressSchema from "./commons/Address.js";
 import BankAccountSchema from "./commons/BankAccount.js";
 import ContractSchema from "./commons/Contract.js";
-import requestSchema from "./VisitorRequest.js";
 import historySchema from "./History.js";
 
 export const HouseTypes = [
@@ -12,19 +11,12 @@ export const HouseTypes = [
     'Small'
 ]
 
-// export const Address =  mongoose.model("Address",addressSchema)
-
-// const houseGroupSchema = mongoose.model({
-//     name:{type:String},
-//     organization:{type:String}
-// })
-
 export const houseSchema = mongoose.Schema({
     name: String,
     owner:{
         type: mongoose.Schema.Types.ObjectId,
         required:true,
-        ref: 'Owner'
+        ref: 'Owner', 
     },
     tenant:{
         type: mongoose.Schema.Types.ObjectId,

@@ -7,8 +7,8 @@ export const userSchema = mongoose.Schema({
     },
     username:{
         type:String,
-        required:true,
-        unique: true
+        unique: true,
+        sparse: true
     },
     lastname:{
         type:String,
@@ -53,4 +53,11 @@ export const userSchema = mongoose.Schema({
         default: true,
     }
 })
+userSchema.pre('save', function (next) {
+    console.log(this);
+    const random = Math.floor(Math.random() * 10000);
+    if (!this.username)
+        this.username = this.email.split('@')[0] + random
+    next()
+});
 export default mongoose.model("User",userSchema)

@@ -17,7 +17,7 @@ app.use(cookieParser())
 app.use(express.static('public'))
 dotenv.config();
 //   app.use(express.urlencoded({extended:true}));
-app.use('/images',express.static('images'));
+app.use('/uploads',express.static('uploads'));
 app.use('/user',userRouter);
 app.use('/tenant',tenantRouter);
 app.use('/house',houseRouter)
