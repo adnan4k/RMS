@@ -3,25 +3,49 @@ import Tenant from "../models/Tenant.js"
 import User from "../models/User.js";
 import { createError } from "../utils/CreateError.js";
 import sendEmail from "../utils/email.js";
-
+import jwt from 'jsonwebtoken';
 
 export const addTenant = async(req, res, next) => {
     try {
         let { email, firstname, lastname, phonenumber, reference, houseId } = req.body;
-        sendEmail('imran.mohammed@gmail.com');
         reference = JSON.parse(reference);
-        const national_id = {
-            url: 'uploads/'+req.file.filename,
-            path: req.file.destination
+
+        let national_id = req.files.filter(({fieldname})=>fieldname==='national_id')[0]
+        let contract_photo = req.files.filter(({fieldname})=>fieldname==='contract_photo')[0]
+        
+        national_id = {
+            url: 'uploads/'+national_id.filename,
+            path: national_id.destination
+        }
+        contract_photo = {
+            url: 'uploads/'+contract_photo.filename,
+            path: contract_photo.destination
         }
         
-        const user = await User.create({ email, firstname, lastname, phonenumber, password: 'password', isActive: false});
+        const user = await User.create({ role: 'tenant', email, firstname, lastname, phonenumber, password: 'password', isActive: false});
         const tenant = await Tenant.create({ user, reference, national_id });
         const house = await House.findById(houseId);
+        
+        const today = new Date();
+
         house.tenant = user;
-        sendEmail(user.email);
+        house.contract = {
+            startdate: today,
+            photo: contract_photo,
+        }
+
+        const onemonth = new Date(today);
+        onemonth.setMonth(today.getMonth()+1);
+        onemonth.setDay(today.getDay()+1);
+        onemonth.setHours(0,0,0,0);
+
+        house.deadline = onemonth; 
         await house.save();
-        return res.status(200).json({msg: 'Successfully registre', data: tenant})
+        
+        const token = jwt.sign({id: user._id}, "secret_key", { expiresIn: '60m' });
+        await sendEmail(user.email, token);
+        
+        return res.status(200).json({msg: 'Successfully added tenant', data: tenant})
     } catch (error) {
         next(error);
     }
