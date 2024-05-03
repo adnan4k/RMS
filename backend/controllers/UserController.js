@@ -2,6 +2,8 @@ import User from "../models/User.js";
 import bcrypt from "bcrypt"
 import  jwt  from "jsonwebtoken";
 import { createError } from "../utils/CreateError.js";
+import sendEmail from "../utils/email.js";
+
 
 export const register = async (req, res, next) => {
   try {
@@ -82,8 +84,9 @@ export const forgetPassword = async (req, res, next) => {
       "secret_key",
       { expiresIn: '60m' }
     );
-
+    
     await sendEmail(user.email, token);
+    console.log(token);
     return res.status(201).json({msg: 'Email for reseting password sent!!'});
   } catch (error) {
     next(error);
