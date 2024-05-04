@@ -8,6 +8,7 @@ import tenantRouter from "./routers/tenatRoute.js";
 import houseRouter from "./routers/houseRoutes.js";
 import ownerRouter from "./routers/ownerRoutes.js";
 import cookieParser from "cookie-parser";
+import maintainanceRouter from "./routers/maintainance.js";
 
 const app = express();
 app.use(cors());
@@ -23,6 +24,7 @@ app.use('/user',userRouter);
 app.use('/tenant',tenantRouter);
 app.use('/house',houseRouter)
 app.use('/owner', ownerRouter);
+app.use('/maintainance', maintainanceRouter);
 
 //error handler
 app.use((err,req,res,next) =>{
