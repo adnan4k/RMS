@@ -1,3 +1,4 @@
+import mongoose, { startSession } from "mongoose";
 import House from "../models/House.js";
 import Tenant from "../models/Tenant.js"
 import User from "../models/User.js";
@@ -6,6 +7,8 @@ import sendEmail from "../utils/email.js";
 import jwt from 'jsonwebtoken';
 
 export const addTenant = async(req, res, next) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
     try {
         let { email, firstname, lastname, phonenumber, reference, houseId } = req.body;
         reference = JSON.parse(reference);
@@ -22,8 +25,8 @@ export const addTenant = async(req, res, next) => {
             path: contract_photo.destination
         }
         
-        const user = await User.create({ role: 'tenant', email, firstname, lastname, phonenumber, password: 'password', isActive: false});
-        const tenant = await Tenant.create({ user, reference, national_id });
+        const user = await User.create({ role: 'tenant', email, firstname, lastname, phonenumber, password: 'password', isActive: false}, { session });
+        const tenant = await Tenant.create({ user, reference, national_id }, { session: session });
         const house = await House.findById(houseId);
         
         const today = new Date();
@@ -47,6 +50,8 @@ export const addTenant = async(req, res, next) => {
         
         return res.status(200).json({msg: 'Successfully added tenant', data: tenant})
     } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
         next(error);
     }
 };

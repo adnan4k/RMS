@@ -35,15 +35,12 @@ export const craeteVisitorRequest = async (req, res, next) => {
                     day: {$dayOfMonth: '$date'},
                     hour: {$hour: '$date'}
                 },
-            
-            },
-            {
+            },  {
                 $match: {
                     month: date.getMonth()+1,
                     day: date.getDate()
                 },
-            },
-            {
+            },  {
                 $sort: {
                     hour: 1
                 }
@@ -53,6 +50,9 @@ export const craeteVisitorRequest = async (req, res, next) => {
         const endtime = new Date(date)
         endtime.setHours(endtime.getHours()+1, endtime.getMinutes(), 0, 0)
         for(let index = 0; index < schedules.length; index ++) {
+            if (schedules[index].visitor.toString() === visitor._id.toString())
+                continue
+
             const s = new Date(schedules[index].date);
             const e = new Date(schedules[index].date);
             e.setHours(s.getHours() + 1, s.getMinutes(), 0, 0);
@@ -60,7 +60,10 @@ export const craeteVisitorRequest = async (req, res, next) => {
             if ((s<date && date<e) || (s<endtime && endtime<e))
                 throw createError(400, "This time interfeers with another time!")
         }
-        
+        await Requests.deleteOne({
+            visitor: visitor._id,
+            house: house._id,
+        });
         const request = await Requests.create({
             visitor,
             house,
@@ -69,5 +72,31 @@ export const craeteVisitorRequest = async (req, res, next) => {
         return res.status(200).json({msg: `Successfully booked`, data: request});
     } catch (error) {
         next(error)
+    }
+}
+
+export const getAllRequests = async (req, res, next) => {
+    try {
+        const requests = await Requests.find({visitor: req.user}).populate([
+            {
+                path: 'house',
+                select: '-tenant -deadline -contract -occupancy_history'
+            },{
+                path: 'visitor',
+                select: '-role -password -isActive'    
+            }
+        ])
+        return res.status(200).json(requests);
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const deleteRequest = async (req, res, next) => {
+    try {
+        const deleted = await Requests.findByIdAndDelete(req.params.id)
+        return res.status(204).json({msg: "Deleted", data: deleted})
+    } catch(error) {
+        next(error);
     }
 }
