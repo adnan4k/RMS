@@ -2,8 +2,9 @@ import mongoose from "mongoose";
 
 const maintenanceSchema = mongoose.Schema({
     tenant_id:{
-        type:String,
-        required:true
+        type: mongoose.Schema.Types.ObjectId,
+        required:true,
+        ref: 'tenant'
     },
     description:{
         type:String,
@@ -11,20 +12,18 @@ const maintenanceSchema = mongoose.Schema({
     },
     status:{
         type:Boolean,
-        required:true
-    },
-    phone:{
-        type:String,
-        required:true
+        required:true,
+        default: false,
     },
     date_of_request:{
         type:Date,
-        required:true
+        required:true,
+        default: Date.now
     },
     house_id:{
-        type:String,
-        required:true
+        type: mongoose.Schema.Types.ObjectId,
+        required:true,
+        ref: 'House'
     }
-
 })
 export default mongoose.model("Maintenance",maintenanceSchema)

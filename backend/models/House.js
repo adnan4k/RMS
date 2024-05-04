@@ -1,83 +1,64 @@
 import mongoose from "mongoose";
-const addressSchema = mongoose.Schema({
-   city: {
-    type: String,
-    required: true
-   },
-   kebele: {
-    type: String,
-    required: true
-   },
-   sub_city: {
-    type: String,
-    required: true
-   },
-   woreda: {
-    type: String,
-    required: true
-   },
-   latitude: {
-    type: Number,
-    required: true
-   },
-   longitude: {
-    type: Number,
-    required: true
-   }
-});
+import addressSchema from "./commons/Address.js";
+import BankAccountSchema from "./commons/BankAccount.js";
+import ContractSchema from "./commons/Contract.js";
+import historySchema from "./History.js";
 
-const Address = mongoose.model("Address", addressSchema);
+export const HouseTypes = [
+    'villa',
+    'Building',
+    'L-shape',
+    'Small'
+]
 
-const houseGroupSchema = mongoose.Schema({
-    name: { type: String },
-    organization: { type: String }
-});
-
-const houseSchema = mongoose.Schema({
-    owner: {
-        type: String,
-        required: true
+export const houseSchema = mongoose.Schema({
+    name: String,
+    owner:{
+        type: mongoose.Schema.Types.ObjectId,
+        required:true,
+        ref: 'Owner', 
     },
-    tenant: {
-        type: String,
-        required: true
+    tenant:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Tenant'
     },
-    no_of_rooms: {
-        type: Number,
-        required: true
+    no_of_rooms:{
+        type:Number,
+        required:true
     },
-    no_of_bath_rooms: {
-        type: Number,
-        required: true
+    no_of_bath_rooms:{
+        type:Number,
+        required:true
     },
-    width: {
-        type: Number
+    width:{
+        type:Number,
     },
-    length: {
-        type: Number
+    length:{
+        type:Number, 
     },
-    house_group: {
-        type: houseGroupSchema
+    house_type:{
+        type:String,
+        enum: HouseTypes
     },
-    house_type: {
-        type: String
+    address:{
+        type:addressSchema
     },
-    address: {
-       type: addressSchema
+    bankaccounts: [BankAccountSchema],
+    rent_amount:{
+        type:Number
     },
-    rent_amount: {
-        type: Number
+    deadline: {
+        type:Date
     },
-    images: {
-        type: [String]
+    images:[{
+        url: String,
+        path: String,
+    }],
+    contract: ContractSchema,
+    description:{
+        type:String
     },
-    description: {
-        type: String
-    },
-    visitor_requests: {
-        type: String
-    }
-});
-
+    occupancy_history: [historySchema]
+})
 
 export default mongoose.model("House",houseSchema)

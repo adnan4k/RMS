@@ -1,36 +1,51 @@
+import House from "../models/House.js";
 import Tenant from "../models/Tenant.js"
 import User from "../models/User.js";
 import { createError } from "../utils/CreateError.js";
-
+import sendEmail from "../utils/email.js";
+import jwt from 'jsonwebtoken';
 
 export const addTenant = async(req, res, next) => {
     try {
-        // Create a new user with the specified role
-        const newUser = new User({
-            username: req.body.username, 
-            role: req.body.role
-        });
+        let { email, firstname, lastname, phonenumber, reference, houseId } = req.body;
+        reference = JSON.parse(reference);
 
-        // Save the new user to the database
-        const savedUser = await newUser.save();
+        let national_id = req.files.filter(({fieldname})=>fieldname==='national_id')[0]
+        let contract_photo = req.files.filter(({fieldname})=>fieldname==='contract_photo')[0]
+        
+        national_id = {
+            url: 'uploads/'+national_id.filename,
+            path: national_id.destination
+        }
+        contract_photo = {
+            url: 'uploads/'+contract_photo.filename,
+            path: contract_photo.destination
+        }
+        
+        const user = await User.create({ role: 'tenant', email, firstname, lastname, phonenumber, password: 'password', isActive: false});
+        const tenant = await Tenant.create({ user, reference, national_id });
+        const house = await House.findById(houseId);
+        
+        const today = new Date();
 
-        if (!savedUser) {
-            return createError(500, 'Error while creating user');
+        house.tenant = user;
+        house.contract = {
+            startdate: today,
+            photo: contract_photo,
         }
 
-        const newTenant = new Tenant({
-            ...req.body,
-            tenant: savedUser._id 
-        });
+        const onemonth = new Date(today);
+        onemonth.setMonth(today.getMonth()+1);
+        onemonth.setDay(today.getDay()+1);
+        onemonth.setHours(0,0,0,0);
 
-        const savedTenant = await newTenant.save();
-
-        if (!savedTenant) {
-            await User.findByIdAndDelete(savedUser._id);
-            return createError(500, 'Error while creating tenant');
-        }
-
-        return res.status(201).json(savedTenant);
+        house.deadline = onemonth; 
+        await house.save();
+        
+        const token = jwt.sign({id: user._id}, "secret_key", { expiresIn: '60m' });
+        await sendEmail(user.email, token);
+        
+        return res.status(200).json({msg: 'Successfully added tenant', data: tenant})
     } catch (error) {
         next(error);
     }

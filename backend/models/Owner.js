@@ -1,21 +1,22 @@
 import mongoose from "mongoose";
+import addressSchema from "./commons/Address.js";
 
 const ownerSchema = mongoose.Schema({
-    kebele:{
-        type:String,
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+        unique: true
+    },
+    address:{
+        type:addressSchema,
         required:true
     },
-    reference_name:{
-        type:String,
-        required:true
-    },
-    reference_number:{
-        type:String,
-        required:true
-    },
- 
-    national_id:{
-        type:String,
+    national_id:{ 
+        type: {
+            url: String,
+            path: String
+        },
         required:true
     }
 
