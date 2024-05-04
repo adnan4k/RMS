@@ -9,6 +9,8 @@ import houseRouter from "./routers/houseRoutes.js";
 import ownerRouter from "./routers/ownerRoutes.js";
 import cookieParser from "cookie-parser";
 
+process.env.TZ = 'UTC';
+
 const app = express();
 app.use(cors());
 app.use(express.json());
