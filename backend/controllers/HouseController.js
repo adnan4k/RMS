@@ -85,7 +85,6 @@ export const addHouseCalendar = async (req, res, next) => {
             if (day < 0 || day > 6)
                 throw createError(400, "Invalid day");
             
-            // Make sure that day is UTC not locale
             if (starttime.hour >= endtime.hour)
                 throw createError(400, 'There must be morethan one hour difference between the two');
             schedule[day] = {

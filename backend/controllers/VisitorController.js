@@ -3,7 +3,7 @@ import User from "../models/User.js";
 import Requests from "../models/VisitorRequest.js";
 import { createError } from "../utils/CreateError.js";
 
-export const craeteVisitorRequest = async (req, res, next) => {
+export const createVisitorRequest = async (req, res, next) => {
     try {
         const date = new Date(req.body.date);
 
@@ -15,12 +15,9 @@ export const craeteVisitorRequest = async (req, res, next) => {
         if (!day)
             throw createError(402, "The house have no schedule this day");
 
-        const diff = day.endtime - day.starttime;
-        const inMinutes = Math.ceil( diff / 60000)
-
         const start = new Date().setHours(day.starttime.getHours(), day.starttime.getMinutes(), 0 ,0);
 
-        const end = new Date().setHours(day.starttime.getHours() + Math.floor(inMinutes/60), day.starttime.getMinutes()+inMinutes%60, 0 ,0);
+        const end = new Date().setHours(day.endtime.getHours(), day.endtime.getMinutes(), 0, 0);
         const current = new Date().setHours(date.getHours(), date.getMinutes(), 0, 0);
 
         
