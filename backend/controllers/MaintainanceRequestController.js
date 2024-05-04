@@ -40,3 +40,14 @@ export const getMaintenanceRequest = async(req,res,next) =>{
                 createError(500,'internal server error');
              }
 }
+
+export const getAllMaintenanceRequests = async(req,res,next) =>{
+    try {
+         const allRequest = await Maintenance.find();
+         if(!allRequest) createError(404,'there is no maintenance request')
+        
+        return res.status(200).json(allRequest);
+    } catch (error) {
+        createError(500,'server error')
+    }
+}
