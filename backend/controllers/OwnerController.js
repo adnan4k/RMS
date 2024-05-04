@@ -24,7 +24,7 @@ export const addOwner = async(req, res, next) => {
         });
 
         const savedOwner = await newOwner.save();
-
+``
         if (!savedOwner) {
             await User.findByIdAndDelete(savedUser._id);
             return createError(500, 'Error while creating Owner');
