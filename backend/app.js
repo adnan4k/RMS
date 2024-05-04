@@ -10,6 +10,8 @@ import ownerRouter from "./routers/ownerRoutes.js";
 import cookieParser from "cookie-parser";
 import maintainanceRouter from "./routers/maintainance.js";
 
+process.env.TZ = 'UTC';
+
 const app = express();
 app.use(cors());
 app.use(express.json());

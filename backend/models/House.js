@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { get } from "mongoose";
 import addressSchema from "./commons/Address.js";
 import BankAccountSchema from "./commons/BankAccount.js";
 import ContractSchema from "./commons/Contract.js";
@@ -10,6 +10,10 @@ export const HouseTypes = [
     'L-shape',
     'Small'
 ]
+
+function timegetter(date) {
+    return new Date(date);
+}
 
 export const houseSchema = mongoose.Schema({
     name: String,
@@ -58,7 +62,24 @@ export const houseSchema = mongoose.Schema({
     description:{
         type:String
     },
-    occupancy_history: [historySchema]
+    occupancy_history: [historySchema],
+    calendar: {
+        type: {
+            open: Boolean,
+            schedule: {
+                type: [{
+                    starttime: {
+                        type: Date,
+                        get: timegetter,
+                    },
+                    endtime: {
+                        type: Date,
+                        get: timegetter
+                    }
+                }],
+            }
+        },
+    },
 })
 
 export default mongoose.model("House",houseSchema)

@@ -10,8 +10,8 @@ export const addTenant = async(req, res, next) => {
         let { email, firstname, lastname, phonenumber, reference, houseId } = req.body;
         reference = JSON.parse(reference);
 
-        let national_id = req.files.filter(({fieldname})=>fieldname==='national_id')[0]
-        let contract_photo = req.files.filter(({fieldname})=>fieldname==='contract_photo')[0]
+        let national_id = req.files['national_id'][0]
+        let contract_photo = req.files['contract_photo'][0]
         
         national_id = {
             url: 'uploads/'+national_id.filename,
@@ -36,7 +36,7 @@ export const addTenant = async(req, res, next) => {
 
         const onemonth = new Date(today);
         onemonth.setMonth(today.getMonth()+1);
-        onemonth.setDay(today.getDay()+1);
+        onemonth.setDate(today.getDate()+1);
         onemonth.setHours(0,0,0,0);
 
         house.deadline = onemonth; 
