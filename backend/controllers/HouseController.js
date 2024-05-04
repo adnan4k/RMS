@@ -1,5 +1,5 @@
-import { populate } from "dotenv";
 import House from "../models/House.js"
+import User from "../models/User.js"
 import { createError } from "../utils/CreateError.js";
 
 export const createHouse = async (req, res, next) => {
@@ -65,6 +65,46 @@ export const getHouse = async (req, res, next) => {
         return next(error);
     }
 };
+
+
+export const addHouseCalendar = async (req, res, next) => {
+    try {
+        let {isOpen, schedules} = req.body;
+        schedules = JSON.parse(schedules);
+        
+        const house = await House.findOne({owner: req.user, _id: req.params.houseid});
+
+        if(!house)
+            throw createError(400, "House not found!!");
+
+        let schedule = house.calendar.schedule;
+        if (schedule.length < 7)
+            schedule = Array(7).fill(null)
+        
+        schedules.forEach(({day, starttime, endtime}) => {
+            if (day < 0 || day > 6)
+                throw createError(400, "Invalid day");
+            
+            // Make sure that day is UTC not locale
+            if (starttime.hour >= endtime.hour)
+                throw createError(400, 'There must be morethan one hour difference between the two');
+            schedule[day] = {
+                day,
+                starttime: new Date().setHours(starttime.hour, starttime.minute, 0, 0),
+                endtime: new Date().setHours(endtime.hour, endtime.minute, 0, 0),
+            }
+        });
+
+        house.calendar = {
+            open: isOpen || house.open,
+            schedule,
+        }
+        await house.save()
+        return res.status(201).json({message: "Successfully set calendar!", data: house.calendar});
+    } catch (error) {
+        next(error)
+    }
+}
 
 export const editHouse = async (req, res, next) => {
     const id = req.params.id;

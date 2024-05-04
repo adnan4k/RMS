@@ -5,6 +5,7 @@ const file_name = function (req, file, cb) {
     cb(null, uniqueSuffix + '.jpg')
 }
 
+// TODO: Required fields must be check;
 const filtering = function (req, file, cb) {
     const allowed_image_mime = ['image/jpeg', 'image/png', 'image/gif'];
     const allowed_image_extensions = ['png', 'jpeg', 'jpg'];
