@@ -1,3 +1,4 @@
+import House from "../models/House.js";
 import Maintenance from "../models/Maintenance.js";
 import { createError } from "../utils/CreateError";
 
@@ -21,4 +22,21 @@ export const createMaintainance = async(req,res,next)=>{
      } catch (error) {
         createError(500,"internal server error")
      }
+}
+
+export const getMaintenanceRequest = async(req,res,next) =>{
+             const {ownerId} = req.params.id;
+             try {
+                const houses = await House.find({owner:ownerId});
+                 if(!houses) createError(404,"houses with this owner are not found")
+                const houseIds = houses.map(house => house._id);
+            
+                const maintenanceRequests = await Maintenance.find({house_id:houseIds})
+                 if(!maintenanceRequests) createError(404,'no maintenance requests')
+                
+                res.status(200).json(maintenanceRequests)
+
+             } catch (error) {
+                createError(500,'internal server error');
+             }
 }

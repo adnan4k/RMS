@@ -26,7 +26,7 @@ app.use('/user',userRouter);
 app.use('/tenant',tenantRouter);
 app.use('/house',houseRouter)
 app.use('/owner', ownerRouter);
-app.use('/maintainance', maintainanceRouter);
+app.use('/maintenance', maintainanceRouter);
 
 //error handler
 app.use((err,req,res,next) =>{
