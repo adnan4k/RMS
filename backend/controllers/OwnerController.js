@@ -4,7 +4,6 @@ import jwt from 'jsonwebtoken';
 import { createError } from "../utils/CreateError.js";
 
 
-
 export const addOwner = async(req, res, next) => {
     try {
         let { address } = req.body;
@@ -36,3 +35,15 @@ export const addOwner = async(req, res, next) => {
         next(error);
     }
 };
+
+export const getOwner = async (req, res, next) => {
+    try {
+        const owner = Owner({user: req.user}).populate({
+            path: 'user',
+            select: '-role -password -isActive'
+        });
+        return res.status(200).json(owner);
+    } catch (error) {
+        next(error)
+    }
+}

@@ -10,7 +10,7 @@ const verifyToken = (role) => (req, res, next) =>  {
         if (err)
             return res.status(401).json('Unauthorized access');
         if (decoded.role !== role)
-            return res.status(401).json('Unauthorized access');
+            return res.status(403).json('Unauthorized access');
         req.user = decoded.id;
         req.role = decoded.role;
         next()

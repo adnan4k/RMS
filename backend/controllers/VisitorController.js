@@ -24,7 +24,6 @@ export const createVisitorRequest = async (req, res, next) => {
         if (current<start || current > end)
             throw createError(400, "The house have no schedule this time")
         
-        console.log(date.getMonth(), date.getDate());
         const schedules = await Requests.aggregate([
             {
                 $addFields:{
@@ -67,4 +66,12 @@ export const createVisitorRequest = async (req, res, next) => {
     } catch (error) {
         next(error)
     }
+}
+
+export const getVisitRequests = async (req, res, next) => {
+    const requests = await Requests.find({
+        house: req.params.houseid
+    }).populate({ path: 'visitor', select: '-password -role -isActive'});
+
+    return res.status(200).json(requests);
 }

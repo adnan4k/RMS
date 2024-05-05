@@ -45,10 +45,9 @@ export const createHouse = async (req, res, next) => {
 export const getHouse = async (req, res, next) => {
     const id = req.params.id;
     try {
-        const house = await House.findById(id);
-        if(!house){
-            createError(404,'house not found')
-        }
+        const house = await House.findById(id).select('-occupancy_history -bankaccounts -deadline -contract -calendar');
+        if(!house)
+            throw createError(404,'house not found');
 
         await house.populate({
             path: 'owner', 
@@ -66,6 +65,24 @@ export const getHouse = async (req, res, next) => {
     }
 };
 
+export const getHouses = async (req, res, next) => {
+    try {
+        const houses = await House.find({tenant: null}).select('-occupancy_history -bankaccounts -deadline -contract -calendar');
+
+        await houses.populate({
+            path: 'owner', 
+            foreignField: 'user',
+            select: '-national_id ',
+            populate: {
+                path: 'user',
+                select: '-role -password -isActive'
+            }
+        });
+        return res.status(200).json(houses);
+    } catch (error) {
+        return next(error);
+    }
+};
 
 export const addHouseCalendar = async (req, res, next) => {
     try {
@@ -129,15 +146,4 @@ export const deleteHouse = async (req, res, next) => {
         return next(error);
     }
 };
-export const getHouses = async (req, res, next) => {
-    try {
-        const houses = await House.find();
-        if(!houses){
-            createError(404,'house not found')
-        }
 
-       return res.status(200).json(houses);
-    } catch (error) {
-        return next(error);
-    }
-};

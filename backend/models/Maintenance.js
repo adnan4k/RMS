@@ -4,7 +4,7 @@ const maintenanceSchema = mongoose.Schema({
     tenant_id:{
         type: mongoose.Schema.Types.ObjectId,
         required:true,
-        ref: 'tenant'
+        ref: 'Tenant'
     },
     description:{
         type:String,
