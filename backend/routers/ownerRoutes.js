@@ -4,11 +4,15 @@ import verifyToken from "../utils/verifyToken.js";
 import uploader from "../utils/fileProcessing.js"
 import { getVisitRequests } from "../controllers/VisitorController.js";
 import { addHouseCalendar } from "../controllers/HouseController.js";
+import { addTenant } from "../controllers/TenantController.js";
+import { getMaintenanceRequest } from "../controllers/MaintainanceRequestController.js";
 
 const ownerRouter  = express.Router();
 
-ownerRouter.post('/createowner', verifyToken("user"), uploader.single('national_id'), addOwner);
+ownerRouter.post('/', verifyToken("user"), uploader.single('national_id'), addOwner);
 ownerRouter.get('/', verifyToken('owner'), getOwner);
+ownerRouter.post('/:houseid', verifyToken('owner'), uploader.fields([{name:'national_id', maxCount: 1, minCount: 1}, {name:'contract_photo', maxCount: 1, minCount: 1}]), addTenant);
+ownerRouter.get('/maintenance',verifyToken('owner'),getMaintenanceRequest);
 ownerRouter.get('/:houseid/requests', verifyToken('owner'), getVisitRequests);
 ownerRouter.post('/:houseid/calendar', verifyToken('owner'), addHouseCalendar);
 

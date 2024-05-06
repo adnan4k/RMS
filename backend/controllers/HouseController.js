@@ -1,6 +1,7 @@
 import House from "../models/House.js"
 import User from "../models/User.js"
 import { createError } from "../utils/CreateError.js";
+import { paginate } from "../utils/pagination.js";
 
 export const createHouse = async (req, res, next) => {
     try {    
@@ -45,7 +46,7 @@ export const createHouse = async (req, res, next) => {
 export const getHouse = async (req, res, next) => {
     const id = req.params.id;
     try {
-        const house = await House.findById(id).select('-occupancy_history -bankaccounts -deadline -contract -calendar');
+        const house = await House.findById(id).select('-occupancy_history -bankaccounts -deadline -contract');
         if(!house)
             throw createError(404,'house not found');
 
@@ -67,7 +68,9 @@ export const getHouse = async (req, res, next) => {
 
 export const getHouses = async (req, res, next) => {
     try {
-        const houses = await House.find({tenant: null}).select('-occupancy_history -bankaccounts -deadline -contract -calendar');
+        const [result, start, size] = paginate(req.query, 30);
+        const houses = await House.find({tenant: null}).skip(start)
+        .limit(size).select('-occupancy_history -bankaccounts -deadline -contract -calendar');
 
         await houses.populate({
             path: 'owner', 
@@ -78,7 +81,9 @@ export const getHouses = async (req, res, next) => {
                 select: '-role -password -isActive'
             }
         });
-        return res.status(200).json(houses);
+        
+        result.data = houses;
+        return res.status(200).json(result);
     } catch (error) {
         return next(error);
     }
@@ -102,6 +107,8 @@ export const addHouseCalendar = async (req, res, next) => {
             if (day < 0 || day > 6)
                 throw createError(400, "Invalid day");
             
+            if (!(3 < starttime.hour < 24 && 3 < endtime < 24))
+                throw createError(400, "Please set the time properly")
             if (starttime.hour >= endtime.hour)
                 throw createError(400, 'There must be morethan one hour difference between the two');
             schedule[day] = {

@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 const requestSchema = mongoose.Schema({
+    ope:Boolean,
     visitor: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -15,6 +16,8 @@ const requestSchema = mongoose.Schema({
         type: Date,
     }
 });
+
+requestSchema.index({ visitor: 1, house: 1 }, { unique: true });
 
 const Requests = mongoose.model('Request', requestSchema);
 export default Requests;
