@@ -7,7 +7,8 @@ import jwt from 'jsonwebtoken';
 
 export const addTenant = async(req, res, next) => {
     try {
-        let { email, firstname, lastname, phonenumber, reference, houseId } = req.body;
+        let { email, firstname, lastname, phonenumber, reference } = req.body;
+        const houseId = req.params.houseid
         reference = JSON.parse(reference);
 
         let national_id = req.files['national_id'][0]
@@ -22,7 +23,11 @@ export const addTenant = async(req, res, next) => {
             path: contract_photo.destination
         }
         
-        const user = await User.create({ role: 'tenant', email, firstname, lastname, phonenumber, password: 'password', isActive: false});
+        let user =  await User.findOne({email: email});
+        if (user && user.role != 'user')
+            throw createError(400, 'This email has been taken!!');
+        if (!user)
+            user = await User.create({ role: 'tenant', email, firstname, lastname, phonenumber, password: 'password', isActive: false});
         const tenant = await Tenant.create({ user, reference, national_id });
         const house = await House.findById(houseId);
         

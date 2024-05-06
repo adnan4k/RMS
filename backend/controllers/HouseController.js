@@ -72,7 +72,7 @@ export const getHouses = async (req, res, next) => {
         await houses.populate({
             path: 'owner', 
             foreignField: 'user',
-            select: '-national_id ',
+            select: '-national_id',
             populate: {
                 path: 'user',
                 select: '-role -password -isActive'
@@ -105,7 +105,6 @@ export const addHouseCalendar = async (req, res, next) => {
             if (starttime.hour >= endtime.hour)
                 throw createError(400, 'There must be morethan one hour difference between the two');
             schedule[day] = {
-                day,
                 starttime: new Date().setHours(starttime.hour, starttime.minute, 0, 0),
                 endtime: new Date().setHours(endtime.hour, endtime.minute, 0, 0),
             }
