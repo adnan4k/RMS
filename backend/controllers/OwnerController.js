@@ -2,6 +2,8 @@ import Owner from "../models/Owner.js";
 import User from "../models/User.js";
 import jwt from 'jsonwebtoken';
 import { createError } from "../utils/CreateError.js";
+import { request } from "express";
+import House from "../models/House.js";
 
 
 export const addOwner = async(req, res, next) => {
@@ -44,6 +46,28 @@ export const getOwner = async (req, res, next) => {
         });
         return res.status(200).json(owner);
     } catch (error) {
+        next(error)
+    }
+}
+
+export const deleteOwner = async(req,res,next) =>{
+    const ownerId  = request.params.ownerId
+    try {
+        const session = await mongoose.startSession();
+         session.startTransaction()
+          const owner = await Owner.findById(ownerId);
+
+        await House.deleteMany({owner:ownerId}).session(session);
+        await Owner.findByIdAndDelete(ownerId).session(session);
+        await User.findByIdAndDelete(owner.user).session(session)
+
+        session.commitTransaction();
+        session.endSession();
+          
+
+    } catch (error) {
+        session.abortTransaction()
+        session.endSession();
         next(error)
     }
 }
