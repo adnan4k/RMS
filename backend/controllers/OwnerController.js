@@ -5,7 +5,6 @@ import { createError } from "../utils/CreateError.js";
 import User from "../models/User.js";
 import { removeImage } from "../utils/fileProcessing.js";
 import mongoose from "mongoose";
-import { request } from "express";
 import House from "../models/House.js";
 
 
@@ -43,11 +42,13 @@ export const addOwner = async(req, res, next) => {
 
 export const getOwner = async (req, res, next) => {
     try {
-        const owner = Owner({user: req.user}).populate({
-            path: 'user',
-            select: '-role -password -isActive'
-        });
-        return res.status(200).json(owner);
+        const user = User.findOne({$or: [{username: req.params.username}, {_id: req.params.username}]});
+        if (!user)
+            throw createError(400, 'Owner not found')
+        const owner = await Owner.findOne({user: user._id});
+        if (!owner)
+            throw createError(400, 'Not an owner')
+        return res.status(200).json({owner, user});
     } catch (error) {
         next(error)
     }
@@ -75,8 +76,8 @@ export const editProfile = async (req, res, next) => {
                 path: req.file.destination
             }
         }
-        await owner.save().session(session);
         await user.save().session(session);
+        await owner.save().session(session);
         await session.commitTransaction();
         return res.status(200).json({msg: "Succssesfully updated!", data: {owner, user}})
     } catch (error) {
@@ -88,23 +89,24 @@ export const editProfile = async (req, res, next) => {
 }
 
 export const deleteOwner = async(req,res,next) =>{
-    const ownerId  = request.params.ownerId
+    const ownerId  = req.user;
     try {
         const session = await mongoose.startSession();
-         session.startTransaction()
-          const owner = await Owner.findById(ownerId);
+        session.startTransaction()
+        const owner = await Owner.findById(ownerId);
 
         await House.deleteMany({owner:ownerId}).session(session);
-        await Owner.findByIdAndDelete(ownerId).session(session);
+        await Owner.findOneAndDelete({user: ownerId}).session(session);
         await User.findByIdAndDelete(owner.user).session(session)
 
-        session.commitTransaction();
-        session.endSession();
-          
+        await session.commitTransaction();
+        await session.endSession();
+        
+        return res.status(200).json({msg: 'Successfully Deleted This owner'});
 
     } catch (error) {
-        session.abortTransaction()
-        session.endSession();
+        await session.abortTransaction()
+        await session.endSession();
         next(error)
     }
 }

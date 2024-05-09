@@ -1,5 +1,6 @@
+import mongoose from "mongoose";
 import House from "../models/House.js"
-import User from "../models/User.js"
+import Requests from "../models/VisitorRequest.js";
 import { createError } from "../utils/CreateError.js";
 import { removeImage } from "../utils/fileProcessing.js";
 import { paginate } from "../utils/pagination.js";
@@ -190,6 +191,43 @@ export const addHouseCalendar = async (req, res, next) => {
         return res.status(201).json({message: "Successfully set calendar!", data: house.calendar});
     } catch (error) {
         next(error)
+    }
+}
+
+export const getHouseVisits = async (req, res, next) => {
+    try {
+        const house = mongoose.Schema.Types.ObjectId(req.params.id)
+        const requests = await Requests.aggregate([
+            {$match: {
+                house: house
+            }},
+            {$addFields: {
+                truncDate: {$dateTrunc: {
+                    date: '$date',
+                    unit: 'day'
+                }},
+                hour: {$hour: '$date'}
+            }},
+            {$project: {
+                visitor: 0,
+                message: 0,
+                house: 0
+            }},
+            {$sort: {
+                hour: 1
+            }},
+            {$group: {
+                _id: '$truncDate',
+                requests: {$push: {
+                    date: '$date',
+                }},
+                count: {$sum: 1}
+            }}
+        ]);
+
+        return res.status(200).json(requests);
+    } catch (error) {
+        next(error);
     }
 }
 

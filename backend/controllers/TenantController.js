@@ -58,7 +58,7 @@ export const addTenant = async(req, res, next) => {
         return res.status(200).json({msg: 'Successfully added tenant', data: tenant})
     } catch (error) {
         await session.abortTransaction();
-// TODO: Multilevel try catch blocks here
+// TODO: may be multilevel try catch blocks here
 
         await removeImage(req.files['national_id'][0].destination);
         await removeImage(req.files['contract_photo'][0].destination);
@@ -68,41 +68,72 @@ export const addTenant = async(req, res, next) => {
     }
 };
 
-
-
 export const editTenant = async (req, res, next) => {
-    const id = req.params.id;
+    const session = await mongoose.startSession();
+    session.startTransaction();
     try {
-        const updatedTenant = await Tenant.findByIdAndUpdate(id, req.body, { new: true });
+        let { firstname, lastname, email, phonenumber, username, mother_name, reference } = req.body;
+        
+        if (reference)
+            reference = JSON.parse(reference);
+        const user = await User.findById(req.user).select('-password -isActive -role');
+        const tenant = await Tenant.findOne({user: user._id});
+        user.firstname = firstname || user.firstname; 
+        user.lastname = lastname || user.lastname; 
+        user.email = email || user.email; 
+        user.phonenumber = phonenumber || user.phonenumber;
+        user.username = username || user.username;
+        
+        tenant.reference = reference || tenant.reference;
+        tenant.mother_name = mother_name || tenant.mother_name;
 
-        if (!updatedTenant) {
-            return next(createError(500, 'Error while updating'));
+        if (req.file) {
+            await removeImage(tenant.national_id.path);
+            tenant.national_id = {
+                url: "uploads/"+req.file.filename,
+                path: req.file.destination
+            }
         }
+        
+        await user.save().session(session);
+        await tenant.save().session(session);
+    
+        await session.commitTransaction();
+        return res.status(200).json({msg: "Succssesfully updated!", data: {tenant, user}})
+    } catch (error) {
+        await session.abortTransaction();
+        next(error);
+    } finally {
+        await session.endSession();
+    }
+};
 
-        return res.status(200).json(updatedTenant);
+export const getTenant = async (req, res, next) => {
+    try {
+        const teantid = req.role === 'tenant'? req.user: req.params.username
+        const user = User.findOne({$or: [{username: teantid}, {_id: teantid}]});
+        if (!user)
+            throw createError(400, 'Owner not found')
+        if (req.role === 'owner') {
+            const house = await House.findOne({owner: req.user, tenant: user._id});
+            if (!house)
+                throw createError(400, 'Not allowed to see this tenant')
+        }
+        const tenant = await Tenant.findOne({user: user._id});
+        if (!tenant)
+            throw createError(400, 'Not an tenant')
+        return res.status(200).json({tenant, user});
     } catch (error) {
         return next(error);
     }
 };
+
 export const deleteTenant = async (req, res, next) => {
     const id = req.params.id;
     try {
         const updatedTenant = await Tenant.findByIdAndDelete(id);
 
        return res.status(200).json({message:"successfully deleted"});
-    } catch (error) {
-        return next(error);
-    }
-};
-export const getTenant = async (req, res, next) => {
-    const id = req.params.id;
-    try {
-        const tenant = await Tenant.findById(id);
-        if(!tenant){
-            createError(404,'Tenant not found')
-        }
-
-       return res.status(200).json(tenant);
     } catch (error) {
         return next(error);
     }

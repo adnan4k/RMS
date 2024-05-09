@@ -14,7 +14,8 @@ const requestSchema = mongoose.Schema({
     },
     date:{
         type: Date,
-    }
+    },
+    message: String
 });
 
 requestSchema.index({ visitor: 1, house: 1 }, { unique: true });

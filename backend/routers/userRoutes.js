@@ -9,7 +9,7 @@ userRouter.post('/login',login);
 userRouter.post('/resetpassword/:token', resetPassword);
 userRouter.post('/forgetpassword', forgetPassword);
 userRouter.put('/:username', verifyToken('user'), editProfile);
-userRouter.put('/:username', getUser);
+userRouter.get('/:username', getUser);
 userRouter.get('/schedules', verifyToken('user'), getRequests);
 userRouter.post('/:houseid', verifyToken('user'), createVisitorRequest);
 

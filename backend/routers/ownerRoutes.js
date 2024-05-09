@@ -10,7 +10,7 @@ import { getMaintenanceRequest } from "../controllers/MaintainanceRequestControl
 const ownerRouter  = express.Router();
 
 ownerRouter.post('/', verifyToken("user"), uploader.single('national_id'), addOwner);
-ownerRouter.get('/', verifyToken('owner'), getOwner);
+ownerRouter.get('/:username', getOwner);
 ownerRouter.put('/', verifyToken('owner'), uploader.single('national_id'), editProfile);
 ownerRouter.post('/:houseid', verifyToken('owner'), uploader.fields([{name:'national_id', maxCount: 1, minCount: 1}, {name:'contract_photo', maxCount: 1, minCount: 1}]), addTenant);
 ownerRouter.put('/:houseid/images', verifyToken('owner'), uploader.array('images', 10), editHouseImages);

@@ -6,6 +6,7 @@ import { createError } from "../utils/CreateError.js";
 export const createVisitorRequest = async (req, res, next) => {
     try {
         const date = new Date(req.body.date);
+        const message = req.body.message;
 
         const house = await House.findById(req.params.houseid);
         const visitor = await User.findById(req.user);
@@ -33,6 +34,7 @@ export const createVisitorRequest = async (req, res, next) => {
                 visitor,
                 house,
                 date,
+                message
             }, {upsert: true});
             return res.status(200).json({msg: `Successfully booked`, data: request});
         }
@@ -80,7 +82,8 @@ export const createVisitorRequest = async (req, res, next) => {
             visitor,
             house,
             date,
-        });
+            message
+        }, {upsert: true});
         return res.status(200).json({msg: `Successfully booked`, data: request});
     } catch (error) {
         next(error)
@@ -123,6 +126,7 @@ export const getRequests = async (req, res, next) => {
                 }
             }
         });
+        return res.status(200).json(requests);
     } catch (error) {
         next(error)
     }
