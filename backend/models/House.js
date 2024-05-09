@@ -20,7 +20,7 @@ export const houseSchema = mongoose.Schema({
     owner:{
         type: mongoose.Schema.Types.ObjectId,
         required:true,
-        ref: 'Owner', 
+        ref: 'Owner',
     },
     tenant:{
         type: mongoose.Schema.Types.ObjectId,

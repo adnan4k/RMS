@@ -1,17 +1,9 @@
-export const paginate = (query, n) => {
-    let {size, page} = query;
-    if (!page)
-        page = 1
-    if (!size)
-        size = 10
-    page = parseInt(page)
-    size = parseInt(size)
-    const start = (page-1) * size;
-    const end = page*size;
-    const result = {};
-    if (start > 1)
+export const paginate = (page, limit, total, data) => {
+    const end = page * limit;
+    const result = { data };
+    if (page > 1)
         result.prev = page-1
-    if (end < n)
+    if (end < total)
         result.next = page+1
-    return [result, start, size]
+    return result
 }

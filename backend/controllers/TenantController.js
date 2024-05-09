@@ -5,6 +5,7 @@ import User from "../models/User.js";
 import { createError } from "../utils/CreateError.js";
 import sendEmail from "../utils/email.js";
 import jwt from 'jsonwebtoken';
+import { removeImage } from "../utils/fileProcessing.js";
 
 export const addTenant = async(req, res, next) => {
     const session = await mongoose.startSession();
@@ -52,12 +53,18 @@ export const addTenant = async(req, res, next) => {
         
         const token = jwt.sign({id: user._id}, "secret_key", { expiresIn: '60m' });
         await sendEmail(user.email, token);
-        
+
+        await session.commitTransaction();
         return res.status(200).json({msg: 'Successfully added tenant', data: tenant})
     } catch (error) {
         await session.abortTransaction();
-        session.endSession();
+// TODO: Multilevel try catch blocks here
+
+        await removeImage(req.files['national_id'][0].destination);
+        await removeImage(req.files['contract_photo'][0].destination);
         next(error);
+    } finally {
+        await session.endSession();
     }
 };
 
