@@ -6,6 +6,7 @@ import User from "../models/User.js";
 import { removeImage } from "../utils/fileProcessing.js";
 import mongoose from "mongoose";
 import House from "../models/House.js";
+import { generateToken } from "../utils/generateTokens.js";
 
 
 export const addOwner = async(req, res, next) => {
@@ -30,11 +31,8 @@ export const addOwner = async(req, res, next) => {
         });
         
         const savedOwner = await newOwner.save();
-        const token = jwt.sign(
-            { id: user._id, role: user.role },
-            "secret_key"
-          );
-        return res.status(201).cookie("access_token", token, { httponly: true }).json(savedOwner);
+        const { accesstoken, refreshtoken } = generateToken(savedOwner);
+        return res.status(201).json({accesstoken, refreshtoken, savedOwner});
     } catch (error) {
         next(error);
     }

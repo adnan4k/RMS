@@ -1,9 +1,14 @@
 import User from "../models/User.js";
 import bcrypt from "bcrypt"
 import  jwt  from "jsonwebtoken";
+import Token from "../models/Tokens.js";
 import { createError } from "../utils/CreateError.js";
 import sendEmail from "../utils/email.js";
+import { generateToken, refresh } from "../utils/generateTokens.js";
+import dotenv from "dotenv";
 
+
+dotenv.config();
 
 export const register = async (req, res, next) => {
   try {
@@ -20,17 +25,14 @@ export const register = async (req, res, next) => {
     });
 
     const user = await newUser.save();
-    const token = jwt.sign(
-      { id: user._id, role: user.role },
-      "secret_key"
-    );
+    const {accesstoken, refreshtoken} = generateToken(user);
     
     const { password: p, role, isActive, ...otherDetails } = user._doc;
+    await Token.create({refreshtoken, user: user._id});
     
     return res
-      .cookie("access_token", token, { httponly: true })
       .status(200)
-      .json({ ...otherDetails });
+      .json({accesstoken, refreshtoken,  ...otherDetails});
     
   } catch (error) {
     next(error);
@@ -52,16 +54,13 @@ export const login = async (req, res, next) => {
     if (!isPasswordCorrect)
       throw createError(400, "username or password incorrect");
     
-    const token = jwt.sign(
-      { id: user._id, role: user.role },
-      "secret_key"
-    );
+    const {accesstoken, refreshtoken} = generateToken(user);
+    await Token.create({refreshtoken, user: user._id});
   
     const { password, role, isActive, ...otherDetails } = user._doc;
     return res
-      .cookie("access_token", token, { httponly: true })
       .status(200)
-      .json({ ...otherDetails });
+      .json({accesstoken, refreshtoken, ...otherDetails });
   } catch (error) {
     next(error);
   }
@@ -79,14 +78,10 @@ export const forgetPassword = async (req, res, next) => {
     if (!user)
       throw createError(400, "User not found");
     
-    const token = jwt.sign(
-      { id: user._id },
-      "secret_key",
-      { expiresIn: '60m' }
-    );
-    
+    const token = refresh({ id: user._id }, '60m');
+
     await sendEmail(user.email, token);
-    console.log(token);
+    await Token.deleteMany({user: user._id});
     return res.status(201).json({msg: 'Email for reseting password sent!!'});
   } catch (error) {
     next(error);
@@ -100,7 +95,7 @@ export const resetPassword = async (req, res, next) => {
     
     const { password } = req.body;
     
-    jwt.verify(req.params.token, 'secret_key', (err, decoded) => {
+    jwt.verify(req.params.token, process.env.JWT_ACCESS_TOKEN, (err, decoded) => {
       if (err)
         return res.status(401).json({msg: 'Invalid token'})
       req.id = decoded.id;
@@ -113,20 +108,52 @@ export const resetPassword = async (req, res, next) => {
     user.isActive = true;
     
     await user.save();
-
-    const token = jwt.sign(
-      { id: user._id, role: user.role },
-      "secret_key"
-    );
+    
+    const {accesstoken, refreshtoken} = generateToken(user)
+    await Token.create({refreshtoken, user: user._id});
 
     const { password:p, role, isActive, ...otherDetails } = user._doc;
     
     return res
-      .cookie("access_token", token, { httponly: true })
       .status(200)
-      .json({ ...otherDetails });
+      .json({ accesstoken, refreshtoken, ...otherDetails });
   } catch (error) {
     next(error)
+  }
+}
+
+export const refreshToken = async (req, res, next) => {
+  try {
+    const refreshtoken = req.body.refreshtoken;
+    
+    if (!refreshtoken)
+      return res.status(400).send(createError(400, 'Not autheniticated'));
+
+    if (!await Token.exists({refreshtoken}))
+      return res.status(400).send(createError(400, 'Not autheniticated'));
+    
+    jwt.verify(refreshtoken, process.env.JWT_REFRESH_TOKEN, (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ message: 'Invalid token' });
+      }
+        
+      const accesstoken = refresh({user: decoded.user, role: decoded.role}, '20m');
+
+      res.status(200).json({msg: "Refreshed", accesstoken});
+    });
+  
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const logout = async (req, res, next) => {
+  try {
+    if (!Token.exists({refreshtoken: req.body.refreshtoken})) throw createError(404, "Error occured while logingout!");
+    await Token.deleteOne({refreshtoken: req.body.refreshtoken});
+    res.status(200).json(createSuccess("User logged out"));
+  } catch (err) {
+    next(err);
   }
 }
 

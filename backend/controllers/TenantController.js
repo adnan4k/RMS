@@ -4,9 +4,9 @@ import Tenant from "../models/Tenant.js"
 import User from "../models/User.js";
 import { createError } from "../utils/CreateError.js";
 import sendEmail from "../utils/email.js";
-import jwt from 'jsonwebtoken';
+import {refresh} from '../utils/generateTokens.js'
 import { removeImage } from "../utils/fileProcessing.js";
-import Maintenance from "../models/Maintenance.js";
+import Token from "../models/Tokens.js"
 
 export const addTenant = async(req, res, next) => {
     const session = await mongoose.startSession();
@@ -33,9 +33,11 @@ export const addTenant = async(req, res, next) => {
             throw createError(400, 'This email has been taken!!');
         if (!user)
             user = await User.create({ role: 'tenant', email, firstname, lastname, phonenumber, password: 'password', isActive: false}, {session});
-        const tenant = await Tenant.create({ user, reference, national_id });
+        const tenant = await Tenant.create({ user, reference, national_id }, {session});
         const house = await House.findById(houseId);
         
+        if (!house)
+            throw createError(400, "House not found!");
         const today = new Date();
 
         house.tenant = user;
@@ -52,14 +54,13 @@ export const addTenant = async(req, res, next) => {
         house.deadline = onemonth; 
         await house.save();
         
-        const token = jwt.sign({id: user._id}, "secret_key", { expiresIn: '60m' });
+        const token = refresh({id: user._id}, '60m' );
         await sendEmail(user.email, token);
 
         await session.commitTransaction();
         return res.status(200).json({msg: 'Successfully added tenant', data: tenant})
     } catch (error) {
         await session.abortTransaction();
-// TODO: may be multilevel try catch blocks here
 
         await removeImage(req.files['national_id'][0].destination);
         await removeImage(req.files['contract_photo'][0].destination);
@@ -155,7 +156,8 @@ export const deleteTenant = async (req, res, next) => {
         }
         house.occupancy_history.push(history);
         
-        // Log the tenant out
+        await Token.deleteMany({user: tenant});
+        // May send an email to the tenant
         await User.findAndUpdateOne({_id: tenant}, {$set: {
             email: {$concat: ['$email', ' ', Date.now()]},
             phonenumber: {$concat: ['$phone', ' ', Date.now()]},
