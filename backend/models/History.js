@@ -1,5 +1,4 @@
 import mongoose, { Schema } from "mongoose";
-import ContractSchema from "./commons/Contract.js";
 
 const historySchema = mongoose.Schema({
    tenant_id: {

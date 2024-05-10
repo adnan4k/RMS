@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import addressSchema from "./commons/Address.js";
 
-const ownerSchema = mongoose.Schema({
+export const tenantSchema = mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -27,4 +27,4 @@ const ownerSchema = mongoose.Schema({
     required: true,
   },
 });
-export default mongoose.model("Tenant", ownerSchema);
+export default mongoose.model("Tenant", tenantSchema);

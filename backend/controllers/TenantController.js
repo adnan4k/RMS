@@ -6,6 +6,7 @@ import { createError } from "../utils/CreateError.js";
 import sendEmail from "../utils/email.js";
 import jwt from 'jsonwebtoken';
 import { removeImage } from "../utils/fileProcessing.js";
+import Maintenance from "../models/Maintenance.js";
 
 export const addTenant = async(req, res, next) => {
     const session = await mongoose.startSession();
@@ -76,7 +77,11 @@ export const editTenant = async (req, res, next) => {
         
         if (reference)
             reference = JSON.parse(reference);
-        const user = await User.findById(req.user).select('-password -isActive -role');
+        const user = await User.findOne({_id: req.user, isActive: true}).select('-password -isActive -role');
+        
+        if (!user)
+            throw createError(400, "User not found")
+
         const tenant = await Tenant.findOne({user: user._id});
         user.firstname = firstname || user.firstname; 
         user.lastname = lastname || user.lastname; 
@@ -111,7 +116,7 @@ export const editTenant = async (req, res, next) => {
 export const getTenant = async (req, res, next) => {
     try {
         const teantid = req.role === 'tenant'? req.user: req.params.username
-        const user = User.findOne({$or: [{username: teantid}, {_id: teantid}]});
+        const user = User.findOne({$or: [{username: teantid, isActive: true}, {_id: teantid, isActive:true}]});
         if (!user)
             throw createError(400, 'Owner not found')
         if (req.role === 'owner') {
@@ -129,15 +134,41 @@ export const getTenant = async (req, res, next) => {
 };
 
 export const deleteTenant = async (req, res, next) => {
-    const id = req.params.id;
     try {
-        const updatedTenant = await Tenant.findByIdAndDelete(id);
+        const house = await House.findOne({_id: req.params.houseid, owner: req.user});
+        if (!house)
+            throw createError(400, 'House not found!!');
+        
+        let tenant = house.tenant;
+        if (!tenant)
+            throw createError(400, "This house doesn't have a tenant!!");
 
-       return res.status(200).json({message:"successfully deleted"});
+        
+        house.tenant = null;
+        house.contract = null;
+        house.deadline = null;
+        
+        const history = {
+            tenant,
+            from: house.contract.startdate,
+            contract_photo: house.contract.photo
+        }
+        house.occupancy_history.push(history);
+        
+        // Log the tenant out
+        await User.findAndUpdateOne({_id: tenant}, {$set: {
+            email: {$concat: ['$email', ' ', Date.now()]},
+            phonenumber: {$concat: ['$phone', ' ', Date.now()]},
+            username: null,
+            isActive: false
+        }});
+        await house.save();
+        return res.status(200).json({message:"successfully deleted"});
     } catch (error) {
-        return next(error);
+        next(error);
     }
 };
+
 export const getTenants = async (req, res, next) => {
     try {
         const tenants = await Tenant.find();

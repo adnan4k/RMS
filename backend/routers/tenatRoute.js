@@ -9,7 +9,6 @@ tenantRouter.get('/:username', verifyToken('tenant', 'owner'), getTenant);
 tenantRouter.put('/', verifyToken('tenant'), uploader.single('national_id'), editTenant);
 tenantRouter.post('/maintenance', verifyToken('tenant'), createMaintainance);
 tenantRouter.get('/maintenance', verifyToken('tenant'), tenantRequests);
-// and put will be here
 tenantRouter.delete('/delete/:id',deleteTenant);
 
 export default tenantRouter
