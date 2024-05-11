@@ -1,4 +1,4 @@
-import mongoose, { startSession } from "mongoose";
+import mongoose from "mongoose";
 import House from "../models/House.js";
 import Tenant from "../models/Tenant.js"
 import User from "../models/User.js";

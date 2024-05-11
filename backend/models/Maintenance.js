@@ -15,15 +15,12 @@ const maintenanceSchema = mongoose.Schema({
         required:true,
         default: false,
     },
-    date_of_request:{
-        type:Date,
-        required:true,
-        default: Date.now
-    },
     house_id:{
         type: mongoose.Schema.Types.ObjectId,
         required:true,
         ref: 'House'
     }
+}, {
+    timestamps: true,
 })
 export default mongoose.model("Maintenance",maintenanceSchema)
