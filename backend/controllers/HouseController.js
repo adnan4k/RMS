@@ -234,9 +234,11 @@ export const getHouseVisits = async (req, res, next) => {
 export const deleteHouse = async (req, res, next) => {
     const id = req.params.id;
     try {
-        const updatedHouse = await House.findByIdAndDelete(id);
-
-       return res.status(200).json({message:"successfully deleted"});
+        const house = await House.findOne({_id: id, owner: req.user});
+        if(!house)
+            throw createError(400, 'House not found');
+        await house.deleteOne();
+        return res.status(200).json({message:"successfully deleted"});
     } catch (error) {
         return next(error);
     }

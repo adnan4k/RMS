@@ -20,11 +20,11 @@ export const addTenant = async(req, res, next) => {
         let contract_photo = req.files['contract_photo'][0]
         
         national_id = {
-            url: 'uploads/'+national_id.filename,
+            url: 'nationalids/'+national_id.filename,
             path: national_id.destination
         }
         contract_photo = {
-            url: 'uploads/'+contract_photo.filename,
+            url: 'contracts/'+contract_photo.filename,
             path: contract_photo.destination
         }
         
@@ -81,7 +81,7 @@ export const editTenant = async (req, res, next) => {
         const user = await User.findOne({_id: req.user, isActive: true}).select('-password -isActive -role');
         
         if (!user)
-            throw createError(400, "User not found")
+            throw createError(400, "User not found");
 
         const tenant = await Tenant.findOne({user: user._id});
         user.firstname = firstname || user.firstname; 
@@ -96,7 +96,7 @@ export const editTenant = async (req, res, next) => {
         if (req.file) {
             await removeImage(tenant.national_id.path);
             tenant.national_id = {
-                url: "uploads/"+req.file.filename,
+                url: "nationalids/"+req.file.filename,
                 path: req.file.destination
             }
         }

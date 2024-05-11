@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-export const userSchema = mongoose.Schema({
+export const userSchema = new mongoose.Schema({
     firstname:{
         type:String,
         required:true
@@ -52,12 +52,14 @@ export const userSchema = mongoose.Schema({
         type: Boolean,
         default: true,
     }
-})
+});
+
 userSchema.pre('save', function (next) {
-    console.log(this);
     const random = Math.floor(Math.random() * 10000);
     if (!this.username)
         this.username = this.email.split('@')[0] + random
     next()
 });
-export default mongoose.model("User",userSchema)
+
+const User = mongoose.model("User",userSchema);
+export default User;

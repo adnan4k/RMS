@@ -1,6 +1,5 @@
 import Owner from "../models/Owner.js";
 import User from "../models/User.js";
-import jwt from 'jsonwebtoken';
 import { createError } from "../utils/CreateError.js";
 import User from "../models/User.js";
 import { removeImage } from "../utils/fileProcessing.js";
@@ -25,7 +24,7 @@ export const addOwner = async(req, res, next) => {
             address,
             user,
             national_id : {
-                url: "uploads/"+req.file.filename,
+                url: "nationalids/"+req.file.filename,
                 path: req.file.destination
             }
         });
@@ -70,7 +69,7 @@ export const editProfile = async (req, res, next) => {
         if (req.file) {
             await removeImage(owner.national_id.path);
             owner.national_id = {
-                url: "uploads/"+req.file.filename,
+                url: "nationalids/"+req.file.filename,
                 path: req.file.destination
             }
         }
@@ -93,7 +92,11 @@ export const deleteOwner = async(req,res,next) =>{
         session.startTransaction()
         const owner = await Owner.findById(ownerId);
 
-        await House.deleteMany({owner:ownerId}).session(session);
+
+        const houses = await House.find({owner:ownerId});
+        houses.forEach(async (house) => {
+            await house.deleteOne().session(session);
+        });
         await Owner.findOneAndDelete({user: ownerId}).session(session);
         await User.findByIdAndDelete(owner.user).session(session)
 
