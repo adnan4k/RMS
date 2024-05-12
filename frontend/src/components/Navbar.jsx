@@ -9,18 +9,28 @@ function Navbar() {
             to="/home"
             className="flex items-center space-x-3 rtl:space-x-reverse"
           >
-           
+
             <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
               RMS
             </span>
           </Link>
-          <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+          <div className="mx-5 flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+            <Link to='/login'>
+            <button
+              type="button"
+              className="mx-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            >
+              Log in
+            </button>
+            </Link>
+            <Link to='/signup' >
             <button
               type="button"
               className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
             >
-              Get started
+              Sign up
             </button>
+            </Link>
             <button
               data-collapse-toggle="navbar-sticky"
               type="button"

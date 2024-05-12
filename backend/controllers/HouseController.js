@@ -8,7 +8,6 @@ import { paginate } from "../utils/pagination.js";
 export const createHouse = async (req, res, next) => {
     try {    
         const owner = req.user;
-        console.log(req.body,'body')
         let {
             no_of_rooms, 
             no_of_bath_rooms,

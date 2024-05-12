@@ -61,12 +61,15 @@ function CreateHouse() {
     };
     const handleFileChange = (e) => {
         setImages(e.target.files);
-        console.log(e.target.files,'files')
+        // console.log(e.target.files,'files')
     };
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        // Combine houseData, addressData, and bankData into one object
+        const formImages =  new FormData()
+        for (let i = 0; i < images.length; i++) {
+            formImages.append(`image_${i}`, images[i]);
+        }
+             // Combine houseData, addressData, and bankData into one object
         const formData = {
             house: houseData,
             houseType: selectedOption,

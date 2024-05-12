@@ -10,8 +10,10 @@ const file_name = function (req, file, cb) {
 
 // TODO: Required fields must be check;
 const filtering = function (req, file, cb) {
+    console.log(file,'file')
     const allowed_image_mime = ['image/jpeg', 'image/png', 'image/gif'];
     const allowed_image_extensions = ['png', 'jpeg', 'jpg'];
+    
 
     const extensions = file.originalname.split('.')
     
