@@ -2,7 +2,6 @@ import Owner from "../models/Owner.js";
 import User from "../models/User.js";
 import jwt from 'jsonwebtoken';
 import { createError } from "../utils/CreateError.js";
-import User from "../models/User.js";
 import { removeImage } from "../utils/fileProcessing.js";
 import mongoose from "mongoose";
 import House from "../models/House.js";

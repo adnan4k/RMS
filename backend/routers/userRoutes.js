@@ -6,8 +6,8 @@ import { createVisitorRequest, getRequests } from "../controllers/VisitorControl
 const userRouter  = express.Router();
 userRouter.post('/register',register);
 userRouter.post('/login',login);
-router.post('/refresh', refreshToken);
-router.post('/:username/logout', verifyToken('user', 'owner', 'admin', 'tenant'), logout);
+userRouter.post('/refresh', refreshToken);
+userRouter.post('/:username/logout', verifyToken('user', 'owner', 'admin', 'tenant'), logout);
 userRouter.post('/resetpassword/:token', resetPassword);
 userRouter.post('/forgetpassword', forgetPassword);
 userRouter.put('/:username', verifyToken('user'), editProfile);

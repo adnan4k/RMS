@@ -1,7 +1,7 @@
 import multer from "multer";
 import {unlink} from 'node:fs/promises';
 import {existsSync} from 'node:fs';
-import { createError } from "./CreateError";
+import { createError } from "./CreateError.js";
 
 const file_name = function (req, file, cb) {
     const uniqueSuffix = Date.now()
