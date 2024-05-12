@@ -6,6 +6,7 @@ import { createError } from "../utils/CreateError.js";
 export const createVisitorRequest = async (req, res, next) => {
     try {
         const date = new Date(req.body.date);
+        const message = req.body.message;
 
         const house = await House.findById(req.params.houseid);
         const visitor = await User.findById(req.user);
@@ -23,20 +24,36 @@ export const createVisitorRequest = async (req, res, next) => {
         
         if (current<start || current > end)
             throw createError(400, "The house have no schedule this time")
+
+        if (house.calendar.open) {
+            const request = await Requests.findOneAndUpdate( {
+                    house: house._id,
+                    visitor: visitor._id
+                }, {
+                open: true,
+                visitor,
+                house,
+                date,
+                message
+            }, {upsert: true});
+            return res.status(200).json({msg: `Successfully booked`, data: request});
+        }
+        const truncDate = new Date(date.toDateString())
         
         const schedules = await Requests.aggregate([
             {
                 $addFields:{
-                    month: {$month:'$date'},
-                    day: {$dayOfMonth: '$date'},
+                    truncDate: {$dateTrunc: {
+                        date: '$date',
+                        unit: 'day'
+                    }},
                     hour: {$hour: '$date'}
                 },
             
             },
             {
                 $match: {
-                    month: date.getMonth()+1,
-                    day: date.getDate()
+                    truncDate
                 },
             },
             {
@@ -56,12 +73,17 @@ export const createVisitorRequest = async (req, res, next) => {
             if ((s<date && date<e) || (s<endtime && endtime<e))
                 throw createError(400, "This time interfeers with another time!")
         }
-        
-        const request = await Requests.create({
+
+        const request = await Requests.findOneAndUpdate({
+                visitor: visitor._id,
+                house: house._id,
+            },  {
+            open: false,
             visitor,
             house,
             date,
-        });
+            message
+        }, {upsert: true});
         return res.status(200).json({msg: `Successfully booked`, data: request});
     } catch (error) {
         next(error)
@@ -69,9 +91,43 @@ export const createVisitorRequest = async (req, res, next) => {
 }
 
 export const getVisitRequests = async (req, res, next) => {
-    const requests = await Requests.find({
-        house: req.params.houseid
-    }).populate({ path: 'visitor', select: '-password -role -isActive'});
+    try {
+        const house = await House.find({
+            owner: req.user,
+            house: req.params.houseid,
+        });
 
-    return res.status(200).json(requests);
+        if (!house)
+            throw createError(400, 'House not found!!');
+        const requests = await Requests.find({
+            house: house._id
+        }).populate({ path: 'visitor', select: '-password -role -isActive'});
+        
+        return res.status(200).json(requests);
+    } catch (error) {
+        
+    }
+}
+
+export const getRequests = async (req, res, next) => {
+    try {
+        const requests = await Requests.find({
+            visitor: req.user
+        }).populate({
+            path: 'house', 
+            select: 'images name address owner _id',
+            populate: {
+                path: 'owner', 
+                foreignField: 'user',
+                select: '-national_id',
+                populate: {
+                    path: 'user',
+                    select: '-role -password -isActive'
+                }
+            }
+        });
+        return res.status(200).json(requests);
+    } catch (error) {
+        next(error)
+    }
 }

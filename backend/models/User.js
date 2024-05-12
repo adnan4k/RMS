@@ -34,7 +34,7 @@ export const userSchema = mongoose.Schema({
                 const checker = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 return checker.test(email);
             },
-            message: 'Phone number format doesn\'t match'
+            message: 'Incorrect email format!'
         },
         unique: true
     },

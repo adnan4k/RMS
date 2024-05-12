@@ -1,4 +1,7 @@
 import multer from "multer";
+import {unlink} from 'node:fs/promises';
+import {existsSync} from 'node:fs';
+import { createError } from "./CreateError";
 
 const file_name = function (req, file, cb) {
     const uniqueSuffix = Date.now()
@@ -32,5 +35,15 @@ const uploader = multer({
     storage,
     fileFilter: filtering
 });
+
+export const removeImage = async (path) => {
+    try {
+        if (!existsSync(path))
+            throw createError(400, "File not found")
+        return unlink(path);   
+    } catch (error) {
+        throw error
+    }
+} 
 
 export default uploader

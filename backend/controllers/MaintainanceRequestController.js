@@ -28,7 +28,7 @@ export const createMaintainance = async(req,res,next)=>{
 
 export const getMaintenanceRequest = async(req,res,next) =>{
     try {
-        const ownerId = new mongoose.Types.ObjectId(req.user);
+        const ownerId = new mongoose.Schema.Types.ObjectId(req.user);
         
         const maintenanceRequests = await Maintenance.aggregate([
             {
@@ -96,7 +96,7 @@ export const getMaintenanceRequest = async(req,res,next) =>{
                     requests: {$push: {
                         status: '$requests.status',
                         description: '$requests.description',
-                        date_of_request: '$requests.date_of_request',
+                        date_of_request: '$requests.createdAt',
                         tenant: '$tenant'  
                     }}
                 }
@@ -121,9 +121,39 @@ export const getMaintenanceRequest = async(req,res,next) =>{
     }
 }
 
+export const editRequest = async (req, res, next) => {
+    try {
+        const {description} = req.body;
+        const request = await Request.findOne({_id: req.params.requestid, tenant: req.user});
+        if (!request)
+            throw createError(400, "Request not found")
+        
+        request.description = description || request.description;
+        await request.save()
+        return res.status(200).json({msg: 'Successfully updated'})
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const changeStatus = async (req, res, next) => {
+    try {
+        const {status} = req.body;
+
+        const houses = await House.find({owner: req.user}).select('_id');
+        houses.map(({_id})=>_id);
+        const request = await Request.findOne({_id: req.params.requestid, house: {$in: houses}});
+        request.status = status;
+        await request.save();
+        return res.status(200).json({msg: "Successfully updated status to "+status})
+    } catch (error) {
+        next(error)
+    }
+}
+
 export const tenantRequests = async (req, res, next) => {
     try {
-        const requests = await Maintenance.find({tenant: req.user}).select('date_of_request status description').sort({date_of_request:1});
+        const requests = await Maintenance.find({tenant: req.user}).select('createdAt status description updatedAt').sort({updatedAt:1, createdAt: 1});
         return res.status(200).json(requests)
     } catch (error) {
         next(error)
