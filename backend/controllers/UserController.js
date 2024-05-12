@@ -23,7 +23,6 @@ export const register = async (req, res, next) => {
       lastname,
       phonenumber
     });
-
     const user = await newUser.save();
     const {accesstoken, refreshtoken} = generateToken(user);
     
@@ -42,8 +41,8 @@ export const register = async (req, res, next) => {
 
 export const login = async (req, res, next) => {
   try {
-    const user = await User.findOne({ email: req.body.email });
-    if (!user || !user.isActive) 
+    const user = await User.findOne({ $or: [{email: req.body.email, isActive: true}, {username: req.body.email, isActive: true}] });
+    if (!user) 
       throw createError(404, "user not found");
     
     const isPasswordCorrect = await bcrypt.compare(
@@ -98,9 +97,9 @@ export const resetPassword = async (req, res, next) => {
     jwt.verify(req.params.token, process.env.JWT_ACCESS_TOKEN, (err, decoded) => {
       if (err)
         return res.status(401).json({msg: 'Invalid token'})
-      req.id = decoded.id;
+        req.user = decoded.user;
     });
-    const user = await User.findById(req.id);
+    const user = await User.findById(req.user);
     var salt = bcrypt.genSaltSync(10);
     var hash = bcrypt.hashSync(password, salt);
 
@@ -127,10 +126,10 @@ export const refreshToken = async (req, res, next) => {
     const refreshtoken = req.body.refreshtoken;
     
     if (!refreshtoken)
-      return res.status(400).send(createError(400, 'Not autheniticated'));
+      return res.status(400).send(createError(400, 'Not authenticated'));
 
     if (!await Token.exists({refreshtoken}))
-      return res.status(400).send(createError(400, 'Not autheniticated'));
+      return res.status(400).send(createError(400, 'Not authenticated'));
     
     jwt.verify(refreshtoken, process.env.JWT_REFRESH_TOKEN, (err, decoded) => {
       if (err) {

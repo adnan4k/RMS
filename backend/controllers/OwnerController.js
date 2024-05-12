@@ -1,19 +1,18 @@
 import Owner from "../models/Owner.js";
 import User from "../models/User.js";
 import { createError } from "../utils/CreateError.js";
-import User from "../models/User.js";
 import { removeImage } from "../utils/fileProcessing.js";
 import mongoose from "mongoose";
 import House from "../models/House.js";
 import { generateToken } from "../utils/generateTokens.js";
+import Token from "../models/Tokens.js";
 
 
 export const addOwner = async(req, res, next) => {
     try {
         let { address } = req.body;
         address = JSON.parse(address);
-        
-        const user = await User.findById(req.user);
+        const user = await User.findById(req.user).select('-password -isActive -role');
 
         if (!user) 
             throw createError(400, "User not found");
@@ -29,8 +28,14 @@ export const addOwner = async(req, res, next) => {
             }
         });
         
+
         const savedOwner = await newOwner.save();
         const { accesstoken, refreshtoken } = generateToken(savedOwner);
+        await Token.deleteMany({user: user._id});
+        await Token.create({
+            refreshtoken,
+            user: user._id
+        })
         return res.status(201).json({accesstoken, refreshtoken, savedOwner});
     } catch (error) {
         next(error);

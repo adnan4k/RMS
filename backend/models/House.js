@@ -10,9 +10,9 @@ import User from "./User.js";
 
 export const HouseTypes = [
     'villa',
-    'Building',
-    'L-shape',
-    'Small'
+    'building',
+    'l-shape',
+    'small'
 ]
 
 function timegetter(date) {
@@ -20,7 +20,11 @@ function timegetter(date) {
 }
 
 export const houseSchema = new mongoose.Schema({
-    name: String,
+    housenumber: {
+        type: Number,
+        required: true,
+        get: houseno => houseno < 10? '0'+houseno : houseno
+    },
     owner:{
         type: mongoose.Schema.Types.ObjectId,
         required:true,
@@ -46,7 +50,8 @@ export const houseSchema = new mongoose.Schema({
     },
     house_type:{
         type:String,
-        enum: HouseTypes
+        enum: HouseTypes,
+        lowercase: true
     },
     address:{
         type:addressSchema
@@ -81,8 +86,13 @@ export const houseSchema = new mongoose.Schema({
                         get: timegetter
                     }
                 }],
+                required: false
             }
         },
+        default: v => {
+            console.log('The default is run just when created', v);
+            return ({open: false, schedule: Array(7).fill(null)});
+        }
     },
 })
 
@@ -101,6 +111,8 @@ houseSchema.pre('deleteOne', { document: true, query: false }, async function() 
         await removeImage(element.path)
     });
 });
+
+houseSchema.index({ housenumber: 1, owner: 1 }, { unique: true });
 
 const House = mongoose.model("House", houseSchema);
 export default House 

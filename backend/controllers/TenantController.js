@@ -9,15 +9,13 @@ import { removeImage } from "../utils/fileProcessing.js";
 import Token from "../models/Tokens.js"
 
 export const addTenant = async(req, res, next) => {
-    const session = await mongoose.startSession();
-    session.startTransaction();
     try {
         let { email, firstname, lastname, phonenumber, reference } = req.body;
         const houseId = req.params.houseid
         reference = JSON.parse(reference);
 
-        let national_id = req.files['national_id'][0]
-        let contract_photo = req.files['contract_photo'][0]
+        let national_id = req.files['nationalid'][0]
+        let contract_photo = req.files['contract'][0]
         
         national_id = {
             url: 'nationalids/'+national_id.filename,
@@ -32,12 +30,17 @@ export const addTenant = async(req, res, next) => {
         if (user && user.role != 'user')
             throw createError(400, 'This email has been taken!!');
         if (!user)
-            user = await User.create({ role: 'tenant', email, firstname, lastname, phonenumber, password: 'password', isActive: false}, {session});
-        const tenant = await Tenant.create({ user, reference, national_id }, {session});
+            user = new User({ role: 'tenant', email, firstname, lastname, phonenumber, password: 'password', isActive: false});
+        user.role = 'tenant'
+        user.isActive = false
+        await user.save()
+        const tenant = await Tenant.create({ user, reference, national_id });
         const house = await House.findById(houseId);
         
         if (!house)
             throw createError(400, "House not found!");
+        if (house.tenant)
+            throw createError(400, "You have to remove that tenant before adding a new one");
         const today = new Date();
 
         house.tenant = user;
@@ -56,17 +59,16 @@ export const addTenant = async(req, res, next) => {
         
         const token = refresh({id: user._id}, '60m' );
         await sendEmail(user.email, token);
-
-        await session.commitTransaction();
+        console.log(token)
+        // await session.commitTransaction();
         return res.status(200).json({msg: 'Successfully added tenant', data: tenant})
     } catch (error) {
-        await session.abortTransaction();
-
-        await removeImage(req.files['national_id'][0].destination);
-        await removeImage(req.files['contract_photo'][0].destination);
+        // await session.abortTransaction();
+        await removeImage(req.files['nationalid'][0].destination+'/'+req.files['nationalid'][0].filename);
+        await removeImage(req.files['contract'][0].destination+'/'+req.files['contract'][0].filename);
         next(error);
     } finally {
-        await session.endSession();
+        // await session.endSession();
     }
 };
 
@@ -145,9 +147,6 @@ export const deleteTenant = async (req, res, next) => {
             throw createError(400, "This house doesn't have a tenant!!");
 
         
-        house.tenant = null;
-        house.contract = null;
-        house.deadline = null;
         
         const history = {
             tenant,
@@ -155,12 +154,15 @@ export const deleteTenant = async (req, res, next) => {
             contract_photo: house.contract.photo
         }
         house.occupancy_history.push(history);
+        house.tenant = null;
+        house.contract = null;
+        house.deadline = null;
         
         await Token.deleteMany({user: tenant});
+        // const tenant = await Tenant.findById(tenant)
         // May send an email to the tenant
-        await User.findAndUpdateOne({_id: tenant}, {$set: {
-            email: {$concat: ['$email', ' ', Date.now()]},
-            phonenumber: {$concat: ['$phone', ' ', Date.now()]},
+        await User.findOneAndUpdate({_id: tenant}, {$set: {
+            email: {$concat: ['$email', ' ;']},
             username: null,
             isActive: false
         }});

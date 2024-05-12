@@ -4,6 +4,11 @@ import Requests from "../models/VisitorRequest.js";
 import { createError } from "../utils/CreateError.js";
 import { removeImage } from "../utils/fileProcessing.js";
 import { paginate } from "../utils/pagination.js";
+import jwt from 'jsonwebtoken';
+import dotenv from "dotenv";
+
+dotenv.config();
+
 
 export const createHouse = async (req, res, next) => {
     try {    
@@ -17,7 +22,8 @@ export const createHouse = async (req, res, next) => {
             bankaccounts,
             address,
             rent_amount,
-            description
+            description,
+            housenumber
         } = req.body;
 
         address = JSON.parse(address);
@@ -26,6 +32,7 @@ export const createHouse = async (req, res, next) => {
         const images = req.files.map(file => ({url: 'uploads/'+file.filename, path: file.destination}));
         
         const newHouse = await House.create({
+            housenumber,
             owner,
             no_of_rooms,
             no_of_bath_rooms,
@@ -41,6 +48,7 @@ export const createHouse = async (req, res, next) => {
 
         return res.status(200).json({msg: "Successfully Created", data: newHouse});
     } catch(error) {
+        req.files.forEach(async file => await removeImage(file.destination+'/'+file.filename))
         next(error)
     } 
 }
@@ -70,18 +78,18 @@ export const getHouse = async (req, res, next) => {
 
 export const getHouses = async (req, res, next) => {
     try {
-        const houses = await House.find({tenant: null});
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const start = (page-1) * limit
-        const total = await houses.count()
-        const data = await houses
+        const total = await House.find({tenant: ''}).estimatedDocumentCount();
+        
+        const data = await House.find({tenant: null})
         .skip(start)
         .limit(limit).select('-occupancy_history -bankaccounts -deadline -contract -calendar')
         .populate({
             path: 'owner',
             select: '-role -password -isActive',
-            model: 'users',
+            model: 'User',
             foreignField: '_id'
         });
         
@@ -95,7 +103,7 @@ export const getHouses = async (req, res, next) => {
 export const editHouseInfo = async (req, res, next) => {
     try {
         let { 
-            name,
+            housenumber,
             no_of_rooms, 
             no_of_bath_rooms,
             width,
@@ -114,7 +122,7 @@ export const editHouseInfo = async (req, res, next) => {
         const houseid = req.params.houseid;
         const house = await House.findOne({house: houseid, owner: req.user});
 
-        house.name = name || house.name;
+        house.housenumber = housenumber || house.housenumber;
         house.no_of_rooms = no_of_rooms || house.no_of_rooms;
         house.no_of_bath_rooms = no_of_bath_rooms || house.no_of_bath_rooms;
         house.width = width || house.width;
@@ -125,6 +133,7 @@ export const editHouseInfo = async (req, res, next) => {
         await house.save();
         return res.status(200).json(house);
     } catch (error) {
+
         next(error);
     }
 }
@@ -158,28 +167,26 @@ export const editHouseImages = async (req, res, next) => {
 export const addHouseCalendar = async (req, res, next) => {
     try {
         let {isOpen, schedules} = req.body;
-        schedules = JSON.parse(schedules);
         
+        schedules = typeof schedules === 'string' ? JSON.parse(schedules): schedules;
         const house = await House.findOne({owner: req.user, _id: req.params.houseid});
 
         if(!house)
             throw createError(400, "House not found!!");
 
         let schedule = house.calendar.schedule;
-        if (schedule.length < 7)
-            schedule = Array(7).fill(null)
-        
-        schedules.forEach(({day, starttime, endtime}) => {
-            if (day < 0 || day > 6)
-                throw createError(400, "Invalid day");
             
-            if (!(3 < starttime.hour < 24 && 3 < endtime < 24))
-                throw createError(400, "Please set the time properly")
-            if (starttime.hour >= endtime.hour)
+        schedules.forEach(({starttime, endtime}) => {
+            starttime = new Date(starttime);
+            endtime = new Date(endtime);
+            if (starttime.getDate() !== endtime.getDate())
+                throw createError(400, 'Set the times  for a specific date please');
+            if (starttime.getHours() >= endtime.getHours())
                 throw createError(400, 'There must be morethan one hour difference between the two');
-            schedule[day] = {
-                starttime: new Date().setHours(starttime.hour, starttime.minute, 0, 0),
-                endtime: new Date().setHours(endtime.hour, endtime.minute, 0, 0),
+            
+            schedule[starttime.getDay()] = {
+                starttime,
+                endtime
             }
         });
 
@@ -196,10 +203,22 @@ export const addHouseCalendar = async (req, res, next) => {
 
 export const getHouseVisits = async (req, res, next) => {
     try {
-        const house = mongoose.Schema.Types.ObjectId(req.params.id)
+        const house = new mongoose.Types.ObjectId(req.params.id);
+        if (req.headers.authorization) {
+            const access_token = req.headers.authorization.split(' ')[1];
+            jwt.verify(access_token, process.env.JWT_ACCESS_TOKEN, (err, decoded) => {
+                if (err)
+                    return res.status(401).json('Unauthenticated access');
+                
+                req.user = decoded.user;                
+            });
+        }
+        
+        
         const requests = await Requests.aggregate([
             {$match: {
-                house: house
+                house,
+                visitor: {$ne: new mongoose.Types.ObjectId(req.user)}
             }},
             {$addFields: {
                 truncDate: {$dateTrunc: {

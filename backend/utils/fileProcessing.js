@@ -1,7 +1,7 @@
 import multer from "multer";
 import {unlink} from 'node:fs/promises';
 import {existsSync} from 'node:fs';
-import { createError } from "./CreateError";
+import { createError } from "./CreateError.js";
 
 const file_name = function (req, file, cb) {
     const uniqueSuffix = Date.now()
@@ -22,15 +22,23 @@ const filtering = function (req, file, cb) {
     if (file.size > 1024*3)
         return cb(new Error('The size is too big'))
     cb(null, true)
+}
 
+const destination = function (req, file, cb) {
+    if (file.fieldname === 'contract')
+        return cb(null, __dirname+'/../contracts')
+    if (file.fieldname === 'nationalid')
+        return cb(null, __dirname+'/../nationalids')
+    return cb(null, __dirname+'/../uploads')
 }
 
 const __dirname = import.meta.dirname;
 
 const storage = multer.diskStorage({
     filename: file_name,
-    destination: __dirname+'/../uploads',
+    destination: destination,
 });
+
 const uploader = multer({
     storage,
     fileFilter: filtering

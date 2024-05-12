@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import addressSchema from "./commons/Address.js";
 
-const ownerSchema = mongoose.Schema({
+const ownerSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

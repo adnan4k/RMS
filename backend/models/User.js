@@ -8,7 +8,8 @@ export const userSchema = new mongoose.Schema({
     username:{
         type:String,
         unique: true,
-        sparse: true
+        sparse: true,
+        lowercase: true
     },
     lastname:{
         type:String,
@@ -17,18 +18,19 @@ export const userSchema = new mongoose.Schema({
     phonenumber:{
         type: String,
         required: true,
+        unique: true,
         validate: {
             validator: phone => {
                 const checker = /\+(2519|2517)\d{8}/;
                 return checker.test(phone);
             },
             message: 'Phone number format doesn\'t match'
-        },
-        unique: true
+        }
     },
     email:{
         type:String,
         required:true,
+        unique: true,
         validate: {
             validator: email => {
                 const checker = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -36,7 +38,7 @@ export const userSchema = new mongoose.Schema({
             },
             message: 'Incorrect email format!'
         },
-        unique: true
+        lowercase: true
     },
     password:{
         type:String,

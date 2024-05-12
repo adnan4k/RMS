@@ -3,7 +3,7 @@ import addressSchema from "./commons/Address";
 import BankAccountSchema from "./commons/BankAccount";
 
 const HouseComplex = mongoose.Schema({
-    name: {
+    housenumber: {
         type: String,
         required: true,
         unique: true,

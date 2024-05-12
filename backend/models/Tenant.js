@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import addressSchema from "./commons/Address.js";
 
-export const tenantSchema = mongoose.Schema({
+export const tenantSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -13,7 +13,7 @@ export const tenantSchema = mongoose.Schema({
   },
   reference: {
     type: {
-      name: String,
+      housenumber: String,
       phone: String,
       address: addressSchema
     },

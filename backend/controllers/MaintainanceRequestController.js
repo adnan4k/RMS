@@ -50,7 +50,7 @@ export const getMaintenanceRequest = async(req,res,next) =>{
                     pipeline: [{
                         $replaceRoot: {
                             newRoot: {
-                                name: '$name',
+                                housenumber: '$housenumber',
                                 images: '$images',
                                 owner: '$owner',
                             }

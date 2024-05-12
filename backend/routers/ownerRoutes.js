@@ -9,10 +9,10 @@ import { editRequest, getMaintenanceRequest } from "../controllers/MaintainanceR
 
 const ownerRouter  = express.Router();
 
-ownerRouter.post('/', verifyToken("user"), uploader.single('national_id'), addOwner);
+ownerRouter.post('/', verifyToken("user"), uploader.single('nationalid'), addOwner);
 ownerRouter.get('/:username', getOwner);
-ownerRouter.put('/', verifyToken('owner'), uploader.single('national_id'), editProfile);
-ownerRouter.post('/:houseid', verifyToken('owner'), uploader.fields([{name:'national_id', maxCount: 1, minCount: 1}, {name:'contract_photo', maxCount: 1, minCount: 1}]), addTenant);
+ownerRouter.put('/', verifyToken('owner'), uploader.single('nationalid'), editProfile);
+ownerRouter.post('/:houseid', verifyToken('owner'), uploader.fields([{name:'nationalid', maxCount: 1, minCount: 1}, {name:'contract', maxCount: 1, minCount: 1}]), addTenant);
 ownerRouter.put('/:houseid/images', verifyToken('owner'), uploader.array('images', 10), editHouseImages);
 ownerRouter.delete('/:houseid/tenant', verifyToken('owner'), deleteTenant)
 ownerRouter.put('/:houseid',verifyToken('owner'), editHouseInfo);

@@ -6,7 +6,7 @@ import { createMaintainance, editRequest, tenantRequests } from "../controllers/
 
 const tenantRouter  = express.Router();
 tenantRouter.get('/:username', verifyToken('tenant', 'owner'), getTenant);
-tenantRouter.put('/', verifyToken('tenant'), uploader.single('national_id'), editTenant);
+tenantRouter.put('/', verifyToken('tenant'), uploader.single('nationalid'), editTenant);
 tenantRouter.post('/maintenance', verifyToken('tenant'), createMaintainance);
 tenantRouter.put('/maintenance/:requestid', verifyToken('tenant'), editRequest)
 tenantRouter.get('/maintenance', verifyToken('tenant'), tenantRequests);

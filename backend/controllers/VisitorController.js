@@ -12,9 +12,11 @@ export const createVisitorRequest = async (req, res, next) => {
         const visitor = await User.findById(req.user);
 
         const schedule = house.calendar.schedule;
-        const day = schedule[date.getUTCDay()];
+
+        const day = schedule[date.getDay()];
         if (!day)
-            throw createError(402, "The house have no schedule this day");
+            throw createError(400, "The house have no schedule this day");
+
 
         const start = new Date().setHours(day.starttime.getHours(), day.starttime.getMinutes(), 0 ,0);
 
@@ -39,7 +41,7 @@ export const createVisitorRequest = async (req, res, next) => {
             return res.status(200).json({msg: `Successfully booked`, data: request});
         }
         const truncDate = new Date(date.toDateString())
-        
+
         const schedules = await Requests.aggregate([
             {
                 $addFields:{
@@ -65,12 +67,15 @@ export const createVisitorRequest = async (req, res, next) => {
         
         const endtime = new Date(date)
         endtime.setHours(endtime.getHours()+1, endtime.getMinutes(), 0, 0)
+
         for(let index = 0; index < schedules.length; index ++) {
+            if (schedules[index].visitor === visitor._id)
+                continue
             const s = new Date(schedules[index].date);
             const e = new Date(schedules[index].date);
             e.setHours(s.getHours() + 1, s.getMinutes(), 0, 0);
-
-            if ((s<date && date<e) || (s<endtime && endtime<e))
+            
+            if ((s<=date && date<=e) || (s<=endtime && endtime<e))
                 throw createError(400, "This time interfeers with another time!")
         }
 
@@ -115,7 +120,7 @@ export const getRequests = async (req, res, next) => {
             visitor: req.user
         }).populate({
             path: 'house', 
-            select: 'images name address owner _id',
+            select: 'images housenumber address owner _id',
             populate: {
                 path: 'owner', 
                 foreignField: 'user',
