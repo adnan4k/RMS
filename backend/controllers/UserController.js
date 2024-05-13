@@ -12,6 +12,7 @@ dotenv.config();
 
 export const register = async (req, res, next) => {
   try {
+
     const {  email, username, firstname, lastname, password, phonenumber } = req.body;
     var salt = bcrypt.genSaltSync(10);
     var hash = bcrypt.hashSync(password, salt);
