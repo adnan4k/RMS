@@ -1,15 +1,29 @@
-import { useState } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Layout from "../layout/Layout";
 import { toast } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { signup } from "../api/auth";
 
 function Signup() {
-  const [error, setError] = useState();
+  const [error, setError] = useState('');
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
   const [selectedOption, setSelectedOption] = useState('')
+
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: signup,
+    onSuccess: user => {
+      queryClient.setQueryData(['user'], user);
+      navigate('/');
+    },
+    onError: error => {
+      setError(error.response.data.message);
+    }
+  })
 
   const [formData, setFormData] = useState({
     firstname: "",
@@ -36,47 +50,21 @@ function Signup() {
       ...formData,
       [name]: value,
     });
-    setError("");
   };
 
   const handleSubmit = async (e) => {
+    setError("");
     e.preventDefault();
     if (formData.password === formData.password_confirmation) {
-      try {
-         await axios.post(
-          "http://localhost:4001/user/register",
-          formData
-        ).then((response)=>{
-          toast.success(error.response.data.message,'error')
-
-          console.log(response,'respon')
-        }).catch((error)=>{
-          toast.error(error.response.data.message,'error')
-          console.log(error,'error')
-        })
-        
-        // console.log(response.status, "mama");
-        setError(response.data)
-        if (!response.data.success) {
-          
-          setError("Your account already exists. Please sign in.");
-        }
-        if (response.data.role === "admin") {
-          navigate("/admin/news/display");
-        } else {
-          navigate("/appointment");
-        }
-      } catch (error) {
-        console.log(error);          
-
-      }
+      mutation.mutate(formData)
     } else {
-      toast("Enter password or email !");
-
-      setError("Enter password or email.");
+      setError("Passwords doesn't match");
     }
-    console.log(formData);
   };
+
+  useEffect(() => {
+    error!=='' && toast.error(error)
+  }, [error]);
 
   return (
     <Layout>

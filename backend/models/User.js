@@ -7,7 +7,7 @@ export const userSchema = new mongoose.Schema({
     },
     username:{
         type:String,
-        unique: true,
+        unique: [true, "User name already exists"],
         sparse: true,
         lowercase: true
     },
@@ -18,7 +18,7 @@ export const userSchema = new mongoose.Schema({
     phonenumber:{
         type: String,
         required: true,
-        unique: true,
+        unique: [true, "Phonenumber already exists"],
         validate: {
             validator: phone => {
                 const checker = /\+(2519|2517)\d{8}/;
@@ -29,8 +29,8 @@ export const userSchema = new mongoose.Schema({
     },
     email:{
         type:String,
-        required:true,
-        unique: true,
+        required:[true, "Email is required"],
+        unique: [true, "Email already exists"],
         validate: {
             validator: email => {
                 const checker = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

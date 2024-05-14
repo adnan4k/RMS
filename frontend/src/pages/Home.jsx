@@ -2,7 +2,9 @@ import Popular from "../components/Popular";
 import SearchComponent from "../components/SearchComponent";
 import Layout from "../layout/Layout";
 
+
 function Home() {
+  
   return (
     <Layout>
       <div className="mt-32">

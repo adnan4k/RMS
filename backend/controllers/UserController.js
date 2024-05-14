@@ -45,7 +45,7 @@ export const login = async (req, res, next) => {
   try {
     const user = await User.findOne({ $or: [{email: req.body.email, isActive: true}, {username: req.body.email, isActive: true}] });
     if (!user) 
-      throw createError(404, "user not found");
+      throw createError(404, "Username or password incorrect");
     
     const isPasswordCorrect = await bcrypt.compare(
       req.body.password,
@@ -53,7 +53,7 @@ export const login = async (req, res, next) => {
     );
 
     if (!isPasswordCorrect)
-      throw createError(400, "username or password incorrect");
+      throw createError(400, "Username or password incorrect");
     
     const {accesstoken, refreshtoken} = generateToken(user);
     await Token.create({refreshtoken, user: user._id});

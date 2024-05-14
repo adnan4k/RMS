@@ -35,8 +35,12 @@ app.use('/maintenance', maintainanceRouter);
 
 //error handler
 app.use((err,req,res,next) =>{
-  const errorStatus = err.status || 500;
-  const errorMessage = err.message ||" something went wrong";
+  let errorStatus = err.status || 500;
+  let errorMessage = err.message ||" Something went wrong";
+  if (err.name === 'MongoServerError' && err.code == 11000) {
+    errorStatus = 400;
+    errorMessage =  `This ${Object.keys(err.keyPattern)[0]}: ${err.keyValue[Object.keys(err.keyPattern)[0]]} is already registered`
+  }
   return res.status(errorStatus).json({
    status:errorStatus,
    success:false,
