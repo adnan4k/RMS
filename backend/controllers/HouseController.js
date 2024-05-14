@@ -28,8 +28,7 @@ export const createHouse = async (req, res, next) => {
 
         address = JSON.parse(address);
         bankaccounts = JSON.parse(bankaccounts);
-        
-        const images = req.files.map(file => ({url: 'uploads/'+file.filename, path: file.destination}));
+        const images = req.files.map(file => ({url: 'uploads/'+file.filename, path: file.destination+"/"+file.filename}));
         
         const newHouse = await House.create({
             housenumber,
@@ -80,9 +79,10 @@ export const getHouses = async (req, res, next) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
-        const start = (page-1) * limit
-        const total = await House.find({tenant: ''}).estimatedDocumentCount();
-        
+        const start = (page-1) * limit;
+        // If this doesn't work use DocumentCount({tenant: null})
+        const total = await House.find({tenant: null}).estimatedDocumentCount();
+
         const data = await House.find({tenant: null})
         .skip(start)
         .limit(limit).select('-occupancy_history -bankaccounts -deadline -contract -calendar')
@@ -120,8 +120,10 @@ export const editHouseInfo = async (req, res, next) => {
             address = JSON.parse(address)
 
         const houseid = req.params.houseid;
-        const house = await House.findOne({house: houseid, owner: req.user});
-
+        console.log(req.body)
+        console.log(width)
+        const house = await House.findOne({_id: houseid, owner: req.user});
+    // console.log("house", house);
         house.housenumber = housenumber || house.housenumber;
         house.no_of_rooms = no_of_rooms || house.no_of_rooms;
         house.no_of_bath_rooms = no_of_bath_rooms || house.no_of_bath_rooms;
@@ -151,14 +153,14 @@ export const editHouseImages = async (req, res, next) => {
         });
         images = images.filter(({url, path}) => !deletedImages.has(url));
         
-        const addedImages = req.files.map(file => ({url: 'uploads/'+file.filename, path: file.destination}));
+        const addedImages = req.files.map(file => ({url: 'uploads/'+file.filename, path: file.destination+"/"+file.filename}));
         addedImages.forEach((image) => {
             images.push(image);
         });
 
         house.images = images;
         await house.save();
-        return res.status(200).json({msg: 'Successfully updated photos', data: house.images} )
+        return res.status(200).json({msg: 'Successfully updated photos', data: house.images})
     } catch (error) {
         next(error);
     }

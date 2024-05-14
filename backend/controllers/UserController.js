@@ -6,6 +6,7 @@ import { createError } from "../utils/CreateError.js";
 import sendEmail from "../utils/email.js";
 import { generateToken, refresh } from "../utils/generateTokens.js";
 import dotenv from "dotenv";
+import House from "../models/House.js";
 
 
 dotenv.config();
@@ -125,10 +126,8 @@ export const resetPassword = async (req, res, next) => {
 export const refreshToken = async (req, res, next) => {
   try {
     const refreshtoken = req.body.refreshtoken;
-    
     if (!refreshtoken)
       return res.status(400).send(createError(400, 'Not authenticated'));
-
     if (!await Token.exists({refreshtoken}))
       return res.status(400).send(createError(400, 'Not authenticated'));
     

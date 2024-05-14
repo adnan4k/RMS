@@ -13,8 +13,6 @@ const filtering = function (req, file, cb) {
     console.log(file,'file')
     const allowed_image_mime = ['image/jpeg', 'image/png', 'image/gif'];
     const allowed_image_extensions = ['png', 'jpeg', 'jpg'];
-    
-
     const extensions = file.originalname.split('.')
     
     if (!allowed_image_extensions.includes(extensions[extensions.length - 1].trim()))

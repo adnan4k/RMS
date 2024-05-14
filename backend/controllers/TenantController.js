@@ -9,6 +9,8 @@ import { removeImage } from "../utils/fileProcessing.js";
 import Token from "../models/Tokens.js"
 
 export const addTenant = async(req, res, next) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
     try {
         let { email, firstname, lastname, phonenumber, reference } = req.body;
         const houseId = req.params.houseid
@@ -19,11 +21,11 @@ export const addTenant = async(req, res, next) => {
         
         national_id = {
             url: 'nationalids/'+national_id.filename,
-            path: national_id.destination
+            path: national_id.destination+"/"+national_id.filename
         }
         contract_photo = {
             url: 'contracts/'+contract_photo.filename,
-            path: contract_photo.destination
+            path: contract_photo.destination+"/"+contract_photo.filename
         }
         
         let user =  await User.findOne({email: email});
@@ -33,8 +35,8 @@ export const addTenant = async(req, res, next) => {
             user = new User({ role: 'tenant', email, firstname, lastname, phonenumber, password: 'password', isActive: false});
         user.role = 'tenant'
         user.isActive = false
-        await user.save()
-        const tenant = await Tenant.create({ user, reference, national_id });
+        await user.save({session});
+        const tenant = await Tenant.create([{ user, reference, national_id }], {session});
         const house = await House.findById(houseId);
         
         if (!house)
@@ -55,20 +57,20 @@ export const addTenant = async(req, res, next) => {
         onemonth.setHours(0,0,0,0);
 
         house.deadline = onemonth; 
-        await house.save();
+        await house.save({session});
         
         const token = refresh({id: user._id}, '60m' );
         await sendEmail(user.email, token);
-        console.log(token)
-        // await session.commitTransaction();
+
+        await session.commitTransaction();
         return res.status(200).json({msg: 'Successfully added tenant', data: tenant})
     } catch (error) {
-        // await session.abortTransaction();
+        await session.abortTransaction();
         await removeImage(req.files['nationalid'][0].destination+'/'+req.files['nationalid'][0].filename);
         await removeImage(req.files['contract'][0].destination+'/'+req.files['contract'][0].filename);
         next(error);
     } finally {
-        // await session.endSession();
+        await session.endSession();
     }
 };
 
@@ -99,7 +101,7 @@ export const editTenant = async (req, res, next) => {
             await removeImage(tenant.national_id.path);
             tenant.national_id = {
                 url: "nationalids/"+req.file.filename,
-                path: req.file.destination
+                path: req.file.destination+"/"+req.file.filename
             }
         }
         
@@ -159,13 +161,14 @@ export const deleteTenant = async (req, res, next) => {
         house.deadline = null;
         
         await Token.deleteMany({user: tenant});
-        // const tenant = await Tenant.findById(tenant)
-        // May send an email to the tenant
-        await User.findOneAndUpdate({_id: tenant}, {$set: {
-            email: {$concat: ['$email', ' ;']},
-            username: null,
-            isActive: false
-        }});
+        tenant = await User.findById(tenant)
+        
+        tenant.email = tenant.email + ' ' + Date.now()
+        tenant.phonenumber = tenant.phonenumber + ' ' + Date.now()
+        tenant.isActive = false
+        tenant.username = null
+        await tenant.save({ validateBeforeSave: false });
+        
         await house.save();
         return res.status(200).json({message:"successfully deleted"});
     } catch (error) {

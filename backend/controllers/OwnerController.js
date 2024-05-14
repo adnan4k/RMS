@@ -24,7 +24,7 @@ export const addOwner = async(req, res, next) => {
             user,
             national_id : {
                 url: "nationalids/"+req.file.filename,
-                path: req.file.destination
+                path: req.file.destination+"/"+req.file.filename
             }
         });
         
@@ -75,7 +75,7 @@ export const editProfile = async (req, res, next) => {
             await removeImage(owner.national_id.path);
             owner.national_id = {
                 url: "nationalids/"+req.file.filename,
-                path: req.file.destination
+                path: req.file.destination+"/"+req.file.filename
             }
         }
         await user.save().session(session);

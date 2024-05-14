@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 export const userSchema = new mongoose.Schema({
     firstname:{
         type:String,
-        required:true
+        required: true
     },
     username:{
         type:String,
