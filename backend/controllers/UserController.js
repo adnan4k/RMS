@@ -176,7 +176,11 @@ export const editProfile = async (req, res, next) => {
 
 export const getUser = async (req, res, next) => {
   try {
-    const user = await User.findOne({$or: [{username: req.params.username}, {_id: req.params.username}]}).select('-passowrd -isActive -role');
+    const username = req.params && req.params.username;
+    console.log(username);
+    console.log(req.user);
+    const user = await User.findOne({$or: [{username: username}, {_id: req.user}]}).select('-passowrd -isActive -role');
+    console.log(username);
     if (!user)
       throw createError(400, 'User not found');
     return res.status(200).json(user);    

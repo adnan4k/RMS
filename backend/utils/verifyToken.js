@@ -20,6 +20,7 @@ const verifyToken = (...role) => (req, res, next) =>  {
             next()
         });
     } catch (error) {
+        console.log(error)
         res.status(400).json({msg: "Token not found"})
     }
 }

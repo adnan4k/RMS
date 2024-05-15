@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Layout from "../layout/Layout";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { login } from "../api/auth";
 import { toast } from "react-toastify";
@@ -34,6 +33,7 @@ function Login() {
   
   const handleSubmit = (e) => {
     setError("");
+    console.log('1')
     e.preventDefault();
     mutation.mutate(formData);
   };
@@ -44,7 +44,6 @@ function Login() {
   
 
   return (
-    <Layout>
     <section className="bg-gray-50 dark:bg-gray-900">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
         <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
@@ -119,7 +118,7 @@ function Login() {
                   href="#"
                   className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500"
                 >
-                  htmlForgot password?
+                  Forgot password?
                 </a>
               </div>
               <button
@@ -141,8 +140,7 @@ function Login() {
           </div>
         </div>
       </div>
-    </section>
-    </Layout>
+    </section>  
   );
 }
 

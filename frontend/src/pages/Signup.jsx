@@ -67,7 +67,6 @@ function Signup() {
   }, [error]);
 
   return (
-    <Layout>
       <div className="flex mt-20 justify-center items-center h-screen">
         <form className="w-full max-w-md" onSubmit={handleSubmit}>
           <div className="bg-white px-6 py-8 rounded shadow-md text-black">
@@ -197,7 +196,6 @@ function Signup() {
               </div>
             </form>
           </div>
-        </Layout>
         );
 }
 

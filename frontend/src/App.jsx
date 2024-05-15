@@ -8,6 +8,7 @@ import { ToastContainer, toast } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.css';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query' 
+import Layout from './layout/Layout';
 
 
 function App() {
@@ -20,8 +21,10 @@ function App() {
           <Routes>
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/" element={<Home />} />
             <Route path="/create-house" element={<CreateHouse />} />
+            <Route path="/*" element={<Layout />}>
+              <Route index element={<Home />} />
+            </Route>
           </Routes>
         </BrowserRouter>    
       </QueryClientProvider>

@@ -12,6 +12,7 @@ userRouter.post('/resetpassword/:token', resetPassword);
 userRouter.post('/forgetpassword', forgetPassword);
 userRouter.put('/:username', verifyToken('user'), editProfile);
 userRouter.get('/:username', getUser);
+userRouter.get('/', verifyToken('user'), getUser);
 userRouter.get('/schedules', verifyToken('user'), getRequests);
 userRouter.post('/:houseid', verifyToken('user'), createVisitorRequest);
 

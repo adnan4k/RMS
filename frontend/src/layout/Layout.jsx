@@ -1,17 +1,18 @@
+import { Outlet } from "react-router-dom"
 import Footer from "../components/Footer"
 import Navbar from "../components/Navbar"
 
 // eslint-disable-next-line react/prop-types
-function Layout({children}) {
+function Layout() {
   return (
     <div>
         <div className="mb-10">
         <Navbar />
         </div>
-         {children}
-         <div className="mt-5">
-         <Footer />
-         </div>
+        <Outlet />
+        <div className="mt-5">
+        <Footer />
+        </div>
     </div>
   )
 }

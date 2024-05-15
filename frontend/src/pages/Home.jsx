@@ -1,16 +1,14 @@
 import Popular from "../components/Popular";
 import SearchComponent from "../components/SearchComponent";
-import Layout from "../layout/Layout";
 
 
 function Home() {
   
   return (
-    <Layout>
       <div className="mt-32">
         <div className="flex flex-col justify-center items-center">
           <div>
-            <h1 className="text-[#081E4A] text-center text-3xl font-bold">
+            <h1 className="text-[#081E4A] text-center text-3xl font-bold dark:text-white">
               Find Your Perfect Rental Home
             </h1>
           </div>
@@ -26,7 +24,7 @@ function Home() {
         </div>
         <div>
           <div className="flex flex-col justify-center items-center mx-auto">
-            <h2 className="text-[#081E4A] font-bold my-5 text-3xl">
+            <h2 className="text-[#081E4A] font-bold my-5 text-3xl dark:text-white">
               Trending Listings
             </h2>
             <Popular />
@@ -38,7 +36,6 @@ function Home() {
           </div>
         </div>
       </div>
-    </Layout>
   );
 }
 
