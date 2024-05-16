@@ -120,8 +120,6 @@ export const editHouseInfo = async (req, res, next) => {
             address = JSON.parse(address)
 
         const houseid = req.params.houseid;
-        console.log(req.body)
-        console.log(width)
         const house = await House.findOne({_id: houseid, owner: req.user});
     // console.log("house", house);
         house.housenumber = housenumber || house.housenumber;

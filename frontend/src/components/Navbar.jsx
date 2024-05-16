@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { getUser } from "../api/auth";
+import ShowProfile from "./ShowProfile";
 
 function Navbar() {
 
@@ -8,7 +9,7 @@ function Navbar() {
     queryKey: ['user'],
     queryFn: getUser
   });
-
+  
   return (
     <div className="mb-10">
       <nav className="bg-white dark:bg-gray-900 fixed w-full z-20 top-0 start-0 border-b border-gray-200 dark:border-gray-600">
@@ -24,7 +25,7 @@ function Navbar() {
           <div className="mx-5 flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
             {
             data?
-              <div>{data.username}</div>:
+              <ShowProfile {...data}/>:
             <><Link to='/login'>
             <button
               type="button"

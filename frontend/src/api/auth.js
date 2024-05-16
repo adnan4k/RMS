@@ -33,3 +33,23 @@ export const getUser = async () => {
         throw error
     }
 }
+
+export const frogetPassword = async (email) => {
+    try {
+        const response = await axios.post('user/forgetpassword', {identifier: email});
+        return response
+    } catch (error) {
+        console.log(error)
+        throw error
+    }
+}
+
+export const resetPassword = async (payload) => {
+    try {
+        const response = await axios.post('user/resetpassword', payload);
+        return response.data;
+    } catch (error) {
+        console.log(error)
+        throw error
+    }
+}

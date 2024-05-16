@@ -3,11 +3,11 @@ import mongoose from "mongoose";
 export const userSchema = new mongoose.Schema({
     firstname:{
         type:String,
-        required: true
+        required: [true, "First name is required"]
     },
     username:{
         type:String,
-        unique: [true, "User name already exists"],
+        unique: true,
         sparse: true,
         lowercase: true
     },
@@ -17,11 +17,11 @@ export const userSchema = new mongoose.Schema({
     },
     phonenumber:{
         type: String,
-        required: true,
-        unique: [true, "Phonenumber already exists"],
+        required: [true, "Phone number is required"],
+        unique: true,
         validate: {
             validator: phone => {
-                const checker = /\+(2519|2517)\d{8}/;
+                const checker = /^\+(2519|2517)\d{8}$/;
                 return checker.test(phone);
             },
             message: 'Phone number format doesn\'t match'

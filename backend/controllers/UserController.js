@@ -79,10 +79,9 @@ export const forgetPassword = async (req, res, next) => {
     if (!user)
       throw createError(400, "User not found");
     
-    const token = refresh({ id: user._id }, '60m');
+    const token = refresh({ user: user._id }, '60m');
 
     await sendEmail(user.email, token);
-    await Token.deleteMany({user: user._id});
     return res.status(201).json({msg: 'Email for reseting password sent!!'});
   } catch (error) {
     next(error);
@@ -91,17 +90,18 @@ export const forgetPassword = async (req, res, next) => {
 
 export const resetPassword = async (req, res, next) => {
   try {
-    if (!req.params.token)
-      throw createError(401, "Token not found");
+    const { token, password } = req.body;
+    if (!token)
+      throw createError(400, "Token not found");
     
-    const { password } = req.body;
-    
-    jwt.verify(req.params.token, process.env.JWT_ACCESS_TOKEN, (err, decoded) => {
+    jwt.verify(token, process.env.JWT_ACCESS_TOKEN, (err, decoded) => {
       if (err)
         return res.status(401).json({msg: 'Invalid token'})
         req.user = decoded.user;
     });
     const user = await User.findById(req.user);
+    if (!user)
+      throw createError(400, 'User not found')
     var salt = bcrypt.genSaltSync(10);
     var hash = bcrypt.hashSync(password, salt);
 
@@ -111,6 +111,8 @@ export const resetPassword = async (req, res, next) => {
     await user.save();
     
     const {accesstoken, refreshtoken} = generateToken(user)
+
+    await Token.deleteMany({user: user._id});
     await Token.create({refreshtoken, user: user._id});
 
     const { password:p, role, isActive, ...otherDetails } = user._doc;
@@ -177,10 +179,7 @@ export const editProfile = async (req, res, next) => {
 export const getUser = async (req, res, next) => {
   try {
     const username = req.params && req.params.username;
-    console.log(username);
-    console.log(req.user);
-    const user = await User.findOne({$or: [{username: username}, {_id: req.user}]}).select('-passowrd -isActive -role');
-    console.log(username);
+    const user = await User.findById(req.user).select('-passowrd -isActive -role');
     if (!user)
       throw createError(400, 'User not found');
     return res.status(200).json(user);    

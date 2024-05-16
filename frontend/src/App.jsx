@@ -9,8 +9,10 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query' 
 import Layout from './layout/Layout';
+import ForgetPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
-
+// The default 404 should be done for the route
 function App() {
   const queryClient = new QueryClient();
   return (
@@ -21,6 +23,8 @@ function App() {
           <Routes>
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/forget" element={<ForgetPassword />} />
+            <Route path="/resetpassword/:token" element={<ResetPassword />} />
             <Route path="/create-house" element={<CreateHouse />} />
             <Route path="/*" element={<Layout />}>
               <Route index element={<Home />} />
