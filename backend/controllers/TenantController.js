@@ -72,7 +72,7 @@ export const addTenant = async(req, res, next) => {
     } finally {
         await session.endSession();
     }
-};
+}
 
 export const editTenant = async (req, res, next) => {
     const session = await mongoose.startSession();
@@ -116,7 +116,7 @@ export const editTenant = async (req, res, next) => {
     } finally {
         await session.endSession();
     }
-};
+}
 
 export const getTenant = async (req, res, next) => {
     try {
@@ -131,12 +131,12 @@ export const getTenant = async (req, res, next) => {
         }
         const tenant = await Tenant.findOne({user: user._id});
         if (!tenant)
-            throw createError(400, 'Not an tenant')
+            throw createError(400, 'Not a tenant')
         return res.status(200).json({tenant, user});
     } catch (error) {
         return next(error);
     }
-};
+}
 
 export const deleteTenant = async (req, res, next) => {
     try {
@@ -174,7 +174,7 @@ export const deleteTenant = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-};
+}
 
 export const getTenants = async (req, res, next) => {
     try {
@@ -187,4 +187,4 @@ export const getTenants = async (req, res, next) => {
     } catch (error) {
         return next(error);
     }
-};
+}

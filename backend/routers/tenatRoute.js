@@ -5,11 +5,11 @@ import verifyToken from "../utils/verifyToken.js";
 import { createMaintainance, editRequest, tenantRequests } from "../controllers/MaintainanceRequestController.js";
 
 const tenantRouter  = express.Router();
+tenantRouter.post('/maintenance', verifyToken('tenant'), createMaintainance);
+tenantRouter.get('/maintenance', verifyToken('tenant'), tenantRequests);
+tenantRouter.put('/maintenance/:requestid', verifyToken('tenant'), editRequest)
+tenantRouter.delete('/delete/:id',deleteTenant);
 tenantRouter.get('/:username', verifyToken('tenant', 'owner'), getTenant);
 tenantRouter.put('/', verifyToken('tenant'), uploader.single('nationalid'), editTenant);
-tenantRouter.post('/maintenance', verifyToken('tenant'), createMaintainance);
-tenantRouter.put('/maintenance/:requestid', verifyToken('tenant'), editRequest)
-tenantRouter.get('/maintenance', verifyToken('tenant'), tenantRequests);
-tenantRouter.delete('/delete/:id',deleteTenant);
 
 export default tenantRouter

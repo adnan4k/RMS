@@ -38,6 +38,9 @@ export const addOwner = async(req, res, next) => {
         })
         return res.status(201).json({accesstoken, refreshtoken, savedOwner});
     } catch (error) {
+        if (req.file)
+            await removeImage(req.file.destination+"/"+req.file.filename)
+
         next(error);
     }
 };
@@ -70,9 +73,10 @@ export const editProfile = async (req, res, next) => {
         user.email = email || user.email; 
         user.phonenumber = phonenumber || user.phonenumber;
         owner.address = address || user.address;
-         
+        
+        let previousImage = null
         if (req.file) {
-            await removeImage(owner.national_id.path);
+            previousImage = owner.national_id.path
             owner.national_id = {
                 url: "nationalids/"+req.file.filename,
                 path: req.file.destination+"/"+req.file.filename
@@ -81,9 +85,15 @@ export const editProfile = async (req, res, next) => {
         await user.save().session(session);
         await owner.save().session(session);
         await session.commitTransaction();
+
+        if (previousImage)
+            await removeImage(previousImage);
+
         return res.status(200).json({msg: "Succssesfully updated!", data: {owner, user}})
     } catch (error) {
         await session.abortTransaction();
+        if (req.file)
+            await removeImage(req.file.destination+"/"+req.file.filename)
         next(error)
     } finally {
         await session.endSession();
@@ -92,11 +102,10 @@ export const editProfile = async (req, res, next) => {
 
 export const deleteOwner = async(req,res,next) =>{
     const ownerId  = req.user;
+    const session = await mongoose.startSession();
+    session.startTransaction()
     try {
-        const session = await mongoose.startSession();
-        session.startTransaction()
         const owner = await Owner.findById(ownerId);
-
 
         const houses = await House.find({owner:ownerId});
         houses.forEach(async (house) => {
