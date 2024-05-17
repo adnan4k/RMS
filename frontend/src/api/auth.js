@@ -53,3 +53,16 @@ export const resetPassword = async (payload) => {
         throw error
     }
 }
+
+export const logout = async () => {
+    try {
+        const refreshtoken = localStorage.getItem('refreshtoken');
+        const response = await axios.post('user/logout', {refreshtoken})
+        localStorage.removeItem('refreshtoken')
+        localStorage.removeItem('accesstoken')
+        return response;
+    } catch (error) {
+        console.log(error)
+        throw error
+    }
+}

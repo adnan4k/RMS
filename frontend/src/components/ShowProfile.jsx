@@ -1,9 +1,25 @@
 import React from "react";
-import { useState } from "react"
+import { useState } from "react";
+import { useMutation, useQueryClient } from '@tanstack/react-query' 
+import { logout } from "../api/auth";
+import {toast} from 'react-toastify';
 
 const showProfile = ({username}) => {
+    const queryClient = useQueryClient();
     const [hide, sethide] = useState(true);
-    // console.log(props)
+    const {mutate, status} = useMutation({
+        mutationFn: logout,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['user'] })
+            toast.success('Successfully Logged out!')
+            sethide(true)
+        }
+    })
+    
+    const handleLogout = () => {
+        mutate();
+    } 
+    
     return (
         <div className="flex-col relative">
         <button type="button" className="inline-flex items-center font-medium justify-center px-4 py-2 text-sm text-gray-900 dark:text-white rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white" onClick={() => sethide(!hide)}>
@@ -20,7 +36,7 @@ const showProfile = ({username}) => {
                     </a>
                 </li>
                 <li>
-                    <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">
+                    <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem" onClick={handleLogout}>
                     <div className="inline-flex items-center">
                         Log out
                     </div>

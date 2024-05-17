@@ -7,7 +7,7 @@ const userRouter  = express.Router();
 userRouter.post('/register',register);
 userRouter.post('/login',login);
 userRouter.post('/refresh', refreshToken);
-userRouter.post('/:username/logout', verifyToken('user', 'owner', 'admin', 'tenant'), logout);
+userRouter.post('/logout', verifyToken('user', 'owner', 'admin', 'tenant'), logout);
 userRouter.post('/resetpassword/', resetPassword);
 userRouter.post('/forgetpassword', forgetPassword);
 userRouter.put('/:username', verifyToken('user'), editProfile);

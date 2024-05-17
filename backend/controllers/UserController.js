@@ -150,9 +150,13 @@ export const refreshToken = async (req, res, next) => {
 
 export const logout = async (req, res, next) => {
   try {
-    if (!Token.exists({refreshtoken: req.body.refreshtoken})) throw createError(404, "Error occured while logingout!");
+    const token = await Token.findOne({refreshtoken: req.body.refreshtoken});
+    
+    if (!token || token.user.toString() !== req.user)
+      throw createError(404, "Tokens confilict occured while logingout!");
+
     await Token.deleteOne({refreshtoken: req.body.refreshtoken});
-    res.status(200).json(createSuccess("User logged out"));
+    res.status(200).json("User logged out");
   } catch (err) {
     next(err);
   }
