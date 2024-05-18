@@ -176,6 +176,20 @@ export const deleteTenant = async (req, res, next) => {
     }
 }
 
+export const getHouse = async (req, res, next) => {
+    try {
+        const house = await House.findOne({tenant: req.user}).select('-occupancy_history -callendar -tenant').populate({
+            path: 'owner', foreignField: 'user', populate: {
+                path: 'user',
+                select: '-password -isActive -role'
+            }
+        });
+        return res.status(200).json(house)
+    } catch (error) {
+        next(error)
+    }
+}
+
 export const getTenants = async (req, res, next) => {
     try {
         const tenants = await Tenant.find();

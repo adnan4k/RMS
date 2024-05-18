@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import House from "../models/House.js";
 import { generateToken } from "../utils/generateTokens.js";
 import Token from "../models/Tokens.js";
+import Tenant from "../models/Tenant.js";
 
 
 export const addOwner = async(req, res, next) => {
@@ -47,6 +48,7 @@ export const addOwner = async(req, res, next) => {
 
 export const getOwner = async (req, res, next) => {
     try {
+        const id = mongoose.isObjectIdOrHexString(req.params.username) ? req.params.username : null;
         const user = User.findOne({$or: [{username: req.params.username}, {_id: req.params.username}]});
         if (!user)
             throw createError(400, 'Owner not found')
@@ -123,5 +125,32 @@ export const deleteOwner = async(req,res,next) =>{
         await session.abortTransaction()
         await session.endSession();
         next(error)
+    }
+}
+
+export const occupancyHistory = async (req, res, next) => {
+    try {
+        const history = await House.findOne({owner: req.user, _id: req.params.houseid}).select('occupancy_history')
+        .populate(
+            {path: 'occupancy_history.tenant', foreignField: 'user', populate: {
+                path: 'user',
+                select: '-password -role'
+            }}
+        );
+
+        return res.status(200).json(history);
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const currentTenant = async (req, res, next) => {
+    try {
+        const house = await House.findOne({owner: req.user, _id: req.params.houseid}).select('tenant')
+        .populate({path: 'tenant', foreignField: 'user', populate: {path: 'user', select: '-password -role'}});
+        // Include Payment informations here if needed;
+        return res.status(200).json(house.tenant)
+    } catch (error) {
+        next(error);
     }
 }
