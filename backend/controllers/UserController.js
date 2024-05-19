@@ -82,7 +82,7 @@ export const forgetPassword = async (req, res, next) => {
     const token = refresh({ user: user._id }, '60m');
 
     await sendEmail(user.email, token);
-    return res.status(201).json({msg: 'Email for reseting password sent!!'});
+    return res.status(201).json({msg: 'Email for reseting password sent!!', email: user.email});
   } catch (error) {
     next(error);
   }
@@ -183,7 +183,7 @@ export const editProfile = async (req, res, next) => {
 export const getUser = async (req, res, next) => {
   try {
     const username = req.params && req.params.username;
-    const user = await User.findById(req.user).select('-passowrd -isActive -role');
+    const user = await User.findById(req.user).select('-password -isActive -role');
     if (!user)
       throw createError(400, 'User not found');
     return res.status(200).json(user);    

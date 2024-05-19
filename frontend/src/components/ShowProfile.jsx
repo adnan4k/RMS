@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useState } from "react";
 import { useMutation, useQueryClient } from '@tanstack/react-query' 
 import { logout } from "../api/auth";
 import {toast} from 'react-toastify';
+import { Link } from "react-router-dom";
 
 const showProfile = ({username}) => {
     const queryClient = useQueryClient();
@@ -13,14 +14,24 @@ const showProfile = ({username}) => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['user'] })
             toast.success('Successfully Logged out!')
-            sethide(true)
         }
     })
     
     const handleLogout = () => {
         mutate();
-    } 
+    }
 
+    const handleHide = (e) => {
+        if(e.target.id !== 'accountid')
+            sethide(true)
+    }
+    useEffect(() => {
+        document.addEventListener('click', handleHide);
+        return () => {
+          document.removeEventListener('click', handleHide);
+        };
+      }, []);
+    
     if (status === 'pending')
         return (
             <button disabled type="button" class="py-2.5 px-5 me-2 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:outline-none focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 inline-flex items-center w-full">
@@ -33,18 +44,18 @@ const showProfile = ({username}) => {
         )
     return (
         <div className="flex-col relative">
-        <button type="button" className="inline-flex items-center font-medium justify-center px-4 py-2 text-sm text-gray-900 dark:text-white rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white" onClick={() => sethide(!hide)}>
+        <button type="button" className="inline-flex items-center font-medium justify-center px-4 py-2 text-sm text-gray-900 dark:text-white rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white" onClick={() => sethide(!hide)} id="accountid">
             {username}
         </button>
         
         <div className={"z-50 my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 absolute w-full "+(hide&&'hidden')}>
             <ul className="py-2 font-medium" role="none">
                 <li>
-                    <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">
+                    <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">
                     <div className="inline-flex items-center">
                         Profile
                     </div>
-                    </a>
+                    </Link>
                 </li>
                 <li>
                     <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem" onClick={handleLogout}>

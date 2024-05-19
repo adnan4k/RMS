@@ -3,9 +3,8 @@ import SearchComponent from "../components/SearchComponent";
 
 
 function Home() {
-  
   return (
-      <div className="mt-32">
+      <>
         <div className="flex flex-col justify-center items-center">
           <div>
             <h1 className="text-[#081E4A] text-center text-3xl font-bold dark:text-white">
@@ -35,7 +34,7 @@ function Home() {
             </button>
           </div>
         </div>
-      </div>
+      </>
   );
 }
 

@@ -1,23 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {frogetPassword} from '../api/auth';
 
-function ForgotPassword() {
+const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [success, setSuccess] = useState(false);
-  const [error, setError] = useState('');
+  const [tryagain, setTryagain] = useState(false);
 
   const mutation = useMutation({
     mutationFn: frogetPassword,
     onError: err => {
       setSuccess(false)
-      setError(err.message)
+      setError(err.data.message)
     },
     onSuccess: res => {
-      setError(false)
+      setTryagain(true)
       setSuccess(true)
     }
   });
+
+  useEffect(() => {
+    if(tryagain) {
+      setTimeout(() => {
+        setTryagain(false)
+      }, 60000);
+    }
+  }, [success]);
 
 // Once an email is sent the button should be disabled for some time prompting them to check their inboxes
   return (
@@ -53,11 +61,10 @@ function ForgotPassword() {
                   placeholder="name@company.com"
                   required=""
                 />
-                {success && <p class="mt-2 text-sm text-green-600 dark:text-green-500"><span class="font-medium">Successfully sent!</span> Password reset link sent to {email}</p>}
-              
+                {tryagain && <p class="mt-2 text-xs text-green-600 dark:text-green-500">We have sent a password reset link to the above email. Please check your inbox and if you didn't recieve the email yet try again</p>}
               <button
                 type="submit"
-                className="w-full text-white  bg-[#234B9A] hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                className={"w-full text-white  bg-[#234B9A] hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 "+tryagain&&'disable'}
               >
                 {success ? 'Resend email': 'Recieve Email'}
               </button>
@@ -67,6 +74,8 @@ function ForgotPassword() {
       </div>
     </section>  
   );
-}
+
+} 
+
 
 export default ForgotPassword;
