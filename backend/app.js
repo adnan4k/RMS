@@ -9,6 +9,8 @@ import houseRouter from "./routers/houseRoutes.js";
 import ownerRouter from "./routers/ownerRoutes.js";
 import cookieParser from "cookie-parser";
 import maintainanceRouter from "./routers/maintainance.js";
+import verifyToken from "./utils/verifyToken.js";
+import { verifyContract, verifyNationalId } from "./utils/verifyProtectedImages.js";
 
 process.env.TZ = 'UTC';
 
@@ -17,8 +19,12 @@ app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cookieParser())
-app.use(express.static('public'))
+app.use('/photos', express.static('uploads'))
+app.use('/contracts', verifyToken('admin', 'tenant', 'owner'), verifyContract, express.static('contracts'))
+app.use('/nationalids', verifyToken('admin', 'tenant', 'owner'), verifyNationalId, express.static('nationalids'))
+
 dotenv.config();
+
 app.use(express.urlencoded({extended:true}));
 
 app.use('/uploads',express.static('uploads'));
@@ -30,8 +36,12 @@ app.use('/maintenance', maintainanceRouter);
 
 //error handler
 app.use((err,req,res,next) =>{
-  const errorStatus = err.status || 500;
-  const errorMessage = err.message ||" something went wrong";
+  let errorStatus = err.status || 500;
+  let errorMessage = err.message ||" Something went wrong";
+  if (err.name === 'MongoServerError' && err.code == 11000) {
+    errorStatus = 400;
+    errorMessage =  `This ${Object.keys(err.keyPattern)[0]}: ${err.keyValue[Object.keys(err.keyPattern)[0]]} is already registered`
+  }
   return res.status(errorStatus).json({
    status:errorStatus,
    success:false,

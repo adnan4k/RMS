@@ -16,28 +16,33 @@ export const addTenant = async(req, res, next) => {
         const houseId = req.params.houseid
         reference = JSON.parse(reference);
 
-        let national_id = req.files['national_id'][0]
-        let contract_photo = req.files['contract_photo'][0]
+        let national_id = req.files['nationalid'][0]
+        let contract_photo = req.files['contract'][0]
         
         national_id = {
-            url: 'uploads/'+national_id.filename,
-            path: national_id.destination
+            url: 'nationalids/'+national_id.filename,
+            path: national_id.destination+"/"+national_id.filename
         }
         contract_photo = {
-            url: 'uploads/'+contract_photo.filename,
-            path: contract_photo.destination
+            url: 'contracts/'+contract_photo.filename,
+            path: contract_photo.destination+"/"+contract_photo.filename
         }
         
         let user =  await User.findOne({email: email});
         if (user && user.role != 'user')
             throw createError(400, 'This email has been taken!!');
         if (!user)
-            user = await User.create({ role: 'tenant', email, firstname, lastname, phonenumber, password: 'password', isActive: false}, {session});
-        const tenant = await Tenant.create({ user, reference, national_id }, {session});
+            user = new User({ role: 'tenant', email, firstname, lastname, phonenumber, password: 'password', isActive: false});
+        user.role = 'tenant'
+        user.isActive = false
+        await user.save({session});
+        const tenant = await Tenant.create([{ user, reference, national_id }], {session});
         const house = await House.findById(houseId);
         
         if (!house)
             throw createError(400, "House not found!");
+        if (house.tenant)
+            throw createError(400, "You have to remove that tenant before adding a new one");
         const today = new Date();
 
         house.tenant = user;
@@ -52,7 +57,7 @@ export const addTenant = async(req, res, next) => {
         onemonth.setHours(0,0,0,0);
 
         house.deadline = onemonth; 
-        await house.save();
+        await house.save({session});
         
         const token = refresh({id: user._id}, '60m' );
         await sendEmail(user.email, token);
@@ -61,14 +66,13 @@ export const addTenant = async(req, res, next) => {
         return res.status(200).json({msg: 'Successfully added tenant', data: tenant})
     } catch (error) {
         await session.abortTransaction();
-
-        await removeImage(req.files['national_id'][0].destination);
-        await removeImage(req.files['contract_photo'][0].destination);
+        await removeImage(req.files['nationalid'][0].destination+'/'+req.files['nationalid'][0].filename);
+        await removeImage(req.files['contract'][0].destination+'/'+req.files['contract'][0].filename);
         next(error);
     } finally {
         await session.endSession();
     }
-};
+}
 
 export const editTenant = async (req, res, next) => {
     const session = await mongoose.startSession();
@@ -81,7 +85,7 @@ export const editTenant = async (req, res, next) => {
         const user = await User.findOne({_id: req.user, isActive: true}).select('-password -isActive -role');
         
         if (!user)
-            throw createError(400, "User not found")
+            throw createError(400, "User not found");
 
         const tenant = await Tenant.findOne({user: user._id});
         user.firstname = firstname || user.firstname; 
@@ -96,8 +100,8 @@ export const editTenant = async (req, res, next) => {
         if (req.file) {
             await removeImage(tenant.national_id.path);
             tenant.national_id = {
-                url: "uploads/"+req.file.filename,
-                path: req.file.destination
+                url: "nationalids/"+req.file.filename,
+                path: req.file.destination+"/"+req.file.filename
             }
         }
         
@@ -112,7 +116,7 @@ export const editTenant = async (req, res, next) => {
     } finally {
         await session.endSession();
     }
-};
+}
 
 export const getTenant = async (req, res, next) => {
     try {
@@ -127,12 +131,12 @@ export const getTenant = async (req, res, next) => {
         }
         const tenant = await Tenant.findOne({user: user._id});
         if (!tenant)
-            throw createError(400, 'Not an tenant')
+            throw createError(400, 'Not a tenant')
         return res.status(200).json({tenant, user});
     } catch (error) {
         return next(error);
     }
-};
+}
 
 export const deleteTenant = async (req, res, next) => {
     try {
@@ -145,9 +149,6 @@ export const deleteTenant = async (req, res, next) => {
             throw createError(400, "This house doesn't have a tenant!!");
 
         
-        house.tenant = null;
-        house.contract = null;
-        house.deadline = null;
         
         const history = {
             tenant,
@@ -155,21 +156,39 @@ export const deleteTenant = async (req, res, next) => {
             contract_photo: house.contract.photo
         }
         house.occupancy_history.push(history);
+        house.tenant = null;
+        house.contract = null;
+        house.deadline = null;
         
         await Token.deleteMany({user: tenant});
-        // May send an email to the tenant
-        await User.findAndUpdateOne({_id: tenant}, {$set: {
-            email: {$concat: ['$email', ' ', Date.now()]},
-            phonenumber: {$concat: ['$phone', ' ', Date.now()]},
-            username: null,
-            isActive: false
-        }});
+        tenant = await User.findById(tenant)
+        
+        tenant.email = tenant.email + ' ' + Date.now()
+        tenant.phonenumber = tenant.phonenumber + ' ' + Date.now()
+        tenant.isActive = false
+        tenant.username = null
+        await tenant.save({ validateBeforeSave: false });
+        
         await house.save();
         return res.status(200).json({message:"successfully deleted"});
     } catch (error) {
         next(error);
     }
-};
+}
+
+export const getHouse = async (req, res, next) => {
+    try {
+        const house = await House.findOne({tenant: req.user}).select('-occupancy_history -callendar -tenant').populate({
+            path: 'owner', foreignField: 'user', populate: {
+                path: 'user',
+                select: '-password -isActive -role'
+            }
+        });
+        return res.status(200).json(house)
+    } catch (error) {
+        next(error)
+    }
+}
 
 export const getTenants = async (req, res, next) => {
     try {
@@ -182,4 +201,4 @@ export const getTenants = async (req, res, next) => {
     } catch (error) {
         return next(error);
     }
-};
+}

@@ -1,19 +1,19 @@
 import Owner from "../models/Owner.js";
 import User from "../models/User.js";
-import jwt from 'jsonwebtoken';
 import { createError } from "../utils/CreateError.js";
 import { removeImage } from "../utils/fileProcessing.js";
 import mongoose from "mongoose";
 import House from "../models/House.js";
 import { generateToken } from "../utils/generateTokens.js";
+import Token from "../models/Tokens.js";
+import Tenant from "../models/Tenant.js";
 
 
 export const addOwner = async(req, res, next) => {
     try {
         let { address } = req.body;
         address = JSON.parse(address);
-        
-        const user = await User.findById(req.user);
+        const user = await User.findById(req.user).select('-password -isActive -role');
 
         if (!user) 
             throw createError(400, "User not found");
@@ -24,21 +24,31 @@ export const addOwner = async(req, res, next) => {
             address,
             user,
             national_id : {
-                url: "uploads/"+req.file.filename,
-                path: req.file.destination
+                url: "nationalids/"+req.file.filename,
+                path: req.file.destination+"/"+req.file.filename
             }
         });
         
+
         const savedOwner = await newOwner.save();
         const { accesstoken, refreshtoken } = generateToken(savedOwner);
+        await Token.deleteMany({user: user._id});
+        await Token.create({
+            refreshtoken,
+            user: user._id
+        })
         return res.status(201).json({accesstoken, refreshtoken, savedOwner});
     } catch (error) {
+        if (req.file)
+            await removeImage(req.file.destination+"/"+req.file.filename)
+
         next(error);
     }
 };
 
 export const getOwner = async (req, res, next) => {
     try {
+        const id = mongoose.isObjectIdOrHexString(req.params.username) ? req.params.username : null;
         const user = User.findOne({$or: [{username: req.params.username}, {_id: req.params.username}]});
         if (!user)
             throw createError(400, 'Owner not found')
@@ -65,20 +75,27 @@ export const editProfile = async (req, res, next) => {
         user.email = email || user.email; 
         user.phonenumber = phonenumber || user.phonenumber;
         owner.address = address || user.address;
-         
+        
+        let previousImage = null
         if (req.file) {
-            await removeImage(owner.national_id.path);
+            previousImage = owner.national_id.path
             owner.national_id = {
-                url: "uploads/"+req.file.filename,
-                path: req.file.destination
+                url: "nationalids/"+req.file.filename,
+                path: req.file.destination+"/"+req.file.filename
             }
         }
         await user.save().session(session);
         await owner.save().session(session);
         await session.commitTransaction();
+
+        if (previousImage)
+            await removeImage(previousImage);
+
         return res.status(200).json({msg: "Succssesfully updated!", data: {owner, user}})
     } catch (error) {
         await session.abortTransaction();
+        if (req.file)
+            await removeImage(req.file.destination+"/"+req.file.filename)
         next(error)
     } finally {
         await session.endSession();
@@ -87,12 +104,15 @@ export const editProfile = async (req, res, next) => {
 
 export const deleteOwner = async(req,res,next) =>{
     const ownerId  = req.user;
+    const session = await mongoose.startSession();
+    session.startTransaction()
     try {
-        const session = await mongoose.startSession();
-        session.startTransaction()
         const owner = await Owner.findById(ownerId);
 
-        await House.deleteMany({owner:ownerId}).session(session);
+        const houses = await House.find({owner:ownerId});
+        houses.forEach(async (house) => {
+            await house.deleteOne().session(session);
+        });
         await Owner.findOneAndDelete({user: ownerId}).session(session);
         await User.findByIdAndDelete(owner.user).session(session)
 
@@ -105,5 +125,32 @@ export const deleteOwner = async(req,res,next) =>{
         await session.abortTransaction()
         await session.endSession();
         next(error)
+    }
+}
+
+export const occupancyHistory = async (req, res, next) => {
+    try {
+        const history = await House.findOne({owner: req.user, _id: req.params.houseid}).select('occupancy_history')
+        .populate(
+            {path: 'occupancy_history.tenant', foreignField: 'user', populate: {
+                path: 'user',
+                select: '-password -role'
+            }}
+        );
+
+        return res.status(200).json(history);
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const currentTenant = async (req, res, next) => {
+    try {
+        const house = await House.findOne({owner: req.user, _id: req.params.houseid}).select('tenant')
+        .populate({path: 'tenant', foreignField: 'user', populate: {path: 'user', select: '-password -role'}});
+        // Include Payment informations here if needed;
+        return res.status(200).json(house.tenant)
+    } catch (error) {
+        next(error);
     }
 }

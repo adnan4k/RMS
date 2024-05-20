@@ -18,21 +18,17 @@ function VisitorRequest() {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        // Prepare the form data
         const formData = {
             date: selectedDate,
             message,
         };
 
-        // Send the form data to the backend
         try {
             const response = await axios.post('/submit', formData);
 
             if (response.status === 200) {
-                // Handle successful response
                 toast.success('Form submitted successfully');
             } else {
-                // Handle error response
                 toast.error('Form submission failed');
             }
         } catch (error) {

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const requestSchema = mongoose.Schema({
+const requestSchema = new mongoose.Schema({
     ope:Boolean,
     visitor: {
         type: mongoose.Schema.Types.ObjectId,

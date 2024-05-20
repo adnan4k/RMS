@@ -1,14 +1,15 @@
 import mongoose from "mongoose";
 
-export const userSchema = mongoose.Schema({
+export const userSchema = new mongoose.Schema({
     firstname:{
         type:String,
-        required:true
+        required: [true, "First name is required"]
     },
     username:{
         type:String,
         unique: true,
-        sparse: true
+        sparse: true,
+        lowercase: true
     },
     lastname:{
         type:String,
@@ -16,19 +17,20 @@ export const userSchema = mongoose.Schema({
     },
     phonenumber:{
         type: String,
-        required: true,
+        required: [true, "Phone number is required"],
+        unique: true,
         validate: {
             validator: phone => {
-                const checker = /\+(2519|2517)\d{8}/;
+                const checker = /^\+(2519|2517)\d{8}$/;
                 return checker.test(phone);
             },
             message: 'Phone number format doesn\'t match'
-        },
-        unique: true
+        }
     },
     email:{
         type:String,
-        required:true,
+        required:[true, "Email is required"],
+        unique: [true, "Email already exists"],
         validate: {
             validator: email => {
                 const checker = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -36,7 +38,7 @@ export const userSchema = mongoose.Schema({
             },
             message: 'Incorrect email format!'
         },
-        unique: true
+        lowercase: true
     },
     password:{
         type:String,
@@ -52,12 +54,14 @@ export const userSchema = mongoose.Schema({
         type: Boolean,
         default: true,
     }
-})
+});
+
 userSchema.pre('save', function (next) {
-    console.log(this);
     const random = Math.floor(Math.random() * 10000);
     if (!this.username)
         this.username = this.email.split('@')[0] + random
     next()
 });
-export default mongoose.model("User",userSchema)
+
+const User = mongoose.model("User",userSchema);
+export default User;

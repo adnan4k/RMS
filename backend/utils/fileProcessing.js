@@ -10,11 +10,8 @@ const file_name = function (req, file, cb) {
 
 // TODO: Required fields must be check;
 const filtering = function (req, file, cb) {
-    console.log(file,'file')
     const allowed_image_mime = ['image/jpeg', 'image/png', 'image/gif'];
     const allowed_image_extensions = ['png', 'jpeg', 'jpg'];
-    
-
     const extensions = file.originalname.split('.')
     
     if (!allowed_image_extensions.includes(extensions[extensions.length - 1].trim()))
@@ -24,15 +21,23 @@ const filtering = function (req, file, cb) {
     if (file.size > 1024*3)
         return cb(new Error('The size is too big'))
     cb(null, true)
+}
 
+const destination = function (req, file, cb) {
+    if (file.fieldname === 'contract')
+        return cb(null, __dirname+'/../contracts')
+    if (file.fieldname === 'nationalid')
+        return cb(null, __dirname+'/../nationalids')
+    return cb(null, __dirname+'/../uploads')
 }
 
 const __dirname = import.meta.dirname;
 
 const storage = multer.diskStorage({
     filename: file_name,
-    destination: __dirname+'/../uploads',
+    destination: destination,
 });
+
 const uploader = multer({
     storage,
     fileFilter: filtering

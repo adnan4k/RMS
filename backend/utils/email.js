@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
 
 const sendEmail = async (to, token) => {
     // Front end's url
-    const url = "http://localhost:5000/resetpassword/"+token;
+    const url = "http://localhost:5173/resetpassword/"+token;
     let mailOptions = {
       from: '"Rental Management System" <imo60067035@gmail.com>',
       to, 

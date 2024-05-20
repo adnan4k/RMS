@@ -7,13 +7,14 @@ const userRouter  = express.Router();
 userRouter.post('/register',register);
 userRouter.post('/login',login);
 userRouter.post('/refresh', refreshToken);
-userRouter.post('/:username/logout', verifyToken('user', 'owner', 'admin', 'tenant'), logout);
-userRouter.post('/resetpassword/:token', resetPassword);
+userRouter.post('/logout', verifyToken('user', 'owner', 'admin', 'tenant'), logout);
+userRouter.post('/resetpassword', resetPassword);
 userRouter.post('/forgetpassword', forgetPassword);
+userRouter.get('/schedules', verifyToken('user'), getRequests);
 userRouter.put('/:username', verifyToken('user'), editProfile);
 userRouter.get('/:username', getUser);
-userRouter.get('/schedules', verifyToken('user'), getRequests);
 userRouter.post('/:houseid', verifyToken('user'), createVisitorRequest);
+userRouter.get('/', verifyToken('user'), getUser);
 
 
 export default userRouter

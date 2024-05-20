@@ -1,8 +1,7 @@
 import mongoose from "mongoose";
-import BankAccount from './commons/BankAccount.js'
-import User from "./User.js";
+import BankAccount from './commons/BankAccount.js';
 
-const paymentSchema = mongoose.Schema({
+const paymentSchema = new mongoose.Schema({
     date:{
         type:Date,
         required:true,

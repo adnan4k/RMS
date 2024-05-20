@@ -48,10 +48,10 @@ function SearchComponent() {
         </div>
         <div className="rent-landords w-[40%] flex justify-center ">
           <div>
-            <h2 className="text-center text-3xl font-bold text-[#081E4A]">
+            <h2 className="text-center text-3xl font-bold text-[#081E4A] dark:text-white">
               What We Do
             </h2>
-            <h3 className="font-semibold text-2xl my-4">
+            <h3 className="font-semibold text-2xl my-4 dark:text-white">
               We Simplify Your Rental Home Search
             </h3>
             <p className="text-xl font-normal ">

@@ -6,6 +6,7 @@ import { createError } from "../utils/CreateError.js";
 import sendEmail from "../utils/email.js";
 import { generateToken, refresh } from "../utils/generateTokens.js";
 import dotenv from "dotenv";
+import House from "../models/House.js";
 
 
 dotenv.config();
@@ -42,9 +43,9 @@ export const register = async (req, res, next) => {
 
 export const login = async (req, res, next) => {
   try {
-    const user = await User.findOne({ email: req.body.email });
-    if (!user || !user.isActive) 
-      throw createError(404, "user not found");
+    const user = await User.findOne({ $or: [{email: req.body.email, isActive: true}, {username: req.body.email, isActive: true}] });
+    if (!user) 
+      throw createError(404, "Username or password incorrect");
     
     const isPasswordCorrect = await bcrypt.compare(
       req.body.password,
@@ -52,7 +53,7 @@ export const login = async (req, res, next) => {
     );
 
     if (!isPasswordCorrect)
-      throw createError(400, "username or password incorrect");
+      throw createError(400, "Username or password incorrect");
     
     const {accesstoken, refreshtoken} = generateToken(user);
     await Token.create({refreshtoken, user: user._id});
@@ -78,11 +79,10 @@ export const forgetPassword = async (req, res, next) => {
     if (!user)
       throw createError(400, "User not found");
     
-    const token = refresh({ id: user._id }, '60m');
+    const token = refresh({ user: user._id }, '60m');
 
     await sendEmail(user.email, token);
-    await Token.deleteMany({user: user._id});
-    return res.status(201).json({msg: 'Email for reseting password sent!!'});
+    return res.status(201).json({msg: 'Email for reseting password sent!!', email: user.email});
   } catch (error) {
     next(error);
   }
@@ -90,17 +90,18 @@ export const forgetPassword = async (req, res, next) => {
 
 export const resetPassword = async (req, res, next) => {
   try {
-    if (!req.params.token)
-      throw createError(401, "Token not found");
+    const { token, password } = req.body;
+    if (!token)
+      throw createError(400, "Token not found");
     
-    const { password } = req.body;
-    
-    jwt.verify(req.params.token, process.env.JWT_ACCESS_TOKEN, (err, decoded) => {
+    jwt.verify(token, process.env.JWT_ACCESS_TOKEN, (err, decoded) => {
       if (err)
         return res.status(401).json({msg: 'Invalid token'})
-      req.id = decoded.id;
+        req.user = decoded.user;
     });
-    const user = await User.findById(req.id);
+    const user = await User.findById(req.user);
+    if (!user)
+      throw createError(400, 'User not found')
     var salt = bcrypt.genSaltSync(10);
     var hash = bcrypt.hashSync(password, salt);
 
@@ -110,6 +111,8 @@ export const resetPassword = async (req, res, next) => {
     await user.save();
     
     const {accesstoken, refreshtoken} = generateToken(user)
+
+    await Token.deleteMany({user: user._id});
     await Token.create({refreshtoken, user: user._id});
 
     const { password:p, role, isActive, ...otherDetails } = user._doc;
@@ -125,12 +128,10 @@ export const resetPassword = async (req, res, next) => {
 export const refreshToken = async (req, res, next) => {
   try {
     const refreshtoken = req.body.refreshtoken;
-    
     if (!refreshtoken)
-      return res.status(400).send(createError(400, 'Not autheniticated'));
-
+      return res.status(400).send(createError(400, 'Not authenticated'));
     if (!await Token.exists({refreshtoken}))
-      return res.status(400).send(createError(400, 'Not autheniticated'));
+      return res.status(400).send(createError(400, 'Not authenticated'));
     
     jwt.verify(refreshtoken, process.env.JWT_REFRESH_TOKEN, (err, decoded) => {
       if (err) {
@@ -149,9 +150,13 @@ export const refreshToken = async (req, res, next) => {
 
 export const logout = async (req, res, next) => {
   try {
-    if (!Token.exists({refreshtoken: req.body.refreshtoken})) throw createError(404, "Error occured while logingout!");
+    const token = await Token.findOne({refreshtoken: req.body.refreshtoken});
+    
+    if (!token || token.user.toString() !== req.user)
+      throw createError(404, "Tokens confilict occured while logingout!");
+
     await Token.deleteOne({refreshtoken: req.body.refreshtoken});
-    res.status(200).json(createSuccess("User logged out"));
+    res.status(200).json("User logged out");
   } catch (err) {
     next(err);
   }
@@ -177,7 +182,8 @@ export const editProfile = async (req, res, next) => {
 
 export const getUser = async (req, res, next) => {
   try {
-    const user = await User.findOne({$or: [{username: req.params.username}, {_id: req.params.username}]}).select('-passowrd -isActive -role');
+    const username = req.params && req.params.username;
+    const user = await User.findById(req.user).select('-password -isActive -role');
     if (!user)
       throw createError(400, 'User not found');
     return res.status(200).json(user);    

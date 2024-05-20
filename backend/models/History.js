@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 
-const historySchema = mongoose.Schema({
-   tenant_id: {
+const historySchema = new mongoose.Schema({
+   tenant: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Tenant'
    },

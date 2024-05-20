@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const maintenanceSchema = mongoose.Schema({
+const maintenanceSchema = new mongoose.Schema({
     tenant_id:{
         type: mongoose.Schema.Types.ObjectId,
         required:true,
@@ -23,4 +23,6 @@ const maintenanceSchema = mongoose.Schema({
 }, {
     timestamps: true,
 })
-export default mongoose.model("Maintenance",maintenanceSchema)
+
+const Maintenance = mongoose.model("Maintenance",maintenanceSchema)
+export default Maintenance

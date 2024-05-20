@@ -1,15 +1,29 @@
-import { useState } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Layout from "../layout/Layout";
 import { toast } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { signup } from "../api/auth";
 
 function Signup() {
-  const [error, setError] = useState();
+  const [error, setError] = useState('');
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
   const [selectedOption, setSelectedOption] = useState('')
+
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: signup,
+    onSuccess: user => {
+      queryClient.setQueryData(['user'], user);
+      navigate('/');
+    },
+    onError: error => {
+      setError(error.response.data.message);
+    }
+  })
 
   const [formData, setFormData] = useState({
     firstname: "",
@@ -36,50 +50,23 @@ function Signup() {
       ...formData,
       [name]: value,
     });
-    setError("");
   };
 
   const handleSubmit = async (e) => {
+    setError("");
     e.preventDefault();
     if (formData.password === formData.password_confirmation) {
-      try {
-         await axios.post(
-          "http://localhost:4001/user/register",
-          formData
-        ).then((response)=>{
-          toast.success(error.response.data.message,'error')
-
-          console.log(response,'respon')
-        }).catch((error)=>{
-          toast.error(error.response.data.message,'error')
-          console.log(error,'error')
-        })
-        
-        // console.log(response.status, "mama");
-        setError(response.data)
-        if (!response.data.success) {
-          
-          setError("Your account already exists. Please sign in.");
-        }
-        if (response.data.role === "admin") {
-          navigate("/admin/news/display");
-        } else {
-          navigate("/appointment");
-        }
-      } catch (error) {
-        console.log(error);          
-
-      }
+      mutation.mutate(formData)
     } else {
-      toast("Enter password or email !");
-
-      setError("Enter password or email.");
+      setError("Passwords doesn't match");
     }
-    console.log(formData);
   };
 
+  useEffect(() => {
+    error!=='' && toast.error(error)
+  }, [error]);
+
   return (
-    <Layout>
       <div className="flex mt-20 justify-center items-center h-screen">
         <form className="w-full max-w-md" onSubmit={handleSubmit}>
           <div className="bg-white px-6 py-8 rounded shadow-md text-black">
@@ -90,7 +77,7 @@ function Signup() {
                 onChange={handleChange}
                 value={formData.firstname}
                 type="text"
-                className="block border border-grey-light w-full p-3 rounded mb-4"
+                className="block border border-grey-light w-full p-3 rounded mb-4 dark:color-white"
                 name="firstname"
                 placeholder="First Name"
               />
@@ -98,7 +85,7 @@ function Signup() {
                 onChange={handleChange}
                 value={formData.lastname}
                 type="text"
-                className="block border border-grey-light w-full p-3 rounded mb-4"
+                className="block border border-grey-light w-full p-3 rounded mb-4 dark:color-white"
                 name="lastname"
                 placeholder="Last Name"
               />
@@ -107,12 +94,12 @@ function Signup() {
               onChange={handleChange}
               value={formData.email}
               type="text"
-              className="block border border-grey-light w-full p-3 rounded mb-4"
+              className="block border border-grey-light w-full p-3 rounded mb-4 dark:color-white"
               name="email"
               placeholder="Email"
             />
 
-            <div className="grid md:grid-cols-2 md:gap-6">
+            <div className="grid md:grid-cols-2 md:gap-6 dark:color-white">
 
               <input
                 onChange={handleChange}
@@ -131,7 +118,7 @@ function Signup() {
                 placeholder="Username"
               />
             </div>
-            <div className="grid md:grid-cols-2 md:gap-6">
+            <div className="grid md:grid-cols-2 md:gap-6 dark:color-white">
 
                 <input
                   onChange={handleChange}
@@ -151,7 +138,7 @@ function Signup() {
                   placeholder="Confirm Password"
                 />
                 </div>
-                <div className="relative z-0 w-full mb-5 group">
+                <div className="relative z-0 w-full mb-5 group dark:color-white">
 
 
                   <button onClick={toggleDropdown} id="dropdownDefaultButton" data-dropdown-toggle="dropdown" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
@@ -209,7 +196,6 @@ function Signup() {
               </div>
             </form>
           </div>
-        </Layout>
         );
 }
 
