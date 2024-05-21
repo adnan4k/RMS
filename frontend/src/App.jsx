@@ -3,10 +3,11 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
 import Home from './pages/Home';
-import CreateHouse from './owner/CreateHouse';
 import { ToastContainer, toast } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.css';
+import CreateHouse from './owner/CreateHouses';
+import VisitorRequest from './pages/visitorRequest';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query' 
 import Layout from './layout/Layout';
 import ForgetPassword from './pages/ForgotPassword';
@@ -29,6 +30,8 @@ function App() {
             <Route path="/forget" element={<ForgetPassword />} />
             <Route path="/resetpassword/:token" element={<ResetPassword />} />
             <Route path="/create-house" element={<CreateHouse />} />
+          <Route path="/request" element={<VisitorRequest />} />
+
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
               <Route path='profile' element={<Profile />}/>
