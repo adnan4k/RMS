@@ -13,6 +13,7 @@ import ForgetPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Profile from './pages/Profile';
 import EditProfile from './pages/EditProfile';
+import UpgradeToOwner from './pages/UpgradeToOwner';
 
 // The default 404 should be done for the route
 function App() {
@@ -32,6 +33,7 @@ function App() {
               <Route index element={<Home />} />
               <Route path='profile' element={<Profile />}/>
               <Route path='profile/edit' element={<EditProfile />}/>
+              <Route path='upgrade' element={<UpgradeToOwner />}/>
             </Route>
           </Routes>
         </BrowserRouter>    
