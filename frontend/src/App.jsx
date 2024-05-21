@@ -15,6 +15,8 @@ import ResetPassword from './pages/ResetPassword';
 import Profile from './pages/Profile';
 import EditProfile from './pages/EditProfile';
 import UpgradeToOwner from './pages/UpgradeToOwner';
+import { ProtectedRoutes } from './components/ProtectedRoutes';
+import EditOwner from './pages/EditOwner';
 
 // The default 404 should be done for the route
 function App() {
@@ -30,14 +32,20 @@ function App() {
             <Route path="/forget" element={<ForgetPassword />} />
             <Route path="/resetpassword/:token" element={<ResetPassword />} />
             <Route path="/create-house" element={<CreateHouse />} />
-          <Route path="/request" element={<VisitorRequest />} />
+            <Route path="/request" element={<VisitorRequest />} />
 
+            <Route path='/owner/' element={<ProtectedRoutes role='owner'/>}>
+              <Route path='edit' element={<EditOwner/>}/>
+            </Route>
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
-              <Route path='profile' element={<Profile />}/>
-              <Route path='profile/edit' element={<EditProfile />}/>
-              <Route path='upgrade' element={<UpgradeToOwner />}/>
+              <Route path='profile/' element={<ProtectedRoutes />}>
+                <Route index element={<Profile />} />
+                <Route path='edit' element={<EditProfile />}/>
+                <Route path='upgrade' element={<UpgradeToOwner />}/>
+              </Route>
             </Route>
+
           </Routes>
         </BrowserRouter>    
       </QueryClientProvider>

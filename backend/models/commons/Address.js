@@ -7,7 +7,6 @@ const addressSchema = mongoose.Schema({
     },
     kebele:{
      type:String,
-     required:true
     },
     sub_city:{
      type:String,
@@ -15,6 +14,7 @@ const addressSchema = mongoose.Schema({
     },
     woreda:{
      type:String,
+     required:true
     },
     latitude:{
      type:String,

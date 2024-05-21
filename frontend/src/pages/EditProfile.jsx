@@ -1,9 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import { editprofile, getUser } from "../api/auth";
 import { validateForm } from "../utils/validation";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 
 const EditProfile = () => {
     const [formData, setFormData] = useState({
@@ -29,13 +29,8 @@ const EditProfile = () => {
             toast.error(error.response.data.message)
         }
     });
-    const {data, status} = useQuery(
-        {
-            queryKey: ['user'],
-            queryFn: getUser,
-        }
-    );
 
+    const data = useOutletContext();
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({
@@ -48,8 +43,8 @@ const EditProfile = () => {
         e.preventDefault();
 
         if (Object.keys(errors).length === 0)
-
             mutate({...formData, 'phonenumber': '+251'+formData.phonenumber, user: data.username})
+
         else {
             (Object.keys(errors).forEach((key)=>{
                 toast.error(`${key}: ${errors[key]}`)

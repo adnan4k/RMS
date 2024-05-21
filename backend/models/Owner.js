@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { get } from "mongoose";
 import addressSchema from "./commons/Address.js";
 
 const ownerSchema = new mongoose.Schema({
@@ -17,8 +17,13 @@ const ownerSchema = new mongoose.Schema({
             url: String,
             path: String
         },
-        required:true
+        required:true,
     }
-
 })
+
+ownerSchema.set('toJSON', {transform: (doc, ret, options) => {
+    ret.national_id = ret.national_id.url;
+     return ret
+}});
+
 export default mongoose.model("Owner",ownerSchema)
