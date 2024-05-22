@@ -17,6 +17,8 @@ import EditProfile from './pages/EditProfile';
 import UpgradeToOwner from './pages/UpgradeToOwner';
 import { ProtectedRoutes } from './components/ProtectedRoutes';
 import EditOwner from './pages/EditOwner';
+// import { GoogleMap } from './components/GoogleMap';
+import { AddBankAccounts } from './components/AddBankAccounts';
 
 // The default 404 should be done for the route
 function App() {
@@ -33,8 +35,10 @@ function App() {
             <Route path="/resetpassword/:token" element={<ResetPassword />} />
             <Route path="/create-house" element={<CreateHouse />} />
             <Route path="/request" element={<VisitorRequest />} />
+            {/* <Route path="/googlemap" element={<GoogleMap />}/> */}
 
             <Route path='/owner/' element={<ProtectedRoutes role='owner'/>}>
+              <Route path="bankaccounts" element={<AddBankAccounts />}/>
               <Route path='edit' element={<EditOwner/>}/>
             </Route>
             <Route path="/" element={<Layout />}>

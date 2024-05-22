@@ -32,12 +32,12 @@ const Profile = () => {
     }
 
     useEffect(()=> {
- 
-        // download(data.owner.national_id).then((url) => setUrl(url));
-        // console.log(url)
         document.addEventListener('click', handleHide);
         return () => {
-          document.removeEventListener('click', handleHide);
+            if (url) 
+                URL.revokeObjectURL(url);
+    
+            document.removeEventListener('click', handleHide);
         };
     }, [data]);
     
@@ -55,7 +55,6 @@ const Profile = () => {
         <div className="min-w-[23rem] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 self-center mx-auto px-5 text-center py-5">
             {data&&
             <div className="flex flex-col items-center pb-10">
-                {/*  */}
                 {status === 'success' ? 
                     <div className="w-[100%] h-64 mb-3 shadow-lg overflow-hidden bg-gray-100 dark:bg-gray-600">
                         <img src={url} className="w-full h-full" />    

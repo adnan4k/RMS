@@ -49,7 +49,7 @@ const showProfile = ({username, role}) => {
             {username}
         </button>
         
-        <div className={"z-50 my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 absolute w-full "+(hide&&'hidden')}>
+        <div className={"z-50 my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 absolute min-w-16 "+(hide&&'hidden')}>
             <ul className="py-2 font-medium" role="none">
                 <li>
                     <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">
