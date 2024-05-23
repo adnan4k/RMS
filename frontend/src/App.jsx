@@ -6,7 +6,6 @@ import Home from './pages/Home';
 import { ToastContainer, toast } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.css';
-import CreateHouse from './owner/CreateHouses';
 import VisitorRequest from './pages/visitorRequest';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query' 
 import Layout from './layout/Layout';
@@ -14,6 +13,7 @@ import ForgetPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Profile from './pages/Profile';
 import EditProfile from './pages/EditProfile';
+import StepperForm from './owner/CreateHouses';
 
 // The default 404 should be done for the route
 function App() {
@@ -28,7 +28,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/forget" element={<ForgetPassword />} />
             <Route path="/resetpassword/:token" element={<ResetPassword />} />
-            <Route path="/create-house" element={<CreateHouse />} />
+            <Route path="/create-house" element={<StepperForm />} />
           <Route path="/request" element={<VisitorRequest />} />
 
             <Route path="/" element={<Layout />}>

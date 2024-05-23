@@ -1,120 +1,69 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import Stepper from '@mui/material/Stepper';
-import Step from '@mui/material/Step';
-import StepLabel from '@mui/material/StepLabel';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import form from './createHouse'
-import bankAccount from './bankAccount';
+import React, { useState } from 'react';
+import AddressData from './addressData';
+import BankAccount from "./bankAccount"
+import HouseForm from './HouseForm';
+import Sidebar from '../layout/Sidebar';
 
-const steps = ['House Information', 'Address ', 'Bank Account'];
+function StepperForm() {
+    const [step, setStep] = useState(0);
 
-export default function CreateHouse() {
-  const [activeStep, setActiveStep] = React.useState(0);
-  const [skipped, setSkipped] = React.useState(new Set());
+    const [addressData, setAddressData] = useState({});
+    const [bankData, setBankData] = useState({});
+    const [houseData, setHouseData] = useState({});
+    const [selectedOption, setSelectedOption] = useState(null);
+    const [images, setImages] = useState([]);
 
-  const isStepOptional = (step) => {
-    return step === 1;
-  };
+    const handleNext = () => {
+        setStep(prevStep => prevStep + 1);
+    };
 
-  const isStepSkipped = (step) => {
-    return skipped.has(step);
-  };
+    const handlePrevious = () => {
+        setStep(prevStep => prevStep - 1);
+    };
 
-  const handleNext = () => {
-    let newSkipped = skipped;
-    if (isStepSkipped(activeStep)) {
-      newSkipped = new Set(newSkipped.values());
-      newSkipped.delete(activeStep);
-    }
+    const handleSubmit = (e) => {
+        e.preventDefault();
 
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    setSkipped(newSkipped);
-  };
+        const formData = new FormData();
+        Object.entries(addressData).forEach(([key, value]) => {
+            formData.append(key, value);
+        });
+        Object.entries(bankData).forEach(([key, value]) => {
+            formData.append(key, value);
+        });
+        Object.entries(houseData).forEach(([key, value]) => {
+            formData.append(key, value);
+        });
+        formData.append('houseType', selectedOption);
+        for (let i = 0; i < images.length; i++) {
+            formData.append('images', images[i]);
+        }
 
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
+        // Handle the form submission to your backend API
+        console.log("Form submitted:", addressData, bankData, houseData, selectedOption, images);
+        // axios.post('your-api-endpoint', formData)
+        //     .then(response => console.log(response))
+        //     .catch(error => console.error(error));
+    };
 
-  const handleSkip = () => {
-    if (!isStepOptional(activeStep)) {
-      // You probably want to guard against something like this,
-      // it should never occur unless someone's actively trying to break something.
-      throw new Error("You can't skip a step that isn't optional.");
-    }
+    console.log(houseData);
+    return (
+        <Sidebar>
+            <div className="p-8 flex flex-col justify-center items-center">
+                <form onSubmit={handleSubmit}>
+                    {step === 0 && <HouseForm houseData={houseData} setHouseData={setHouseData} selectedOption={selectedOption} setSelectedOption={setSelectedOption} images={images} setImages={setImages} />}
+                    {step === 1 && <AddressData addressData={addressData} setAddressData={setAddressData} />}
+                    {step === 2 && <BankAccount bankData={bankData} setBankData={setBankData} />}
 
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    setSkipped((prevSkipped) => {
-      const newSkipped = new Set(prevSkipped.values());
-      newSkipped.add(activeStep);
-      return newSkipped;
-    });
-  };
-
-  const handleReset = () => {
-    setActiveStep(0);
-  };
-
-  const arr = [form,bankAccount]
-  return (
-    <Box sx={{ width: '100%' }}>
-      <Stepper activeStep={activeStep}>
-        {steps.map((label, index) => {
-          const stepProps = {};
-          const labelProps = {};
-          if (isStepOptional(index)) {
-            labelProps.optional = (
-              <Typography variant="caption">Optional</Typography>
-            );
-          }
-          if (isStepSkipped(index)) {
-            stepProps.completed = false;
-          }
-          return (
-            <Step key={label} {...stepProps}>
-              <StepLabel {...labelProps}>{label}</StepLabel>
-            </Step>
-          );
-        })}
-      </Stepper>
-      {activeStep === steps.length ? (
-        <React.Fragment>
-          <Typography sx={{ mt: 2, mb: 1 }}>
-            All steps completed - you&apos;re finished
-          </Typography>
-          <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-            <Box sx={{ flex: '1 1 auto' }} />
-            <Button onClick={handleReset}>Reset</Button>
-          </Box>
-        </React.Fragment>
-      ) : (
-        <React.Fragment>
-          {/* <Typography sx={{ mt: 2, mb: 1 }}>Step {activeStep + 2}</Typography> */}
-          {/* <Box>here it is baby</Box> */}
-            {arr[0]()}
-          <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-            <Button
-              color="inherit"
-              disabled={activeStep === 0}
-              onClick={handleBack}
-              sx={{ mr: 1 }}
-            >
-              Back
-            </Button>
-            <Box sx={{ flex: '1 1 auto' }} />
-            {isStepOptional(activeStep) && (
-              <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
-                Skip
-              </Button>
-            )}
-
-            <Button onClick={handleNext}>
-              {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-            </Button>
-          </Box>
-        </React.Fragment>
-      )}
-    </Box>
-  );
+                    <div className="flex justify-between mt-5">
+                        {step > 0 && <button type="button" onClick={handlePrevious} className="bg-gray-500 text-white px-4 py-2 rounded">Previous</button>}
+                        {step < 2 && <button type="button" onClick={handleNext} className="bg-blue-500 text-white px-4 py-2 rounded">Next</button>}
+                        {step === 2 && <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded">Submit</button>}
+                    </div>
+                </form>
+            </div>
+        </Sidebar>
+    );
 }
+
+export default StepperForm;
