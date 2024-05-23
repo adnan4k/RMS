@@ -4,7 +4,6 @@ import { MdDelete } from "react-icons/md";
 const showAdd = (accounts) => accounts.every((val) => val!='');
 
 const handleChange = (value, idx, bank, setBank) => {
-    console.log('here', bank)
     bank[idx] = value
     setBank([...bank])
 }

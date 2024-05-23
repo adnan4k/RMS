@@ -47,7 +47,11 @@ export const frogetPassword = async (email) => {
 export const resetPassword = async (payload) => {
     try {
         const response = await axios.post('user/resetpassword', payload);
-        return response.data;
+        const {refreshtoken, accesstoken, ...data} = response.data;
+        localStorage.setItem('refreshtoken', refreshtoken);
+        localStorage.setItem('accesstoken', accesstoken);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${accesstoken}`
+        return data
     } catch (error) {
         console.log(error)
         throw error

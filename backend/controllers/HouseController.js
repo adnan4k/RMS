@@ -25,7 +25,7 @@ export const createHouse = async (req, res, next) => {
             description,
             housenumber
         } = req.body;
-
+        console.log(owner);
         address = JSON.parse(address);
         bankaccounts = JSON.parse(bankaccounts);
         const images = req.files.map(file => ({url: 'uploads/'+file.filename, path: file.destination+"/"+file.filename}));
@@ -45,7 +45,7 @@ export const createHouse = async (req, res, next) => {
             address
         });
 
-        return res.status(200).json({msg: "Successfully Created", data: newHouse});
+        return res.status(200).json(newHouse);
     } catch(error) {
         req.files.forEach(async file => await removeImage(file.destination+'/'+file.filename))
         next(error)

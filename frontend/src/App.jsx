@@ -39,7 +39,6 @@ function App() {
 
             <Route path='/owner/' element={<ProtectedRoutes role='owner'/>}>
               <Route path="create-house" element={<StepperForm />} />
-              <Route path="bankaccounts" element={<AddBankAccounts />}/>
               <Route path='edit' element={<EditOwner/>}/>
             </Route>
             <Route path="/" element={<Layout />}>
