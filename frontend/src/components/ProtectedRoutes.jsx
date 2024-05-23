@@ -38,9 +38,9 @@ export const ProtectedRoutes = ({role}) => {
     if (status === 'success' && !role)
         return <Outlet context={data}/>
     if(status === 'success' && data.role === role) {
-        return (<div className="flex h-screen items-center">
+        return (<div className="flex h-screen items-center justify-center">
                     <Sidebar />
-                    <div className="w-64 h-1 mr-4"></div>
+                    <div className="min-w-64 h-1 mr-4"></div>
                     <Outlet context={data}/>
                 </div>)
     }

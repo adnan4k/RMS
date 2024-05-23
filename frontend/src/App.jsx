@@ -19,6 +19,7 @@ import { ProtectedRoutes } from './components/ProtectedRoutes';
 import EditOwner from './pages/EditOwner';
 // import { GoogleMap } from './components/GoogleMap';
 import { AddBankAccounts } from './components/AddBankAccounts';
+import MapComponent from './components/Map';
 
 // The default 404 should be done for the route
 function App() {
@@ -33,20 +34,13 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/forget" element={<ForgetPassword />} />
             <Route path="/resetpassword/:token" element={<ResetPassword />} />
-            <Route path="/create-house" element={<StepperForm />} />
             <Route path="/request" element={<VisitorRequest />} />
-            <Route path="/create-house" element={<CreateHouse />} />
-            <Route path="/request" element={<VisitorRequest />} />
-            {/* <Route path="/googlemap" element={<GoogleMap />}/> */}
+            {/* <Route path="/map" element={<MapComponent />}/> */}
 
-<<<<<<< HEAD
             <Route path='/owner/' element={<ProtectedRoutes role='owner'/>}>
+              <Route path="create-house" element={<StepperForm />} />
               <Route path="bankaccounts" element={<AddBankAccounts />}/>
               <Route path='edit' element={<EditOwner/>}/>
-=======
-            <Route path='/owner/' element={<ProtectedRoutes role='owner' />}>
-              <Route path='edit' element={<EditOwner />} />
->>>>>>> origin
             </Route>
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />

@@ -61,7 +61,7 @@ const ForgotPassword = () => {
                   placeholder="name@company.com"
                   required=""
                 />
-                {tryagain && <p class="mt-2 text-xs text-green-600 dark:text-green-500">We have sent a password reset link to the above email. Please check your inbox and if you didn't recieve the email yet try again</p>}
+                {tryagain && <p className="mt-2 text-xs text-green-600 dark:text-green-500">We have sent a password reset link to the above email. Please check your inbox and if you didn't recieve the email yet try again</p>}
               <button
                 type="submit"
                 className={"w-full text-white  bg-[#234B9A] hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 "+tryagain&&'disable'}
