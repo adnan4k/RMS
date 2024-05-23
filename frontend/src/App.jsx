@@ -6,14 +6,14 @@ import Home from './pages/Home';
 import { ToastContainer, toast } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.css';
-import CreateHouse from './owner/CreateHouses';
 import VisitorRequest from './pages/visitorRequest';
-import {QueryClient, QueryClientProvider} from '@tanstack/react-query' 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import Layout from './layout/Layout';
 import ForgetPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Profile from './pages/Profile';
 import EditProfile from './pages/EditProfile';
+import StepperForm from './owner/CreateHouses';
 import UpgradeToOwner from './pages/UpgradeToOwner';
 import { ProtectedRoutes } from './components/ProtectedRoutes';
 import EditOwner from './pages/EditOwner';
@@ -33,25 +33,32 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/forget" element={<ForgetPassword />} />
             <Route path="/resetpassword/:token" element={<ResetPassword />} />
+            <Route path="/create-house" element={<StepperForm />} />
+            <Route path="/request" element={<VisitorRequest />} />
             <Route path="/create-house" element={<CreateHouse />} />
             <Route path="/request" element={<VisitorRequest />} />
             {/* <Route path="/googlemap" element={<GoogleMap />}/> */}
 
+<<<<<<< HEAD
             <Route path='/owner/' element={<ProtectedRoutes role='owner'/>}>
               <Route path="bankaccounts" element={<AddBankAccounts />}/>
               <Route path='edit' element={<EditOwner/>}/>
+=======
+            <Route path='/owner/' element={<ProtectedRoutes role='owner' />}>
+              <Route path='edit' element={<EditOwner />} />
+>>>>>>> origin
             </Route>
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
               <Route path='profile/' element={<ProtectedRoutes />}>
                 <Route index element={<Profile />} />
-                <Route path='edit' element={<EditProfile />}/>
-                <Route path='upgrade' element={<UpgradeToOwner />}/>
+                <Route path='edit' element={<EditProfile />} />
+                <Route path='upgrade' element={<UpgradeToOwner />} />
               </Route>
             </Route>
 
           </Routes>
-        </BrowserRouter>    
+        </BrowserRouter>
       </QueryClientProvider>
     </>
   );
