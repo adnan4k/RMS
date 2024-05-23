@@ -1,6 +1,8 @@
-export const validateForm = (formData) => {
+export const validateForm = (formData, notRequired) => {
     let errors = {};
     Object.keys(formData).forEach((key) => {
+        if (notRequired.includes(key))
+            return
         if (formData[key] === '')
             errors[key] = 'This field is required!'
     });

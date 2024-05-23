@@ -65,15 +65,17 @@ export const editProfile = async (req, res, next) => {
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
-        let { firstname, lastname, email, phonenumber, username, address, national_id } = req.body;
+        let { firstname, lastname, email, phonenumber, username, address} = req.body;
         if (address)
             address = JSON.parse(address)
+        
         const user = await User.findById(req.user);
         const owner = await Owner.findOne({user: req.user});
         user.firstname = firstname || user.firstname; 
         user.lastname = lastname || user.lastname; 
         user.email = email || user.email; 
         user.phonenumber = phonenumber || user.phonenumber;
+        user.username = username || user.username;
         owner.address = address || user.address;
         
         let previousImage = null
@@ -84,14 +86,14 @@ export const editProfile = async (req, res, next) => {
                 path: req.file.destination+"/"+req.file.filename
             }
         }
-        await user.save().session(session);
-        await owner.save().session(session);
+        await user.save({session})
+        await owner.save({session});
         await session.commitTransaction();
 
         if (previousImage)
             await removeImage(previousImage);
 
-        return res.status(200).json({msg: "Succssesfully updated!", data: {owner, user}})
+        return res.status(200).json({owner, user})
     } catch (error) {
         await session.abortTransaction();
         if (req.file)

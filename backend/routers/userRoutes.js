@@ -14,7 +14,7 @@ userRouter.get('/schedules', verifyToken('user'), getRequests);
 userRouter.put('/:username', verifyToken('user'), editProfile);
 userRouter.get('/:username', getUser);
 userRouter.post('/:houseid', verifyToken('user'), createVisitorRequest);
-userRouter.get('/', verifyToken('user'), getUser);
+userRouter.get('/', verifyToken('user', 'owner'), getUser);
 
 
 export default userRouter

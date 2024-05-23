@@ -5,8 +5,8 @@ import Token from "../models/Tokens.js";
 import { createError } from "../utils/CreateError.js";
 import sendEmail from "../utils/email.js";
 import { generateToken, refresh } from "../utils/generateTokens.js";
+import Owner from '../models/Owner.js'
 import dotenv from "dotenv";
-import House from "../models/House.js";
 
 
 dotenv.config();
@@ -28,7 +28,7 @@ export const register = async (req, res, next) => {
     const user = await newUser.save();
     const {accesstoken, refreshtoken} = generateToken(user);
     
-    const { password: p, role, isActive, ...otherDetails } = user._doc;
+    const { password: p, isActive, ...otherDetails } = user._doc;
     await Token.create({refreshtoken, user: user._id});
     
     return res
@@ -58,7 +58,7 @@ export const login = async (req, res, next) => {
     const {accesstoken, refreshtoken} = generateToken(user);
     await Token.create({refreshtoken, user: user._id});
   
-    const { password, role, isActive, ...otherDetails } = user._doc;
+    const { password, isActive, ...otherDetails } = user._doc;
     return res
       .status(200)
       .json({accesstoken, refreshtoken, ...otherDetails });
@@ -115,7 +115,7 @@ export const resetPassword = async (req, res, next) => {
     await Token.deleteMany({user: user._id});
     await Token.create({refreshtoken, user: user._id});
 
-    const { password:p, role, isActive, ...otherDetails } = user._doc;
+    const { password:p, isActive, ...otherDetails } = user._doc;
     
     return res
       .status(200)
@@ -165,7 +165,7 @@ export const logout = async (req, res, next) => {
 export const editProfile = async (req, res, next) => {
   try {
     let { firstname, lastname, email, phonenumber, username } = req.body;
-    const user = await User.findOne({_id: req.user, username: req.params.username}).select('-password -isActive -role');
+    const user = await User.findOne({_id: req.user, username: req.params.username}).select('-password -isActive');
     user.firstname = firstname || user.firstname; 
     user.lastname = lastname || user.lastname; 
     user.email = email || user.email; 
@@ -182,10 +182,14 @@ export const editProfile = async (req, res, next) => {
 
 export const getUser = async (req, res, next) => {
   try {
-    const username = req.params && req.params.username;
-    const user = await User.findById(req.user).select('-password -isActive -role');
+    const user = await User.findById(req.user).select('-password -isActive');
     if (!user)
       throw createError(400, 'User not found');
+    if (user.role === 'owner') {
+      const owner = await Owner.findOne({user: user._id})
+      return res.status(200).json({...user._doc, owner});    
+    }
+
     return res.status(200).json(user);    
   } catch (error) {
     next(error)
