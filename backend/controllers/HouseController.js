@@ -29,6 +29,8 @@ export const createHouse = async (req, res, next) => {
         address = JSON.parse(address);
         bankaccounts = JSON.parse(bankaccounts);
         const images = req.files.map(file => ({url: 'uploads/'+file.filename, path: file.destination+"/"+file.filename}));
+        if (!images || images.length === 0)
+            throw createError(400, "Atleast one image is mandatory!")
         
         const newHouse = await House.create({
             housenumber,

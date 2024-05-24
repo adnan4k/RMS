@@ -23,7 +23,7 @@ const ownerSchema = new mongoose.Schema({
 
 ownerSchema.set('toJSON', {transform: (doc, ret, options) => {
     ret.national_id = ret.national_id.url;
-     return ret
+    return ret
 }});
 
 export default mongoose.model("Owner",ownerSchema)

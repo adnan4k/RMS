@@ -15,7 +15,16 @@ export const editowner = async (payload) => {
     const form = new FormData();
     payload.address = JSON.stringify(payload.address)
     Object.entries(payload).forEach(([key, val]) => {form.append(key, val)});
-    console.log(form)
     const response = await axios.put('owner/', form, {headers: {'Content-Type': 'multipart/form-data'}});
     return response.data
+}
+
+export const getHouses = async () => {
+    const response = await axios.get('owner/houses')
+    return response.data 
+}
+
+export const getSingleHouse = async (houseid) => {
+    const response = await axios.get('owner/houses/'+houseid)
+    return response.data 
 }

@@ -156,3 +156,21 @@ export const currentTenant = async (req, res, next) => {
         next(error);
     }
 }
+
+export const getHouses = async (req, res, next) => {
+    try {
+        const houses = await House.find({owner: req.user}).select('housenumber no_of_rooms no_of_bath_rooms address rentamount house_type length width images');
+        return res.status(200).json(houses)
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const getSingleHouse = async (req, res, next) => {
+    try {
+        const house = await House.findOne({owner: req.user, _id: req.params.houseid});
+        return res.status(200).json(house)
+    } catch (error) {
+        next(error)
+    }
+}

@@ -7,7 +7,7 @@ import { ToastContainer, toast } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.css';
 import VisitorRequest from './pages/visitorRequest';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Layout from './layout/Layout';
 import ForgetPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
@@ -17,9 +17,8 @@ import StepperForm from './owner/CreateHouses';
 import UpgradeToOwner from './pages/UpgradeToOwner';
 import { ProtectedRoutes } from './components/ProtectedRoutes';
 import EditOwner from './pages/EditOwner';
-// import { GoogleMap } from './components/GoogleMap';
-import { AddBankAccounts } from './components/AddBankAccounts';
-import MapComponent from './components/Map';
+import { Houses } from './owner/Houses';
+import { SingleHouse } from './owner/House';
 
 // The default 404 should be done for the route
 function App() {
@@ -38,8 +37,10 @@ function App() {
             {/* <Route path="/map" element={<MapComponent />}/> */}
 
             <Route path='/owner/' element={<ProtectedRoutes role='owner'/>}>
+              <Route index element={<Houses />}/>
               <Route path="create-house" element={<StepperForm />} />
               <Route path='edit' element={<EditOwner/>}/>
+              <Route path=':houseid' element={<SingleHouse />}/>
             </Route>
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />

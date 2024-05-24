@@ -2,22 +2,34 @@ import React from "react";
 
 export const HouseProgress = ({idx}) => {
     return (
-        <ol className="flex items-center w-full justify-center my-4">
-        <li className={`flex items-center text-blue-600 dark:text-blue-500 after:content-[''] after:w-full after:h-1 after:duration-400 after:border-b after:border-4 after:inline-block duration-400 after:opacity-0 after ${idx < 1?'after:border-gray-100 dark:after:border-gray-700': 'after:border-blue-100 dark:after:border-blue-800 after:opacity-100'}`}>
-            <span className="flex items-center justify-center bg-blue-100 dark:text-white rounded px-1 dark:bg-blue-800">
-                House Information
-            </span>
-        </li>
-        <li className={`flex items-center after:content-[''] after:w-full after:h-1 after:border-b after:duration-400 after:border-4 after:inline-block after:opacity-0 ${idx < 2?'after:border-gray-100 dark:after:border-gray-700': ' after:border-blue-100 dark:after:border-blue-800 after:opacity-100'}`}>
-            <span className={`flex items-center justify-center dark:text-white rounded px-1 duration-300 opacity-0 ${idx > 0?'dark:bg-blue-800 bg-blue-100 opacity-100': 'dark:bg-gray-700 bg-gray-100'}`}>
-                Address Information
-            </span>
-        </li>
-        <li className="flex items-center min-w-min">
-            <span className={`flex flex-col justify-center dark:text-white rounded px-1 duration-300 opacity-0 ${idx > 1?'dark:bg-blue-800 bg-blue-100 opacity-100': 'dark:bg-gray-700 bg-gray-100'}`}>
-                <span>Bank Account</span> <span>Information</span>
-            </span>
-        </li>
+        <ol className="items-center w-full space-y-4 sm:flex sm:space-x-8 sm:space-y-0 rtl:space-x-reverse">
+            <li className="flex items-center text-blue-600 dark:text-blue-500 space-x-2.5 rtl:space-x-reverse">
+                <span className="flex items-center justify-center w-8 h-8 border border-blue-600 rounded-full shrink-0 dark:border-blue-500">
+                    1
+                </span>
+                <span>
+                    <h3 className="font-medium leading-tight">House Information</h3>
+                    <p className="text-sm">General house informations here</p>
+                </span>
+            </li>
+            <li className={"flex items-center text-gray-500 dark:text-gray-400 space-x-2.5 rtl:space-x-reverse " + (idx>0&&'text-blue-600 dark:text-blue-500')}>
+                <span className={"flex items-center justify-center w-8 h-8 border border-gray-500 rounded-full shrink-0  "+ (idx>0&&'dark:border-blue-500 border-blue-600') }>
+                    2
+                </span>
+                <span>
+                    <h3 className="font-medium leading-tight">Address Information</h3>
+                    <p className="text-sm">Your house's detail address informations</p>
+                </span>
+            </li>
+            <li className={"flex items-center text-gray-500 dark:text-gray-400 space-x-2.5 rtl:space-x-reverse" + (idx>1&&'text-blue-600 dark:text-blue-500')}>
+                <span className={"flex items-center justify-center w-8 h-8 border border-gray-500 rounded-full shrink-0 dark:border-gray-400 " + (idx>1&&'dark:border-blue-500 border-blue-600')}>
+                    3
+                </span>
+                <span>
+                    <h3 className="font-medium leading-tight">Bank Accounts</h3>
+                    <p className="text-sm">The bank accounts in which you want to reciece your payment for this house</p>
+                </span>
+            </li>
         </ol>
     )
 }

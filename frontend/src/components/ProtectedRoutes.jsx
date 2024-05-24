@@ -3,7 +3,6 @@ import React, { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getUser } from "../api/auth";
-import Login from "../pages/Login";
 import Sidebar from "../layout/Sidebar";
 
 // Another time
@@ -39,7 +38,7 @@ export const ProtectedRoutes = ({role}) => {
         return <Outlet context={data}/>
     if(status === 'success' && data.role === role) {
         return (<div className="flex h-screen items-center justify-center">
-                    <Sidebar />
+                    <Sidebar user={data}/>
                     <div className="min-w-64 h-1 mr-4"></div>
                     <Outlet context={data}/>
                 </div>)

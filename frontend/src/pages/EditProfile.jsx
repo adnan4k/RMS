@@ -58,7 +58,7 @@ const EditProfile = () => {
         }
     }, [data]);
 
-    const errors = validateForm(formData);
+    const errors = validateForm(formData, []);
 
     return (
     <form className="max-w-md mx-auto mt-5 min-w-72" onSubmit={handleSubmit}>

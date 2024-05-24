@@ -112,6 +112,12 @@ houseSchema.pre('deleteOne', { document: true, query: false }, async function() 
     });
 });
 
+houseSchema.set('toJSON', {transform: (doc, ret, options) => {
+    if (ret.images)
+        ret.images = ret.images.map(({url}) => url);
+    return ret
+}});
+
 houseSchema.index({ housenumber: 1, owner: 1 }, { unique: true });
 
 const House = mongoose.model("House", houseSchema);

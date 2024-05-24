@@ -6,34 +6,39 @@ import { toast } from "react-toastify";
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [success, setSuccess] = useState(false);
-  const [tryagain, setTryagain] = useState(false);
-  const [error, setError] = useState('');
+  const [tryagain, setTryagain] = useState(0);
 
   const {mutate, status} = useMutation({
     mutationFn: frogetPassword,
     onError: err => {
       setSuccess(false)
-      setError(err.data.message)
+      toast.error(err.data.message)
     },
     onSuccess: res => {
-      setTryagain(true)
+      const time = Date.now()
+      localStorage.setItem('timestamp', time)
+      setTryagain(time)
       setSuccess(true)
       setError('')
     }
   });
 
   useEffect(() => {
-    if(tryagain) {
+    const t = localStorage.getItem('timestamp')
+
+    if(tryagain > 0 || t) {
       setTimeout(() => {
-        setTryagain(false)
+        setTryagain(0)
+        localStorage.removeItem('timestamp')
         setError('')
-      }, 60000);
+      }, 60000 - (Date.now() - t));
+    }
+    if (t && tryagain === 0) {
+      setTryagain(t)
     }
   }, [success]);
 
-  if(error!=='')
-    toast.error(error)
-// Once an email is sent the button should be disabled for some time prompting them to check their inboxes
+
   return (
     <section className="bg-gray-50 dark:bg-gray-900">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
@@ -48,7 +53,7 @@ const ForgotPassword = () => {
               onSubmit={(e) => {
                 e.preventDefault();
                 if (!email) {
-                  setError('Please insert your email');
+                  toast.error('Please insert your email');
                   return
                 }
                   
@@ -72,11 +77,11 @@ const ForgotPassword = () => {
                   placeholder="name@company.com"
                   required=""
                 />
-                {tryagain && <p className="mt-2 text-xs text-green-600 dark:text-green-500">We have sent a password reset link to the above email. Please check your inbox and if you didn't recieve the email yet try again</p>}
+                {tryagain > 0 && <p className="mt-2 text-xs text-green-600 dark:text-green-500">We have sent a password reset link to the above email. Please check your inbox and if you didn't recieve the email yet try again in {60-Math.floor((Date.now() - tryagain)/1000)} seconds</p>}
               <button
                 type="submit"
-                className={"w-full text-white bg-[#234B9A] hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 "+(tryagain&&'cursor-not-allowed')}
-                disabled={tryagain}
+                className={"w-full text-white bg-[#234B9A] hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 "+(tryagain > 0&&'cursor-not-allowed')}
+                disabled={tryagain > 0}
               >
                 {status==='pending' ? 
                 <svg aria-hidden="true" role="status" className="inline w-4 h-4 me-3 text-gray-200 animate-spin dark:text-gray-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
