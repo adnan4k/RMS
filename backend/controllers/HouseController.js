@@ -94,7 +94,7 @@ export const getHouses = async (req, res, next) => {
             model: 'User',
             foreignField: '_id'
         });
-        
+        console.log(data)
         const result = paginate(page, limit, total, data);        
         return res.status(200).json(result);
     } catch (error) {
