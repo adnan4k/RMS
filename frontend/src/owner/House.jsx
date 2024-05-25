@@ -6,12 +6,8 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import { FaAngleLeft, FaAngleRight, FaBed, FaToilet, FaArrowsLeftRightToLine } from "react-icons/fa6";
+import { AvailableDates } from "../components/AvailableDates";
 
-const tabs = [<a href="#" class="flex items-center p-3 mx-6 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
-<span class="flex-1 ms-3 whitespace-nowrap">MetaMask</span>
-<span>2:00-</span>
-<span>6:00</span>
-</a>]
 
 export const SingleHouse = () => {
     const { houseid } = useParams();
@@ -103,6 +99,7 @@ export const SingleHouse = () => {
                 <div onClick={()=>setTabIndex(2)} className={`hover:bg-gray-100 hover:dark:bg-gray-700 p-2 rounded cursor-pointer ${tabIndex === 2 && 'bg-gray-100 dark:bg-gray-700'}`}>Tenant</div>
             </div>
             <div className="mt-6">
+                <AvailableDates />
             </div>
         </div>
     )

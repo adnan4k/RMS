@@ -13,14 +13,14 @@ const verifyToken = (...role) => (req, res, next) =>  {
             if (err)
                 return res.status(401).json('Unauthenticated access');
             if (!role.includes(decoded.role))
-                return res.status(403).json('Unauthorized access');
+                return res.status(403).json({message: "Unauthorized access"});
             
             req.user = decoded.user;
             req.role = decoded.role;
             next()
         });
     } catch (error) {
-        res.status(400).json({msg: "Token not found"})
+        res.status(400).json({message: "Token not found"})
     }
 }
 export default verifyToken

@@ -13,8 +13,8 @@ export const addOwner = async(req, res, next) => {
     try {
         let { address } = req.body;
         address = JSON.parse(address);
-        const user = await User.findById(req.user).select('-password -isActive -role');
-
+        const user = await User.findById(req.user).select('-password -isActive');
+        
         if (!user) 
             throw createError(400, "User not found");
         
@@ -31,7 +31,7 @@ export const addOwner = async(req, res, next) => {
         
 
         const savedOwner = await newOwner.save();
-        const { accesstoken, refreshtoken } = generateToken(savedOwner);
+        const { accesstoken, refreshtoken } = generateToken(user);
         await Token.deleteMany({user: user._id});
         await Token.create({
             refreshtoken,

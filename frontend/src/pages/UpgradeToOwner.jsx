@@ -1,9 +1,10 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { createowner } from "../api/owner";
 
+// Validation to be done
 const UpgradeToOwner = () => {
     const [address, setAddress] = useState({
         city: '',
@@ -20,15 +21,16 @@ const UpgradeToOwner = () => {
     const {mutate} = useMutation({
         mutationFn: createowner,
         onSuccess: (owner) => {
-            console.log(owner)
-            const user = queryClient.getQuery(['user'])
-            queryClient.setQueryData(['user'], {...user, owner: owner});
-            queryClient.invalidateQueries({ queryKey: ['user'] })
+            const user = queryClient.getQueryData(['user']);
+            queryClient.invalidateQueries({queryKey: ['user']});
+            queryClient.setQueryData(['name'], {...user, owner: owner.savedOwner});
             toast.success('Successfully registered as owner');
             navigate('/profile');
         },
         onError: (error) => {
-            toast.error(error.response.data.message)
+            const user = queryClient.getQueryData(['user']);
+            console.log('user', user);
+            toast.error(error.response.data.message);
         }
     });
 

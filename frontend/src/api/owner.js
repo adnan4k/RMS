@@ -1,12 +1,13 @@
 import axios from "../axiosUtils"
 export const createowner = async (payload) => {
     const response = await axios.post('owner', payload, {headers: {'Content-Type': 'multipart/form-data'}});
-    console.log(response.data);
 
     const {refreshtoken, accesstoken, ...savedOwner} = response.data;
+    console.log(localStorage.getItem('accesstoken'))
     localStorage.setItem('refreshtoken', refreshtoken);
     localStorage.setItem('accesstoken', accesstoken);
-    axios.defaults.headers.common['Authorization'] = `Bearer ${accesstoken}`
+    console.log(localStorage.getItem('accesstoken'));
+    axios.defaults.headers.common['Authorization'] = `Bearer ${accesstoken}`;
 
     return savedOwner
 }
