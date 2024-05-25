@@ -20,9 +20,9 @@ const UpgradeToOwner = () => {
     const {mutate} = useMutation({
         mutationFn: createowner,
         onSuccess: (owner) => {
-            console.log(owner)
             const user = queryClient.getQuery(['user'])
             queryClient.setQueryData(['user'], {...user, owner: owner});
+            console.log(user, owner)
             queryClient.invalidateQueries({ queryKey: ['user'] })
             toast.success('Successfully registered as owner');
             navigate('/profile');

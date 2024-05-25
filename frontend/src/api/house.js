@@ -8,3 +8,14 @@ export const createHouse = async (formData) => {
       return response.data;
 };
 
+export const getHouse = async() =>{
+  try {
+    
+    const response = await axios.get('house/')
+    console.log(response.data,'here is axios')
+    return response.data;
+  } catch (error) {
+    console.log(error,'here is axios')
+    throw error;
+  }
+}
