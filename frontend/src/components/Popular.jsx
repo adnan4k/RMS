@@ -1,12 +1,16 @@
-import { useQuery } from "@tanstack/react-query";
 import { getHouse } from "../api/house";
+import { useQuery } from "@tanstack/react-query"
 
 function Popular() {
-  const { datas, error, isLoading } = useQuery({queryKey:['house'], queryFn:getHouse});
-  
+  const {data:datas, status} = useQuery({
+    queryKey: ['house'],
+    queryFn: getHouse
+  });
+  console.log(datas, status)
+  if (datas)
   return (
     <div className="grid gap-10 grid-cols-3 mx-auto">
-      {datas.map((data, index) => (
+      {datas.data.map((data, index) => (
         <div key={index} className="container">
           <div>
             <img src={data.image} alt="home" />

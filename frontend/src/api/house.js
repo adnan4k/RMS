@@ -10,7 +10,6 @@ export const createHouse = async (formData) => {
 
 export const getHouse = async() =>{
   try {
-    
     const response = await axios.get('house/')
     console.log(response.data,'here is axios')
     return response.data;
