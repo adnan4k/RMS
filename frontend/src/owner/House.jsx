@@ -1,17 +1,37 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { getSingleHouse } from "../api/owner";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import Slider from "react-slick";
+import { FaAngleLeft, FaAngleRight, FaBed, FaToilet, FaArrowsLeftRightToLine } from "react-icons/fa6";
+
+const tabs = [<a href="#" class="flex items-center p-3 mx-6 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
+<span class="flex-1 ms-3 whitespace-nowrap">MetaMask</span>
+<span>2:00-</span>
+<span>6:00</span>
+</a>]
 
 export const SingleHouse = () => {
     const { houseid } = useParams();
+    const housePics = useRef(null);
+    const [tabIndex, setTabIndex] = useState(0);
     
     const {data, status} = useQuery({
         queryKey: ['owner-house', houseid],
         queryFn: ()=>getSingleHouse(houseid)
     });
+
+    const settings = {
+        infinite: true,
+        speed: 500,
+        slidesToShow: 1,
+        slidesToScroll: 1
+    };
+
     return (
-        <div className="w-full h-full p-4">
+        <div className="w-full min-h-full p-8 dark:bg-gray-800">
             <div className="flex justify-between">
                 <div>
                     <h4>
@@ -30,44 +50,59 @@ export const SingleHouse = () => {
                     </p>
                 </div>
             </div>
-            <div id="default-carousel" className="relative w-full" data-carousel="slide">
-                <div className="relative h-56 overflow-hidden rounded-lg md:h-96">
-  
-                    <div className="duration-700 ease-in-out" data-carousel-item>
-                        <img src="/images/home1.png" className="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="..." />
+            <Slider className="max-w-80 mx-auto">
+                <img src="/images/home1.png" className="min-h-full object-fill" alt="" />
+                <img src="/images/home1.png" className="min-h-full object-fill" alt="" />
+                <img src="/images/home1.png" className="min-h-full object-fill" alt="" />
+            </Slider>
+            <div className="mt-2 flex justify-between items-center">
+                <div className="flex relative max-w-[60%] rounded">
+                    <div onClick={() => housePics.current.scrollBy({
+                        left: -200,
+                        behavior: 'smooth',
+                        })}
+                        className="top-0 h-full absolute w-4 cursor-pointer flex items-center left-0 bg-gray-600 opacity-0 dark:bg-gray-800 duration-200 ease-in peer-hover:opacity-70 hover:opacity-70">
+                        <FaAngleLeft />
                     </div>
-                    
-                    <div className="hidden duration-700 ease-in-out" data-carousel-item>
-                        <img src="/images/home1.png" className="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="..." />
+                    <div className="flex gap-2 max-w-full overflow-x-scroll peer" ref={housePics}>
+                        <img src="/images/home1.png" className="max-h-16 rounded-sm" alt="" />
+                        <img src="/images/home1.png" className="max-h-16" alt="" />
+                        <img src="/images/home1.png" className="max-h-16" alt="" />
+                        <img src="/images/home1.png" className="max-h-16" alt="" />
+                        <img src="/images/home1.png" className="max-h-16" alt="" />
+                        <img src="/images/home1.png" className="max-h-16" alt="" />
+                        <img src="/images/home1.png" className="max-h-16" alt="" />
+                        <img src="/images/home1.png" className="max-h-16" alt="" />
                     </div>
-
-                    <div className="hidden duration-700 ease-in-out" data-carousel-item>
-                        <img src="/images/home1.png" className="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="..." />
+                    <div onClick={() => housePics.current.scrollBy({
+                        left: 200,
+                        behavior: 'smooth',
+                        })} 
+                        className="top-0 h-full cursor-pointer absolute w-4 flex items-center right-0 bg-gray-600 opacity-0 dark:bg-gray-800 duration-200 ease-in peer-hover:opacity-70 hover:opacity-70">
+                        <FaAngleRight />
                     </div>
-
                 </div>
-                <div className="absolute z-30 flex -translate-x-1/2 bottom-5 left-1/2 space-x-3 rtl:space-x-reverse">
-                    <button type="button" className="w-3 h-3 rounded-full" aria-current="true" aria-label="Slide 1" data-carousel-slide-to="0"></button>
-                    <button type="button" className="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide 2" data-carousel-slide-to="1"></button>
-                    <button type="button" className="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide 3" data-carousel-slide-to="2"></button>
+                <div className="flex border-dashed rounded">
+                    <div className="flex flex-col items-center ml-2 mr-1 min-w-max border-gray-300 bg-gray-100 rounded-lg p-1 dark:bg-gray-700">
+                        <FaBed className="min-h-8 min-w-8"/>
+                        <span className="text-xs mt-1">5 bed rooms</span>
+                    </div>
+                    <div className="flex flex-col items-center mx-1 min-w-max border-gray-300 bg-gray-100 rounded-lg p-1 dark:bg-gray-700">
+                        <FaBed className="min-h-8 min-w-8"/>
+                        <span className="text-xs mt-1">5 bed rooms</span>
+                    </div>
+                    <div className="flex flex-col items-center mx-1 min-w-max border-gray-300 bg-gray-100 rounded-lg p-1 dark:bg-gray-700">
+                        <FaBed className="min-h-8 min-w-8"/>
+                        <span className="text-xs mt-1">5 bed rooms</span>
+                    </div>
                 </div>
-                <button type="button" className="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-prev>
-                    <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
-                        <svg className="w-4 h-4 text-white dark:text-gray-800 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4"/>
-                        </svg>
-                        <span className="sr-only">Previous</span>
-                    </span>
-                </button>
-                <button type="button" className="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-next>
-                    <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
-                        <svg className="w-4 h-4 text-white dark:text-gray-800 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
-                        </svg>
-                        <span className="sr-only">Next</span>
-                    </span>
-                </button>
-                
+            </div>
+            <div className="flex mt-4 justify-around">
+                <div onClick={()=>setTabIndex(0)} className={`hover:bg-gray-100 hover:dark:bg-gray-700 p-2 rounded cursor-pointer ${tabIndex === 0 && 'bg-gray-100 dark:bg-gray-700'}`}>Description</div>
+                <div onClick={()=>setTabIndex(1)} className={`hover:bg-gray-100 hover:dark:bg-gray-700 p-2 rounded cursor-pointer ${tabIndex === 1 && 'bg-gray-100 dark:bg-gray-700'}`}>Calendar</div>
+                <div onClick={()=>setTabIndex(2)} className={`hover:bg-gray-100 hover:dark:bg-gray-700 p-2 rounded cursor-pointer ${tabIndex === 2 && 'bg-gray-100 dark:bg-gray-700'}`}>Tenant</div>
+            </div>
+            <div className="mt-6">
             </div>
         </div>
     )
