@@ -11,10 +11,10 @@ dotenv.config();
 
 
 export const createHouse = async (req, res, next) => {
-    try {    
+    try {
         const owner = req.user;
         let {
-            no_of_rooms, 
+            no_of_rooms,
             no_of_bath_rooms,
             width,
             length,
@@ -25,13 +25,12 @@ export const createHouse = async (req, res, next) => {
             description,
             housenumber
         } = req.body;
-        console.log(owner);
         address = JSON.parse(address);
         bankaccounts = JSON.parse(bankaccounts);
-        const images = req.files.map(file => ({url: 'uploads/'+file.filename, path: file.destination+"/"+file.filename}));
+        const images = req.files.map(file => ({ url: 'uploads/' + file.filename, path: file.destination + "/" + file.filename }));
         if (!images || images.length === 0)
             throw createError(400, "Atleast one image is mandatory!")
-        
+
         const newHouse = await House.create({
             housenumber,
             owner,
@@ -48,21 +47,32 @@ export const createHouse = async (req, res, next) => {
         });
 
         return res.status(200).json(newHouse);
-    } catch(error) {
-        req.files.forEach(async file => await removeImage(file.destination+'/'+file.filename))
+    } catch (error) {
+        req.files.forEach(async file => await removeImage(file.destination + '/' + file.filename))
         next(error)
-    } 
+    }
 }
+
+export const latestHouses = async (req, res, next) => {
+    try {
+        const houses = await House.find().sort({ createdAt: -1 }).limit(10); 
+        console.log(houses)         
+
+        res.status(200).json(houses);
+    } catch (error) {
+        next(error);
+    }
+};
 
 export const getHouse = async (req, res, next) => {
     const id = req.params.id;
     try {
         const house = await House.findById(id).select('-occupancy_history -bankaccounts -deadline -contract');
-        if(!house)
-            throw createError(404,'house not found');
+        if (!house)
+            throw createError(404, 'house not found');
 
         await house.populate({
-            path: 'owner', 
+            path: 'owner',
             foreignField: 'user',
             select: '-national_id ',
             populate: {
@@ -70,7 +80,7 @@ export const getHouse = async (req, res, next) => {
                 select: '-role -password -isActive'
             }
         });
-        
+
         return res.status(200).json(house);
     } catch (error) {
         return next(error);
@@ -81,21 +91,21 @@ export const getHouses = async (req, res, next) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
-        const start = (page-1) * limit;
+        const start = (page - 1) * limit;
         // If this doesn't work use DocumentCount({tenant: null})
-        const total = await House.find({tenant: null}).estimatedDocumentCount();
+        const total = await House.find({ tenant: null }).estimatedDocumentCount();
 
-        const data = await House.find({tenant: null})
-        .skip(start)
-        .limit(limit).select('-occupancy_history -bankaccounts -deadline -contract -calendar')
-        .populate({
-            path: 'owner',
-            select: '-role -password -isActive',
-            model: 'User',
-            foreignField: '_id'
-        });
+        const data = await House.find({ tenant: null })
+            .skip(start)
+            .limit(limit).select('-occupancy_history -bankaccounts -deadline -contract -calendar')
+            .populate({
+                path: 'owner',
+                select: '-role -password -isActive',
+                model: 'User',
+                foreignField: '_id'
+            });
         console.log(data)
-        const result = paginate(page, limit, total, data);        
+        const result = paginate(page, limit, total, data);
         return res.status(200).json(result);
     } catch (error) {
         return next(error);
@@ -104,9 +114,9 @@ export const getHouses = async (req, res, next) => {
 
 export const editHouseInfo = async (req, res, next) => {
     try {
-        let { 
+        let {
             housenumber,
-            no_of_rooms, 
+            no_of_rooms,
             no_of_bath_rooms,
             width,
             length,
@@ -117,13 +127,13 @@ export const editHouseInfo = async (req, res, next) => {
         } = req.body;
 
         if (bankaccounts)
-            bankaccounts = JSON.parse(bankaccounts) 
+            bankaccounts = JSON.parse(bankaccounts)
         if (address)
             address = JSON.parse(address)
 
         const houseid = req.params.houseid;
-        const house = await House.findOne({_id: houseid, owner: req.user});
-    // console.log("house", house);
+        const house = await House.findOne({ _id: houseid, owner: req.user });
+        // console.log("house", house);
         house.housenumber = housenumber || house.housenumber;
         house.no_of_rooms = no_of_rooms || house.no_of_rooms;
         house.no_of_bath_rooms = no_of_bath_rooms || house.no_of_bath_rooms;
@@ -144,23 +154,23 @@ export const editHouseImages = async (req, res, next) => {
     try {
         let { deletedImages } = req.body;
         deletedImages = new Set(JSON.parse(deletedImages));
-        const house = await House.findOne({_id: req.params.houseid, owner: req.user});
+        const house = await House.findOne({ _id: req.params.houseid, owner: req.user });
         let images = house.images;
-        
-        images.forEach( async ({url, path}) => {
+
+        images.forEach(async ({ url, path }) => {
             if (deletedImages.has(url))
                 await removeImage(path)
         });
-        images = images.filter(({url, path}) => !deletedImages.has(url));
-        
-        const addedImages = req.files.map(file => ({url: 'uploads/'+file.filename, path: file.destination+"/"+file.filename}));
+        images = images.filter(({ url, path }) => !deletedImages.has(url));
+
+        const addedImages = req.files.map(file => ({ url: 'uploads/' + file.filename, path: file.destination + "/" + file.filename }));
         addedImages.forEach((image) => {
             images.push(image);
         });
 
         house.images = images;
         await house.save();
-        return res.status(200).json({msg: 'Successfully updated photos', data: house.images})
+        return res.status(200).json({ msg: 'Successfully updated photos', data: house.images })
     } catch (error) {
         next(error);
     }
@@ -168,24 +178,24 @@ export const editHouseImages = async (req, res, next) => {
 
 export const addHouseCalendar = async (req, res, next) => {
     try {
-        let {isOpen, schedules} = req.body;
-        
-        schedules = typeof schedules === 'string' ? JSON.parse(schedules): schedules;
-        const house = await House.findOne({owner: req.user, _id: req.params.houseid});
+        let { isOpen, schedules } = req.body;
 
-        if(!house)
+        schedules = typeof schedules === 'string' ? JSON.parse(schedules) : schedules;
+        const house = await House.findOne({ owner: req.user, _id: req.params.houseid });
+
+        if (!house)
             throw createError(400, "House not found!!");
 
         let schedule = house.calendar.schedule;
-            
-        schedules.forEach(({starttime, endtime}) => {
+
+        schedules.forEach(({ starttime, endtime }) => {
             starttime = new Date(starttime);
             endtime = new Date(endtime);
             if (starttime.getDate() !== endtime.getDate())
                 throw createError(400, 'Set the times  for a specific date please');
             if (starttime.getHours() >= endtime.getHours())
                 throw createError(400, 'There must be morethan one hour difference between the two');
-            
+
             schedule[starttime.getDay()] = {
                 starttime,
                 endtime
@@ -197,7 +207,7 @@ export const addHouseCalendar = async (req, res, next) => {
             schedule,
         }
         await house.save()
-        return res.status(201).json({message: "Successfully set calendar!", data: house.calendar});
+        return res.status(201).json({ message: "Successfully set calendar!", data: house.calendar });
     } catch (error) {
         next(error)
     }
@@ -211,39 +221,53 @@ export const getHouseVisits = async (req, res, next) => {
             jwt.verify(access_token, process.env.JWT_ACCESS_TOKEN, (err, decoded) => {
                 if (err)
                     return res.status(401).json('Unauthenticated access');
-                
-                req.user = decoded.user;                
+
+                req.user = decoded.user;
             });
         }
-        
-        
+
+
         const requests = await Requests.aggregate([
-            {$match: {
-                house,
-                visitor: {$ne: new mongoose.Types.ObjectId(req.user)}
-            }},
-            {$addFields: {
-                truncDate: {$dateTrunc: {
-                    date: '$date',
-                    unit: 'day'
-                }},
-                hour: {$hour: '$date'}
-            }},
-            {$project: {
-                visitor: 0,
-                message: 0,
-                house: 0
-            }},
-            {$sort: {
-                hour: 1
-            }},
-            {$group: {
-                _id: '$truncDate',
-                requests: {$push: {
-                    date: '$date',
-                }},
-                count: {$sum: 1}
-            }}
+            {
+                $match: {
+                    house,
+                    visitor: { $ne: new mongoose.Types.ObjectId(req.user) }
+                }
+            },
+            {
+                $addFields: {
+                    truncDate: {
+                        $dateTrunc: {
+                            date: '$date',
+                            unit: 'day'
+                        }
+                    },
+                    hour: { $hour: '$date' }
+                }
+            },
+            {
+                $project: {
+                    visitor: 0,
+                    message: 0,
+                    house: 0
+                }
+            },
+            {
+                $sort: {
+                    hour: 1
+                }
+            },
+            {
+                $group: {
+                    _id: '$truncDate',
+                    requests: {
+                        $push: {
+                            date: '$date',
+                        }
+                    },
+                    count: { $sum: 1 }
+                }
+            }
         ]);
 
         return res.status(200).json(requests);
@@ -255,11 +279,11 @@ export const getHouseVisits = async (req, res, next) => {
 export const deleteHouse = async (req, res, next) => {
     const id = req.params.id;
     try {
-        const house = await House.findOne({_id: id, owner: req.user});
-        if(!house)
+        const house = await House.findOne({ _id: id, owner: req.user });
+        if (!house)
             throw createError(400, 'House not found');
         await house.deleteOne();
-        return res.status(200).json({message:"successfully deleted"});
+        return res.status(200).json({ message: "successfully deleted" });
     } catch (error) {
         return next(error);
     }

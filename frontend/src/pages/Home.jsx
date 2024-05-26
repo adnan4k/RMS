@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import Popular from "../components/Popular";
 import SearchComponent from "../components/SearchComponent";
+import LatestHouses from "./LatestHouses";
 
 function Home() {
 
@@ -27,8 +27,8 @@ function Home() {
           <h2 className="text-[#081E4A] font-bold my-5 text-3xl dark:text-white">
             Trending Listings
           </h2>
-          <Popular />
-        </div>
+         <LatestHouses />
+         </div>
         <div className="flex justify-end mr-10 my-5">
           <Link to='/showmore' >
           <button className=" text-white bg-[#234B9A] rounded-2xl">

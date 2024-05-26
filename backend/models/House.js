@@ -94,6 +94,8 @@ export const houseSchema = new mongoose.Schema({
             return ({open: false, schedule: Array(7).fill(null)});
         }
     },
+}, {
+    timestamps: true,
 })
 
 houseSchema.pre('deleteOne', { document: true, query: false }, async function() {
