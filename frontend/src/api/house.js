@@ -17,7 +17,6 @@ export const getHouse = async() =>{
 }
 export const getLatestHouses = async() =>{
   const response = await axios.get('/house/latest')
-  console.log(response.data,'my houses')
   return response.data
   
 }

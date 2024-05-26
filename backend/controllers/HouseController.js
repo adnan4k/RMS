@@ -55,8 +55,12 @@ export const createHouse = async (req, res, next) => {
 
 export const latestHouses = async (req, res, next) => {
     try {
-        const houses = await House.find().sort({ createdAt: -1 }).limit(10); 
-        console.log(houses)         
+        const houses = await House.find().populate({
+            path: 'owner',
+            select: '-role -password -isActive',
+            model: 'User',
+            foreignField: '_id'
+        }).sort({ createdAt: -1 }).limit(10);
 
         res.status(200).json(houses);
     } catch (error) {

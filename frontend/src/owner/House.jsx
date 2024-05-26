@@ -25,7 +25,6 @@ export const SingleHouse = () => {
         slidesToShow: 1,
         slidesToScroll: 1
     };
-
     return (
         <div className="w-full min-h-full p-8 dark:bg-gray-800">
             <div className="flex justify-between">

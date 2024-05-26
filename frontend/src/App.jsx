@@ -20,6 +20,7 @@ import EditOwner from './pages/EditOwner';
 import { Houses } from './owner/Houses';
 import { SingleHouse } from './owner/House';
 import Showmore from './pages/Showmore';
+import DetailsHouses from './pages/DetailsHouses';
 
 // The default 404 should be done for the route
 function App() {
@@ -46,6 +47,8 @@ function App() {
             </Route>
             <Route path="/" element={<Layout />}>
               <Route path="/showmore" element={<Showmore />} />
+              <Route path="/details" element={<DetailsHouses />} />
+
 
               <Route index element={<Home />} />
               <Route path='profile/' element={<ProtectedRoutes />}>
