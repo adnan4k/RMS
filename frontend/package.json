@@ -20,6 +20,7 @@
     "@vis.gl/react-google-maps": "^1.0.0",
     "axios": "^1.6.8",
     "dayjs": "^1.11.11",
+    "dayjs-plugin-utc": "^0.1.2",
     "leaflet": "^1.9.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -28,6 +29,7 @@
     "react-query": "^3.39.3",
     "react-router-dom": "^6.22.3",
     "react-slick": "^0.30.2",
+    "react-time-picker": "^7.0.0",
     "react-toastify": "^10.0.5",
     "slick-carousel": "^1.8.1",
     "styled-components": "^6.1.11"
