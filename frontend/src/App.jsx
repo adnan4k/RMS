@@ -21,6 +21,8 @@ import { Houses } from './owner/Houses';
 import { SingleHouse } from './owner/House';
 import Showmore from './pages/Showmore';
 import DetailsHouses from './pages/DetailsHouses';
+import CreateTenants from './owner/CreateTenants';
+import ShowTenant from './tenant/ShowTenant';
 
 // The default 404 should be done for the route
 function App() {
@@ -40,8 +42,11 @@ function App() {
             {/* <Route path="/map" element={<MapComponent />}/> */}
 
             <Route path='/owner/' element={<ProtectedRoutes role='owner' />}>
+              <Route path='create-tenants' element={<CreateTenants />} />
               <Route index element={<Houses />} />
               <Route path="create-house" element={<StepperForm />} />
+              <Route path="show-tenant" element={<ShowTenant />} />
+
               <Route path='edit' element={<EditOwner />} />
               <Route path=':houseid' element={<SingleHouse />} />
             </Route>

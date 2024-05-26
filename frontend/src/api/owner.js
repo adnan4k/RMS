@@ -29,3 +29,8 @@ export const getSingleHouse = async (houseid) => {
     const response = await axios.get('owner/houses/'+houseid)
     return response.data 
 }
+
+export const addTenant = async({houseData,houseId}) =>{
+     const response = await axios.post(`owner/${houseId}`,houseData);
+     return response.data
+}

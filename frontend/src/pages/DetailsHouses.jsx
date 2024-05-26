@@ -7,17 +7,10 @@ import Slider from "react-slick";
 const DetailsHouses = () => {
     const { state } = useLocation();
     const house = state?.house; // Destructure to get house from state
-    console.log(house, 'house')
     if (!house) {
         return <div>No house data available</div>;
     }
-    // <div key={index}>
-    //     <img
-    //         className="w-full mt-6"
-    //         alt={`house ${index}`}
-    //         src={`http://localhost:4001/${image}`}
-    //     />
-    // </div>
+
     const [show, setShow] = useState(false);
     const [show2, setShow2] = useState(false);
     const settings = {
