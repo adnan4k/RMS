@@ -2,4 +2,4 @@
 /uploads
 /contracts
 /nationalids
-.env
+/.env

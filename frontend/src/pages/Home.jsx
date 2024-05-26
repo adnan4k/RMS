@@ -1,5 +1,6 @@
-import Popular from "../components/Popular";
+import { Link } from "react-router-dom";
 import SearchComponent from "../components/SearchComponent";
+import LatestHouses from "./LatestHouses";
 
 function Home() {
 
@@ -24,14 +25,16 @@ function Home() {
       <div>
         <div className="flex flex-col justify-center items-center mx-auto">
           <h2 className="text-[#081E4A] font-bold my-5 text-3xl dark:text-white">
-            Trending Listings
+           Latest Listings
           </h2>
-          <Popular />
-        </div>
+         <LatestHouses />
+         </div>
         <div className="flex justify-end mr-10 my-5">
+          <Link to='/showmore' >
           <button className=" text-white bg-[#234B9A] rounded-2xl">
             Show More
           </button>
+          </Link>
         </div>
       </div>
     </>

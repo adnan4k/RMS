@@ -9,7 +9,9 @@ import { removeImage } from "../utils/fileProcessing.js";
 import Token from "../models/Tokens.js"
 
 export const addTenant = async(req, res, next) => {
+    console.log(req.params.houseid,'here id')
     const session = await mongoose.startSession();
+    console.log(req.files)
     session.startTransaction();
     try {
         let { email, firstname, lastname, phonenumber, reference } = req.body;
@@ -66,8 +68,10 @@ export const addTenant = async(req, res, next) => {
         return res.status(200).json({msg: 'Successfully added tenant', data: tenant})
     } catch (error) {
         await session.abortTransaction();
-        await removeImage(req.files['nationalid'][0].destination+'/'+req.files['nationalid'][0].filename);
-        await removeImage(req.files['contract'][0].destination+'/'+req.files['contract'][0].filename);
+        if (Object.keys(req.files) > 1) {
+            await removeImage(req.files['nationalid'][0].destination+'/'+req.files['nationalid'][0].filename);
+            await removeImage(req.files['contract'][0].destination+'/'+req.files['contract'][0].filename);
+        }
         next(error);
     } finally {
         await session.endSession();
