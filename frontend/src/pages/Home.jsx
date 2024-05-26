@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Popular from "../components/Popular";
 import SearchComponent from "../components/SearchComponent";
 
@@ -29,9 +30,11 @@ function Home() {
           <Popular />
         </div>
         <div className="flex justify-end mr-10 my-5">
+          <Link to='/showmore' >
           <button className=" text-white bg-[#234B9A] rounded-2xl">
             Show More
           </button>
+          </Link>
         </div>
       </div>
     </>

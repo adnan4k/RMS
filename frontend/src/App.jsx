@@ -19,6 +19,7 @@ import { ProtectedRoutes } from './components/ProtectedRoutes';
 import EditOwner from './pages/EditOwner';
 import { Houses } from './owner/Houses';
 import { SingleHouse } from './owner/House';
+import Showmore from './pages/Showmore';
 
 // The default 404 should be done for the route
 function App() {
@@ -30,19 +31,22 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/signup" element={<Signup />} />
+
             <Route path="/login" element={<Login />} />
             <Route path="/forget" element={<ForgetPassword />} />
             <Route path="/resetpassword/:token" element={<ResetPassword />} />
             <Route path="/request" element={<VisitorRequest />} />
             {/* <Route path="/map" element={<MapComponent />}/> */}
 
-            <Route path='/owner/' element={<ProtectedRoutes role='owner'/>}>
-              <Route index element={<Houses />}/>
+            <Route path='/owner/' element={<ProtectedRoutes role='owner' />}>
+              <Route index element={<Houses />} />
               <Route path="create-house" element={<StepperForm />} />
-              <Route path='edit' element={<EditOwner/>}/>
-              <Route path=':houseid' element={<SingleHouse />}/>
+              <Route path='edit' element={<EditOwner />} />
+              <Route path=':houseid' element={<SingleHouse />} />
             </Route>
             <Route path="/" element={<Layout />}>
+              <Route path="/showmore" element={<Showmore />} />
+
               <Route index element={<Home />} />
               <Route path='profile/' element={<ProtectedRoutes />}>
                 <Route index element={<Profile />} />
