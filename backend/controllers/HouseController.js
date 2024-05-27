@@ -108,7 +108,6 @@ export const getHouses = async (req, res, next) => {
                 model: 'User',
                 foreignField: '_id'
             });
-        console.log(data)
         const result = paginate(page, limit, total, data);
         return res.status(200).json(result);
     } catch (error) {
@@ -130,15 +129,14 @@ export const editHouseInfo = async (req, res, next) => {
             address,
             rent_amount
         } = req.body;
-        console.log(rent_amount)
-        if (bankaccounts)
-            bankaccounts = JSON.parse(bankaccounts)
-        if (address)
-            address = JSON.parse(address)
-
+        
+        // if (bankaccounts)
+        //     bankaccounts = JSON.parse(bankaccounts)
+        // if (address)
+        //     address = JSON.parse(address)
+        
         const houseid = req.params.houseid;
         const house = await House.findOne({ _id: houseid, owner: req.user });
-        // console.log("house", house);
         house.housenumber = housenumber || house.housenumber;
         house.no_of_rooms = no_of_rooms || house.no_of_rooms;
         house.no_of_bath_rooms = no_of_bath_rooms || house.no_of_bath_rooms;
@@ -147,7 +145,9 @@ export const editHouseInfo = async (req, res, next) => {
         house.house_type = house_type || house.house_type;
         house.description = description || house.description;
         house.rent_amount = rent_amount || house.rent_amount;
-
+        house.address = address || house.address
+        house.bankaccounts = bankaccounts || house.bankaccounts
+        
         await house.save();
         return res.status(200).json(house);
     } catch (error) {
@@ -166,13 +166,13 @@ export const editHouseImages = async (req, res, next) => {
             if (deletedImages.has(url))
                 await removeImage(path)
         });
+        
         images = images.filter(({ url, path }) => !deletedImages.has(url));
 
         const addedImages = req.files.map(file => ({ url: 'uploads/' + file.filename, path: file.destination + "/" + file.filename }));
         addedImages.forEach((image) => {
             images.push(image);
         });
-
         house.images = images;
         await house.save();
         return res.status(200).json({ msg: 'Successfully updated photos', data: house.images })

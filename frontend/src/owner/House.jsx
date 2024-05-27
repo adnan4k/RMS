@@ -63,31 +63,30 @@ export const SingleHouse = () => {
                 <Loader />
             </div>
         )
-console.log(data)
     return (
         <div className="w-full h-full overflow-y-scroll p-8 pt-4 dark:bg-gray-800 mx-32 flex flex-col">
             <div className="relative self-end">
 
-                <button onClick={()=>setHide(!hide)} id="editdropdown" data-dropdown-toggle="dropdown" class="text-white bg-blue-700 hover:bg-blue-800 mb-4 focus:outline-none  font-medium rounded-lg text-sm px-3 py-2 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 self-end max-w-64" type="button">Edit House <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                <button onClick={()=>setHide(!hide)} id="editdropdown" data-dropdown-toggle="dropdown" className="text-white bg-blue-700 hover:bg-blue-800 mb-4 focus:outline-none  font-medium rounded-lg text-sm px-3 py-2 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 self-end max-w-64" type="button">Edit House <svg className="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
 
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4"/>
                     </svg>
                 </button>
 
 
-                <div id="dropdown" class={`z-10 ${hide?'hidden':''} absolute right-1 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}>
-                    <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
+                <div id="dropdown" className={`z-10 ${hide?'hidden':''} absolute right-1 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}>
+                    <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
                     <li>
-                        <Link to="edit/general" state={data} class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">General Info</Link>
+                        <Link to="edit/general" state={data} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">General Info</Link>
                     </li>
                     <li>
-                        <Link to="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Address</Link>
+                        <Link to="edit/address" state={{address: data.address, _id: data._id}} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Address</Link>
                     </li>
                     <li>
-                        <Link to="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Bank Accounts</Link>
+                        <Link to="edit/bankaccount" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Bank Accounts</Link>
                     </li>
                     <li>
-                        <Link to="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Images</Link>
+                        <Link to="edit/images" state={{images: data.images, _id: data._id}} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Images</Link>
                     </li>
                     </ul>
                 </div>
@@ -104,7 +103,7 @@ console.log(data)
                 </div>
                 <div>
                     <h4>
-                        {data.rentamount || 0}$
+                        {data.rent_amount || 0} $
                     </h4>
                     <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                         Per month
@@ -163,7 +162,7 @@ console.log(data)
                 <div onClick={()=>setTabIndex(2)} className={`hover:bg-gray-100 hover:dark:bg-gray-700 p-2 rounded cursor-pointer ${tabIndex === 2 && 'bg-gray-100 dark:bg-gray-700'}`}>Tenant</div>
                 <div onClick={()=>setTabIndex(3)} className={`hover:bg-gray-100 hover:dark:bg-gray-700 p-2 rounded cursor-pointer ${tabIndex === 3 && 'bg-gray-100 dark:bg-gray-700'}`}>Bank Accounts</div>
             </div>
-            <div class="border-t border-gray-500 w-3/4 mx-auto my-2"></div>
+            <div className="border-t border-gray-500 w-3/4 mx-auto my-2"></div>
             <div className="mt-6 min-h-32">
                 {tabIndex === 0 && <div className="px-4 font-normal">
                         {data.description}

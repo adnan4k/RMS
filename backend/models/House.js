@@ -114,6 +114,22 @@ houseSchema.pre('deleteOne', { document: true, query: false }, async function() 
     });
 });
 
+
+houseSchema.pre('save', function(next) {
+    // remove duplicate images ?
+    const images = []
+    const imageSet = new Set()
+    this.images.forEach((image) => {
+        if (imageSet.has(image.url))
+            return
+        images.push(image)
+        imageSet.add(image.url)
+    })
+
+    this.images = images
+    next();
+});
+
 houseSchema.set('toJSON', {transform: (doc, ret, options) => {
     if (ret.images)
         ret.images = ret.images.map(({url}) => url);

@@ -24,6 +24,8 @@ import DetailsHouses from './pages/DetailsHouses';
 import CreateTenants from './owner/CreateTenants';
 import ShowTenant from './tenant/ShowTenant';
 import { EditHouse } from './owner/EditHouse';
+import { EditImages } from './owner/EditImages';
+import { EditHouseAddress } from './owner/EditAddress';
 
 // The default 404 should be done for the route
 function App() {
@@ -50,6 +52,8 @@ function App() {
               <Route path='edit' element={<EditOwner />} />
               <Route path=':houseid' element={<SingleHouse />} />
               <Route path=':houseid/edit/general' element={<EditHouse />} />
+              <Route path=':houseid/edit/images' element={<EditImages />} />
+              <Route path=':houseid/edit/address' element={<EditHouseAddress />} />
             </Route>
             <Route path="/" element={<Layout />}>
               <Route path="/showmore" element={<Showmore />} />

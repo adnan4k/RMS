@@ -40,8 +40,12 @@ export const cerateCallendar = async ({d, houseid}) => {
     return response.data
 }
 
-export const editHouse = async ({data, houseid}) => {
-    console.log(data)
+export const editHouse = async ({houseid, ...data}) => {
     const response = await axios.put(`owner/${houseid}`, data);
+    return response.data
+}
+
+export const editHouseImages = async ({houseid, form}) => {
+    const response = await axios.put(`owner/${houseid}/images`, form);
     return response.data
 }

@@ -1,15 +1,25 @@
 import React, { useState } from "react";
 import HouseForm from "./HouseForm";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { editHouse } from "../api/owner";
+import { useQueryClient } from "@tanstack/react-query"
 
 export const EditHouse = () => {
     const {state} = useLocation();
+
+    const queryClient = useQueryClient();
+    const navigate = useNavigate();
     const {mutate} = useMutation({
         mutationFn: editHouse,
-        onSuccess: (house) => toast.success('Successfully updated'),
+        onSuccess: (house) => {
+            queryClient.invalidateQueries({
+                queryKey: ['onwer-house', state._id]
+            });
+            toast.success('Successfully updated')
+            navigate('/owner/'+state._id)
+        },
         onError: (error) => {console.log(error);toast.error(error.response?error.response.data:"Something went wrong")}
     })
 
@@ -26,13 +36,12 @@ export const EditHouse = () => {
     const [selectedOption, setSelectedOption] = useState(state.house_type);
     const [showDropDown, setShowDropDown] = useState(false);
     const onClick = () => {
-        mutate({...houseData, house_type:selectedOption, houseid: state._id})
+        mutate({...houseData, house_type:selectedOption, houseid: state._id});
     }
-
-
+    
     return (<div>
         <HouseForm houseData={houseData} setHouseData={setHouseData} selectedOption={selectedOption} setSelectedOption={setSelectedOption} showDropDown={showDropDown} setShowDropDown={setShowDropDown} edit/>
-        <button type="button" onClick={onClick} class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 mt-8 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Default</button>
+        <button type="button" onClick={onClick} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 mt-8 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Edit house</button>
     </div>
     )
 }
