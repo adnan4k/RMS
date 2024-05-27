@@ -13,7 +13,7 @@ export const tenantSchema = new mongoose.Schema({
   },
   reference: {
     type: {
-      housenumber: String,
+      name: String,
       phone: String,
       address: addressSchema
     },
