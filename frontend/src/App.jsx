@@ -23,6 +23,7 @@ import Showmore from './pages/Showmore';
 import DetailsHouses from './pages/DetailsHouses';
 import CreateTenants from './owner/CreateTenants';
 import ShowTenant from './tenant/ShowTenant';
+import { EditHouse } from './owner/EditHouse';
 
 // The default 404 should be done for the route
 function App() {
@@ -39,7 +40,6 @@ function App() {
             <Route path="/forget" element={<ForgetPassword />} />
             <Route path="/resetpassword/:token" element={<ResetPassword />} />
             <Route path="/request" element={<VisitorRequest />} />
-            {/* <Route path="/map" element={<MapComponent />}/> */}
 
             <Route path='/owner/' element={<ProtectedRoutes role='owner' />}>
               <Route path='create-tenants' element={<CreateTenants />} />
@@ -49,6 +49,7 @@ function App() {
 
               <Route path='edit' element={<EditOwner />} />
               <Route path=':houseid' element={<SingleHouse />} />
+              <Route path=':houseid/edit/general' element={<EditHouse />} />
             </Route>
             <Route path="/" element={<Layout />}>
               <Route path="/showmore" element={<Showmore />} />

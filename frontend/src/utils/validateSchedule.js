@@ -1,10 +1,11 @@
+import dayjs from "dayjs";
+
 export const validateSchedule = (schedule) => {
     const error = Array(7).fill(false)
-    // console.log(schedule)
     schedule.forEach((element, idx) => {
-        const starttime = element.starttime.getUTCHours()
-        if (element.starttime.setUTCHours(starttime+1) > element.endtime)
+        if (element && element.starttime !== '' && element.endtime !== '' && element.starttime.add(1, 'hour').isAfter(element.endtime))
             error[idx] = true
     });
+    // console.log(error)
     return error
 }

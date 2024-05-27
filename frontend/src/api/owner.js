@@ -34,3 +34,14 @@ export const addTenant = async({houseData,houseId}) =>{
      const response = await axios.post(`owner/${houseId}`,houseData);
      return response.data
 }
+
+export const cerateCallendar = async ({d, houseid}) => {
+    const response = await axios.post(`owner/${houseid}/calendar`, {schedules: d});
+    return response.data
+}
+
+export const editHouse = async ({data, houseid}) => {
+    console.log(data)
+    const response = await axios.put(`owner/${houseid}`, data);
+    return response.data
+}

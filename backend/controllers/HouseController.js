@@ -128,8 +128,9 @@ export const editHouseInfo = async (req, res, next) => {
             bankaccounts,
             description,
             address,
+            rent_amount
         } = req.body;
-
+        console.log(rent_amount)
         if (bankaccounts)
             bankaccounts = JSON.parse(bankaccounts)
         if (address)
@@ -144,12 +145,12 @@ export const editHouseInfo = async (req, res, next) => {
         house.width = width || house.width;
         house.length = length || house.length;
         house.house_type = house_type || house.house_type;
-        house.description = description || house.description
+        house.description = description || house.description;
+        house.rent_amount = rent_amount || house.rent_amount;
 
         await house.save();
         return res.status(200).json(house);
     } catch (error) {
-
         next(error);
     }
 }
@@ -183,24 +184,23 @@ export const editHouseImages = async (req, res, next) => {
 export const addHouseCalendar = async (req, res, next) => {
     try {
         let { isOpen, schedules } = req.body;
-
+        
         schedules = typeof schedules === 'string' ? JSON.parse(schedules) : schedules;
         const house = await House.findOne({ owner: req.user, _id: req.params.houseid });
 
         if (!house)
             throw createError(400, "House not found!!");
 
-        let schedule = house.calendar.schedule;
+        let schedule = Array(7).fill(null);
 
-        schedules.forEach(({ starttime, endtime }) => {
+        schedules.forEach(({ starttime, endtime, idx }) => {
             starttime = new Date(starttime);
             endtime = new Date(endtime);
-            if (starttime.getDate() !== endtime.getDate())
-                throw createError(400, 'Set the times  for a specific date please');
-            if (starttime.getHours() >= endtime.getHours())
+
+            if ((starttime.getHours()+3)%24 >= (3+endtime.getHours())%24)
                 throw createError(400, 'There must be morethan one hour difference between the two');
 
-            schedule[starttime.getDay()] = {
+            schedule[idx] = {
                 starttime,
                 endtime
             }

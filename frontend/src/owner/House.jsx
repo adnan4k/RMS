@@ -9,6 +9,8 @@ import { FaAngleLeft, FaAngleRight, FaBed, FaToilet, FaArrowsLeftRightToLine } f
 import { AvailableDates } from "../components/AvailableDates";
 import { MinimalTenant } from "../components/MinimalTenant"
 import { Loader } from "../components/Loader";
+import { DisplayBankAccount } from "../components/DisplayBankAccount";
+import { Link } from "react-router-dom";
 
 export const SingleHouse = () => {
     const { houseid } = useParams();
@@ -33,10 +35,21 @@ export const SingleHouse = () => {
         },
     };
 
+    const [hide, setHide] = useState(true)
+
+    const handleHide = (e) => {
+        if(e.target.id !== 'editdropdown')
+            setHide(true)
+    }
+
     useEffect(() => {
         if (data) {
             setImages(data.images)
         }
+        document.addEventListener('click', handleHide);
+        return () => {
+          document.removeEventListener('click', handleHide);
+        };
     }, [data, status]);
 
     const swipeImages = (idx, current) => {
@@ -50,9 +63,36 @@ export const SingleHouse = () => {
                 <Loader />
             </div>
         )
-    console.log(data)
+console.log(data)
     return (
-        <div className="w-full h-full overflow-y-scroll p-8 dark:bg-gray-800 mx-32">
+        <div className="w-full h-full overflow-y-scroll p-8 pt-4 dark:bg-gray-800 mx-32 flex flex-col">
+            <div className="relative self-end">
+
+                <button onClick={()=>setHide(!hide)} id="editdropdown" data-dropdown-toggle="dropdown" class="text-white bg-blue-700 hover:bg-blue-800 mb-4 focus:outline-none  font-medium rounded-lg text-sm px-3 py-2 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 self-end max-w-64" type="button">Edit House <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                    </svg>
+                </button>
+
+
+                <div id="dropdown" class={`z-10 ${hide?'hidden':''} absolute right-1 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}>
+                    <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
+                    <li>
+                        <Link to="edit/general" state={data} class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">General Info</Link>
+                    </li>
+                    <li>
+                        <Link to="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Address</Link>
+                    </li>
+                    <li>
+                        <Link to="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Bank Accounts</Link>
+                    </li>
+                    <li>
+                        <Link to="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Images</Link>
+                    </li>
+                    </ul>
+                </div>
+            </div>
+
             <div className="flex justify-between mb-4">
                 <div>
                     <h4>
@@ -71,7 +111,7 @@ export const SingleHouse = () => {
                     </p>
                 </div>
             </div>
-            <Slider {...settings} className="max-w-80 mx-auto mt-2">
+            <Slider {...settings} className="min-w-full mx-2 mt-2">
                 {
                     images.map((image, idx) => 
                         <img key={idx} src={"http://localhost:4001/"+image} className="min-h-80 max-h-80 min-w-fill max-w-fill dark:bg-white object-fill rounded-lg" alt="" />
@@ -117,17 +157,21 @@ export const SingleHouse = () => {
                     </div>
                 </div>
             </div>
-            <div className="flex mt-4 justify-around">
+            <div className="flex mt-4 justify-around ">
                 <div onClick={()=>setTabIndex(0)} className={`hover:bg-gray-100 hover:dark:bg-gray-700 p-2 rounded cursor-pointer ${tabIndex === 0 && 'bg-gray-100 dark:bg-gray-700'}`}>Description</div>
                 <div onClick={()=>setTabIndex(1)} className={`hover:bg-gray-100 hover:dark:bg-gray-700 p-2 rounded cursor-pointer ${tabIndex === 1 && 'bg-gray-100 dark:bg-gray-700'}`}>Calendar</div>
                 <div onClick={()=>setTabIndex(2)} className={`hover:bg-gray-100 hover:dark:bg-gray-700 p-2 rounded cursor-pointer ${tabIndex === 2 && 'bg-gray-100 dark:bg-gray-700'}`}>Tenant</div>
+                <div onClick={()=>setTabIndex(3)} className={`hover:bg-gray-100 hover:dark:bg-gray-700 p-2 rounded cursor-pointer ${tabIndex === 3 && 'bg-gray-100 dark:bg-gray-700'}`}>Bank Accounts</div>
             </div>
-            <div className="mt-6">
+            <div class="border-t border-gray-500 w-3/4 mx-auto my-2"></div>
+            <div className="mt-6 min-h-32">
                 {tabIndex === 0 && <div className="px-4 font-normal">
                         {data.description}
                 </div>}
-                {tabIndex === 1 && <AvailableDates dates={data.calendar} />}
+                {tabIndex === 1 && <AvailableDates dates={data.calendar} houseid={data._id} />}
                 {tabIndex === 2 && <MinimalTenant tenant={data.tenant} />}
+                {tabIndex === 3 && 
+                    <DisplayBankAccount bankaccounts={data.bankaccounts} />}
             </div>
         </div>
     )

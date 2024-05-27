@@ -1,6 +1,6 @@
 import React from 'react'
 
-function HouseForm({ houseData, setHouseData, selectedOption, setSelectedOption, setImages, setShowDropDown, showDropDown }) {
+function HouseForm({ houseData, setHouseData, selectedOption, setSelectedOption, setImages, setShowDropDown, showDropDown, edit }) {
     const handleHouseChange = (e) => {
         setHouseData({
             ...houseData,
@@ -69,12 +69,12 @@ function HouseForm({ houseData, setHouseData, selectedOption, setSelectedOption,
                                 </ul>
                             </div>
                         </div>
-                        <div className="relative z-0 w-full mb-5 group">
+                        {!edit&&<div className="relative z-0 w-full mb-5 group">
 
                             <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="images">Upload multiple Images</label>
                             <input onChange={handleFileChange} className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="images" type="file" multiple />
 
-                        </div>
+                        </div>}
                     </div>
 
                     <div className="grid md:grid-cols-2 md:gap-6">
@@ -83,8 +83,8 @@ function HouseForm({ houseData, setHouseData, selectedOption, setSelectedOption,
                             <label htmlFor="housenumber" className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Unique House Number</label>
                         </div>
                         <div className="relative z-0 w-full mb-5 group">
-                            <input onChange={handleHouseChange} type="number" value={houseData.rentamount} name="rentamount" id="rentamount" className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " />
-                            <label htmlFor="rentamount" className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Initial rent amount</label>
+                            <input onChange={handleHouseChange} type="number" value={houseData.rentamount} name="rent_amount" id="rent_amount" className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " />
+                            <label htmlFor="rent_amount" className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Initial rent amount</label>
                         </div>
                     </div>
 
