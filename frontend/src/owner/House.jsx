@@ -83,7 +83,7 @@ export const SingleHouse = () => {
                         <Link to="edit/address" state={{address: data.address, _id: data._id}} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Address</Link>
                     </li>
                     <li>
-                        <Link to="edit/bankaccount" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Bank Accounts</Link>
+                        <Link to="edit/bank" state={{bankaccounts: data.bankaccounts, _id: data._id}} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Bank Accounts</Link>
                     </li>
                     <li>
                         <Link to="edit/images" state={{images: data.images, _id: data._id}} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Images</Link>
@@ -163,7 +163,7 @@ export const SingleHouse = () => {
                 <div onClick={()=>setTabIndex(3)} className={`hover:bg-gray-100 hover:dark:bg-gray-700 p-2 rounded cursor-pointer ${tabIndex === 3 && 'bg-gray-100 dark:bg-gray-700'}`}>Bank Accounts</div>
             </div>
             <div className="border-t border-gray-500 w-3/4 mx-auto my-2"></div>
-            <div className="mt-6 min-h-32">
+            <div className="mt-6 min-h-32 mb-4">
                 {tabIndex === 0 && <div className="px-4 font-normal">
                         {data.description}
                 </div>}

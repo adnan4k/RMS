@@ -130,13 +130,11 @@ export const editHouseInfo = async (req, res, next) => {
             rent_amount
         } = req.body;
         
-        // if (bankaccounts)
-        //     bankaccounts = JSON.parse(bankaccounts)
-        // if (address)
-        //     address = JSON.parse(address)
         
         const houseid = req.params.houseid;
         const house = await House.findOne({ _id: houseid, owner: req.user });
+
+
         house.housenumber = housenumber || house.housenumber;
         house.no_of_rooms = no_of_rooms || house.no_of_rooms;
         house.no_of_bath_rooms = no_of_bath_rooms || house.no_of_bath_rooms;

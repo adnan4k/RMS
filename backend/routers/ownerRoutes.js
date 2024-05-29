@@ -23,7 +23,7 @@ ownerRouter.delete('/:houseid/tenant', verifyToken('owner'), deleteTenant);
 ownerRouter.get('/:username', getOwner);
 ownerRouter.put('/:houseid/images', verifyToken('owner'), uploader.array('images', 10), editHouseImages);
 ownerRouter.post('/:houseid', verifyToken('owner'), uploader.fields([{name:'nationalid', maxCount: 1, minCount: 1}, {name:'contract', maxCount: 1, minCount: 1}]), addTenant);
-ownerRouter.put('/:houseid',verifyToken('owner'), editHouseInfo);
+ownerRouter.put('/:houseid', verifyToken('owner'), editHouseInfo);
 ownerRouter.put('/', verifyToken('owner'), uploader.single('nationalid'), editProfile);
 ownerRouter.post('/', verifyToken("user"), uploader.single('nationalid'), addOwner);
 

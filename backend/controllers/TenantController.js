@@ -14,7 +14,7 @@ export const addTenant = async(req, res, next) => {
     console.log(req.files)
     session.startTransaction();
     try {
-        let { email, firstname, lastname, phonenumber, reference } = req.body;
+        let { email, firstname, lastname, phonenumber, reference, mother_name } = req.body;
         const houseId = req.params.houseid
         reference = JSON.parse(reference);
 
@@ -38,7 +38,7 @@ export const addTenant = async(req, res, next) => {
         user.role = 'tenant'
         user.isActive = false
         await user.save({session});
-        const tenant = await Tenant.create([{ user, reference, national_id }], {session});
+        const tenant = await Tenant.create([{ user, reference, national_id, mother_name }], {session});
         const house = await House.findById(houseId);
         
         if (!house)
