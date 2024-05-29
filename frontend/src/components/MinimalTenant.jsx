@@ -1,10 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-export const MinimalTenant = ({tenant}) => {
+export const MinimalTenant = ({tenant, houseId}) => {
     if (!tenant || Object.keys(tenant).length === 0)
         return <div className="m-auto text-xl w-fit">
-                No tenants assigned yet
+                No tenants assigned yet, 
+                Register tenant 
+                <Link to="create-tenants"
+                        state={{ houseId }} 
+                        className=" my-[15px] block mt-5 text-center focus:outline-none text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add Tenant</Link>
             </div>
     return <Link to={'/'+tenant.username}>
         <h6 className="mb-1 font-bold tracking-tight text-gray-900 dark:text-white">Email: {tenant.email}</h6>

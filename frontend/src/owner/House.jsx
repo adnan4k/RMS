@@ -168,7 +168,7 @@ export const SingleHouse = () => {
                         {data.description}
                 </div>}
                 {tabIndex === 1 && <AvailableDates dates={data.calendar} houseid={data._id} />}
-                {tabIndex === 2 && <MinimalTenant tenant={data.tenant} />}
+                {tabIndex === 2 && <MinimalTenant houseId={data._id} tenant={data.tenant} />}
                 {tabIndex === 3 && 
                     <DisplayBankAccount bankaccounts={data.bankaccounts} />}
             </div>

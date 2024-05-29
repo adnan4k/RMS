@@ -45,13 +45,13 @@ function App() {
             <Route path="/request" element={<VisitorRequest />} />
 
             <Route path='/owner/' element={<ProtectedRoutes role='owner' />}>
-              <Route path='create-tenants' element={<CreateTenants />} />
               <Route index element={<Houses />} />
               <Route path="create-house" element={<StepperForm />} />
               <Route path="show-tenant" element={<ShowTenant />} />
 
               <Route path='edit' element={<EditOwner />} />
               <Route path=':houseid' element={<SingleHouse />} />
+              <Route path=':houseid/create-tenants' element={<CreateTenants />} />
               <Route path=':houseid/edit/general' element={<EditHouse />} />
               <Route path=':houseid/edit/images' element={<EditImages />} />
               <Route path=':houseid/edit/address' element={<EditHouseAddress />} />

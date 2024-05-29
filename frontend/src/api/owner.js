@@ -30,8 +30,8 @@ export const getSingleHouse = async (houseid) => {
     return response.data 
 }
 
-export const addTenant = async({houseData,houseId}) =>{
-     const response = await axios.post(`owner/${houseId}`,houseData);
+export const addTenant = async({formData, houseId}) =>{
+     const response = await axios.post(`owner/${houseId}`, formData);
      return response.data
 }
 

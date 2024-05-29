@@ -47,12 +47,7 @@ export const Houses = () => {
                         <h3><span className="text-[#081E4A] text-[12px] mx-2 font-semibold dark:text-white">Type: </span> <span className="font-semibold text-sm">{house.house_type}</span></h3>
                         <h3><span className="text-[#081E4A] mx-2 text-[12px] font-semibold dark:text-white">Location: </span> <span className="font-semibold text-sm">{house.address.city}, {house.address.sub_city}</span> </h3>
                         <h3><span className="text-[#081E4A] mb-5  mx-2 text-[12px] font-semibold dark:text-white">Area: </span> <span className="font-semibold text-sm">{house.width} <sup>2</sup></span></h3>
-
                     </div>
-                    <Link to="create-tenants"
-                        state={{ houseId: house._id}} 
-                        className=" my-[15px] text-center focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Add Tenant</Link>
-
                 </div>
             }
             )}
