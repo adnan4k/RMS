@@ -9,7 +9,7 @@ import { FaDropbox } from "react-icons/fa";
 export const Houses = () => {
 
     const { data, status, error } = useQuery({
-        queryKey: ['houses'],
+        queryKey: ['owner-houses'],
         queryFn: getHouses,
     });
 

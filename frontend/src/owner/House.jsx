@@ -64,7 +64,7 @@ export const SingleHouse = () => {
             </div>
         )
     return (
-        <div className="w-full h-full overflow-y-scroll p-8 pt-4 dark:bg-gray-800 mx-32 flex flex-col">
+        <div className="w-full h-full overflow-y-scroll overflow-x-hidden p-8 pt-4 dark:bg-gray-800 mx-32 flex flex-col">
             <div className="relative self-end">
 
                 <button onClick={()=>setHide(!hide)} id="editdropdown" data-dropdown-toggle="dropdown" className="text-white bg-blue-700 hover:bg-blue-800 mb-4 focus:outline-none  font-medium rounded-lg text-sm px-3 py-2 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 self-end max-w-64" type="button">Edit House <svg className="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
@@ -98,7 +98,7 @@ export const SingleHouse = () => {
                         House Number {data.housenumber}
                     </h4>
                     <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        {data.address.city}, {data.address.sub_city}, {data.address.woreda} kebele {data.address.kebele}
+                        {data.address.city}, {data.address.sub_city}, {data.address.woreda} {data.address.kebele && "kebele, "+data.address.kebele}
                     </p>
                 </div>
                 <div>
@@ -118,7 +118,7 @@ export const SingleHouse = () => {
                 }
             </Slider>
             <div className="mt-2 flex justify-between items-center min-w-256">
-                <div className="flex relative w-[60%] rounded">
+                <div className="flex relative w-[60%] rounded h-full">
                     <div className="flex gap-2 w-full overflow-x-scroll peer" ref={housePics}>
                     {
                         images.map((image, idx) => 
@@ -141,7 +141,7 @@ export const SingleHouse = () => {
                         <FaAngleRight />
                     </div>
                 </div>
-                <div className="flex border-dashed rounded">
+                <div className="flex border-dashed p-2 rounded">
                     <div className="flex flex-col items-center ml-2 mr-1 min-w-max border-gray-300 bg-gray-100 rounded-lg p-1 dark:bg-gray-700">
                         <FaBed className="min-h-8 min-w-8"/>
                         <span className="text-xs mt-1">{data.no_of_rooms} bed rooms</span>

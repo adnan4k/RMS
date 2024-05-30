@@ -14,7 +14,6 @@ const addressSchema = mongoose.Schema({
     },
     woreda:{
      type:String,
-     required:true
     },
     latitude:{
      type:String,

@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { editHouse } from "../api/owner";
 import { useQueryClient } from "@tanstack/react-query"
 import AddressData from "./addressData";
+import { validateForm } from "../utils/validation";
 
 
 export const EditHouseAddress = () => {
@@ -23,7 +24,7 @@ export const EditHouseAddress = () => {
             navigate('/owner/'+state._id)
         },
         onError: (error) => {console.log(error);toast.error(error.response?error.response.data:"Something went wrong")}
-    })
+    });
 
     const [addressData, setAddressData] = useState({
         city: address.city,
@@ -39,9 +40,9 @@ export const EditHouseAddress = () => {
         mutate({address: addressData, houseid: state._id})
     }
     
-
+    const addressErrors = validateForm(addressData, ['longitude', 'latitude', 'woreda', 'kebele']);
     return (<div className="h-full flex flex-col justify-start overflow-scroll py-8">
-        <AddressData addressData={addressData} setAddressData={setAddressData}/>
+        <AddressData addressData={addressData} setAddressData={setAddressData} errors={addressErrors} setDisplay={(name) => {}} displayError={new Set(['city', 'sub_city'])}/>
         <div className="flex gap-4 justify-end">
             <Link to={'/owner/'+state._id} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 mt-8 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Back</Link>
             <button type="button" onClick={onClick} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 mt-8 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Edit address</button>

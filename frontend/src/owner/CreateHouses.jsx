@@ -1,19 +1,34 @@
 import React, { useState } from 'react';
 import AddressData from './addressData';
 import HouseForm from './HouseForm';
-import Sidebar from '../layout/Sidebar';
 import { AddBankAccounts } from '../components/AddBankAccounts';
 import { HouseProgress } from '../components/HouseProgress';
 import { validateForm } from '../utils/validation';
-import {useMutation} from '@tanstack/react-query';
+import {useMutation, useQueryClient} from '@tanstack/react-query';
 import { createHouse } from '../api/house';
-import { useOutletContext } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 function StepperForm() {
     const [step, setStep] = useState(0);
 
-    const [addressData, setAddressData] = useState({});
-    const [houseData, setHouseData] = useState({});
+    const [addressData, setAddressData] = useState({
+        city: '',
+        sub_city: '',
+        kebele: '',
+        woreda: '',
+        longitude: '',
+        latitude: '',
+    });
+    const [displayError, setDisplayError] = useState(new Set())
+    const [houseData, setHouseData] = useState({
+        no_of_rooms: '',
+        no_of_bath_rooms: '',
+        length: '',
+        width: '',
+        housenumber: '',
+        description: '',
+    });
     const [selectedOption, setSelectedOption] = useState('');
     const [showDropDown, setShowDropDown] = useState(false);
     const [images, setImages] = useState([]);
@@ -24,16 +39,42 @@ function StepperForm() {
     const [hijra, setHijra] = useState(['']);
 
     const owner = useOutletContext();
+    const queryClient = useQueryClient();
+    const navigate = useNavigate();
     const {mutate, status} = useMutation({
         mutationFn: createHouse,
         onSuccess: (house) => {
-            console.log(house)
+            queryClient.invalidateQueries({queryKey: ['owner-houses'], exact: true});
+            queryClient.setQueryData(['owner-houses', house._id], house);
+            navigate('/owner/'+house._id);
+            toast.success('House crated successfully');
         },
         onError: (err) => {
+            toast.error(err.response?err.response.data.message : err.message)
             console.log(err)
         }
     })
     const handleNext = () => {
+        if (Object.keys(houseErrors).length > 0) {
+            Object.keys(houseErrors).forEach((key)=>
+                setDisplayError((prev) => new Set(prev.add(key)))
+            )
+            const field = Object.keys(houseErrors)[0];
+
+            return toast.error(`${field}: ${houseErrors[field]}`)
+        }
+        if (images.length < 1) {
+            setDisplayError(new Set(displayError.add('images')));
+            return toast.error(`Atleast one house image is required`)
+        }
+        if (step > 0 && Object.keys(addressErrors).length > 0) {
+            Object.keys(addressErrors).forEach((key)=>
+                setDisplayError((prev) => new Set(prev.add(key)))
+            )
+            const field = Object.keys(addressErrors)[0];
+
+            return toast.error(`${field}: ${addressErrors[field]}`)
+        }
         setStep(prevStep => prevStep + 1);
     };
 
@@ -45,7 +86,7 @@ function StepperForm() {
         e.preventDefault();
 
         if (!images || images.length === 0) {
-            console.log('error')
+            toast.error('You havent choosen an image')
             return
         }
 
@@ -87,13 +128,14 @@ function StepperForm() {
         mutate(formData);
     };
 
-    const houseValidation = validateForm(houseData, ['width', 'height', 'rentamount'])
+    const houseErrors = validateForm(houseData, ['description']);
+    const addressErrors = validateForm(addressData, ['longitude', 'latitude', 'woreda', 'kebele'])
  
     return (<div className="p-8 flex flex-col justify-around items-center h-full">
                 <HouseProgress idx={step}/>
                  <div>
-                    {step === 0 && <HouseForm houseData={houseData} setHouseData={setHouseData} selectedOption={selectedOption} setSelectedOption={setSelectedOption} showDropDown={showDropDown} setShowDropDown={setShowDropDown} setImages={setImages} />}
-                    {step === 1 && <AddressData addressData={addressData} setAddressData={setAddressData} />}
+                    {step === 0 && <HouseForm houseData={houseData} setHouseData={setHouseData} selectedOption={selectedOption} setSelectedOption={setSelectedOption} images={images} showDropDown={showDropDown} setShowDropDown={setShowDropDown} setImages={setImages} errors={houseErrors} setDisplay={setDisplayError} displayError={displayError}/>}
+                    {step === 1 && <AddressData addressData={addressData} setAddressData={setAddressData} errors={addressErrors} setDisplay={setDisplayError} displayError={displayError}/>}
                     {step === 2 && <AddBankAccounts CBE={CBE} setCBE={setCBE} BOA={BOA} setBOA={setBOA} awash={awash} setAwash={setAwash} hijra={hijra} setHijra={setHijra}/>}
                     <div className="flex justify-end my-4 gap-8">
                         {step > 0 && <button type="button" onClick={handlePrevious} className="bg-gray-500 text-white px-4 py-2 rounded">Previous</button>}
