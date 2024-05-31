@@ -30,12 +30,13 @@ export const addTenant = async(req, res, next) => {
             path: contract_photo.destination+"/"+contract_photo.filename
         }
         
-        let user =  await User.findOne({email: email});
+        let user =  await User.findOne({email: email}).select('-password');
         if (user && user.role != 'user')
             throw createError(400, 'This email has been taken!!');
         if (!user)
             user = new User({ role: 'tenant', email, firstname, lastname, phonenumber, password: 'password', isActive: false});
         user.role = 'tenant'
+        user.verified = false
         user.isActive = false
         await user.save({session});
         const tenant = await Tenant.create([{ user, reference, national_id, mother_name }], {session});
@@ -124,19 +125,31 @@ export const editTenant = async (req, res, next) => {
 
 export const getTenant = async (req, res, next) => {
     try {
-        const teantid = req.role === 'tenant'? req.user: req.params.username
-        const user = User.findOne({$or: [{username: teantid, isActive: true}, {_id: teantid, isActive:true}]});
+        let user = null;
+        let house = null;
+
+        if (req.role === 'tenant')
+            user = await User.findOne({_id: req.user, isActive:true}).select('-password');
+        else
+            user = await User.findOne({_id: req.params.id, isActive: true}).select('-password');
+
         if (!user)
-            throw createError(400, 'Owner not found')
-        if (req.role === 'owner') {
-            const house = await House.findOne({owner: req.user, tenant: user._id});
-            if (!house)
-                throw createError(400, 'Not allowed to see this tenant')
-        }
+            throw createError(400, 'User not found');
+        if (req.role === 'owner') 
+            house = await House.findOne({owner: req.user, tenant: user._id}).select('deadline contract');
+        else
+            house = await House.findOne({tenant: user._id}).select('deadline contract');
+        // Limit the information here
+
+        if (!house)
+            throw createError(400, 'Not allowed to see this tenant')
+
         const tenant = await Tenant.findOne({user: user._id});
+        
         if (!tenant)
             throw createError(400, 'Not a tenant')
-        return res.status(200).json({tenant, user});
+        
+        return res.status(200).json({tenant, ...user._doc, house});
     } catch (error) {
         return next(error);
     }

@@ -53,6 +53,10 @@ export const userSchema = new mongoose.Schema({
     isActive: {
         type: Boolean,
         default: true,
+    },
+    verified: {
+        type: Boolean,
+        default: true,
     }
 });
 

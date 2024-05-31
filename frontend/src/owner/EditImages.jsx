@@ -56,9 +56,9 @@ export const EditImages = () => {
         }
         mutate({houseid: id, form})
     }
-
+    
     return (
-        <div className="h-full flex flex-col justify-between py-8 overflow-scroll">
+        <div className="h-screen flex flex-col justify-between">
             <div>
                 Please Select images you want to remove
                 <div className="grid md:grid-cols-3 sm:grid-col-1 gap-4 mt-4">
@@ -78,6 +78,7 @@ export const EditImages = () => {
                         className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
                         type="file"
                         onChange={(e) => setNewImages(e.target.files)}
+                        accept="image/*"
                         multiple
                     />    
                     <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">Upto 10 images in total (SVG, PNG, JPG (MAX. 3 MB)).</p>    
@@ -91,4 +92,4 @@ export const EditImages = () => {
             <Modal hide={hide} title={'Apply Changes to your houses images'} message={`If you press yes ${selectedImages.length} images will be deleted and ${newImages.length} new ones will be add. Are you sure you want to do that`} submit={onApplyChange} email={{newImages, selectedImages, id:state._id}}/>
         </div>
     );
-} 
+}

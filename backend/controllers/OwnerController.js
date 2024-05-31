@@ -168,8 +168,8 @@ export const getHouses = async (req, res, next) => {
 
 export const getSingleHouse = async (req, res, next) => {
     try {
-        const house = await House.findOne({owner: req.user, _id: req.params.houseid});
-        return res.status(200).json(house)
+        const house = await House.findOne({owner: req.user, _id: req.params.houseid}).populate({path: 'tenant', model: 'User', select: '-isActive -password'});
+        return res.status(200).json(house);
     } catch (error) {
         next(error)
     }

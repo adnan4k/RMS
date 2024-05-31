@@ -49,3 +49,13 @@ export const editHouseImages = async ({houseid, form}) => {
     const response = await axios.put(`owner/${houseid}/images`, form);
     return response.data
 }
+
+export const getTenant = async (tenantid) => {
+    try {
+        
+        const response = await axios.get(`tenant/${tenantid}`);
+        return response.data
+    } catch (error) {
+        console.log(error)
+    }
+}

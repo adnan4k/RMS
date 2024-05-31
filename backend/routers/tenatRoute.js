@@ -11,7 +11,7 @@ tenantRouter.get('/maintenance', verifyToken('tenant'), tenantRequests);
 tenantRouter.put('/maintenance/:requestid', verifyToken('tenant'), editRequest);
 tenantRouter.post('/payrent', verifyToken('tenant'), payRent);
 tenantRouter.delete('/delete/:id',deleteTenant);
-tenantRouter.get('/:username', verifyToken('tenant', 'owner'), getTenant);
+tenantRouter.get('/:id', verifyToken('tenant', 'owner'), getTenant);
 tenantRouter.put('/', verifyToken('tenant'), uploader.single('nationalid'), editTenant);
 
 export default tenantRouter

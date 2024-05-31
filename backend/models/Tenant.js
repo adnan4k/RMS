@@ -14,8 +14,19 @@ export const tenantSchema = new mongoose.Schema({
   reference: {
     type: {
       name: String,
-      phone: String,
-      address: addressSchema
+      phonenumber:{
+        type: String,
+        required: [true, "Reference phone number is required"],
+        unique: true,
+        validate: {
+            validator: phone => {
+                const checker = /^\+(2519|2517)\d{8}$/;
+                return checker.test(phone);
+            },
+            message: 'Phone number format doesn\'t match'
+        }
+    },
+    address: addressSchema
     },
     required: true
   },
@@ -27,4 +38,11 @@ export const tenantSchema = new mongoose.Schema({
     required: true,
   },
 });
+
+tenantSchema.set('toJSON', {transform: (doc, ret, options) => {
+  ret.national_id = ret.national_id.url;
+  return ret
+}});
+
+
 export default mongoose.model("Tenant", tenantSchema);

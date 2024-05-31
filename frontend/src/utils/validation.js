@@ -8,7 +8,7 @@ export const validateForm = (formData, notRequired) => {
     });
 
     if (formData.phonenumber && ! /^(9|7)\d{8}$/.test(formData.phonenumber))
-        errors.phonenumber = "Wrong phone number format starts with 9 or 7";
+        errors.phonenumber = "Wrong phone number format: (it's 9 digits and starts with 9 or 7)";
     if (formData.email && ! /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
         errors.email = "Wrong email format";
     if (formData.password && formData.password.length < 7)

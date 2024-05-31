@@ -56,19 +56,19 @@ export const SingleHouse = () => {
         [images[current], images[idx]] = [images[idx], images[current]]
         setImages([...images])
     }
-
+    
     if(status === 'pending')
         return (
             <div className="w-full h-full flex justify-center align-center">
                 <Loader />
             </div>
         )
+    console.log(data);
     return (
         <div className="w-full h-full overflow-y-scroll overflow-x-hidden p-8 pt-4 dark:bg-gray-800 mx-32 flex flex-col">
             <div className="relative self-end">
 
                 <button onClick={()=>setHide(!hide)} id="editdropdown" data-dropdown-toggle="dropdown" className="text-white bg-blue-700 hover:bg-blue-800 mb-4 focus:outline-none  font-medium rounded-lg text-sm px-3 py-2 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 self-end max-w-64" type="button">Edit House <svg className="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-
                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4"/>
                     </svg>
                 </button>
@@ -169,8 +169,7 @@ export const SingleHouse = () => {
                 </div>}
                 {tabIndex === 1 && <AvailableDates dates={data.calendar} houseid={data._id} />}
                 {tabIndex === 2 && <MinimalTenant houseId={data._id} tenant={data.tenant} />}
-                {tabIndex === 3 && 
-                    <DisplayBankAccount bankaccounts={data.bankaccounts} />}
+                {tabIndex === 3 && <DisplayBankAccount bankaccounts={data.bankaccounts} />}
             </div>
         </div>
     )

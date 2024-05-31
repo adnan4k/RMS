@@ -133,6 +133,8 @@ houseSchema.pre('save', function(next) {
 houseSchema.set('toJSON', {transform: (doc, ret, options) => {
     if (ret.images)
         ret.images = ret.images.map(({url}) => url);
+    if (ret.contract && ret.contract.photo)
+        ret.contract.photo = ret.contract.photo.url;
     return ret
 }});
 

@@ -107,6 +107,7 @@ export const resetPassword = async (req, res, next) => {
 
     user.password = hash;
     user.isActive = true;
+    user.verified = true;
     
     await user.save();
     
