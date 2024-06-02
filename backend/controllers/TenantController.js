@@ -13,7 +13,6 @@ export const addTenant = async(req, res, next) => {
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
-        console.log(req.body)
         let { email, firstname, lastname, phonenumber, reference, mother_name } = req.body;
         const houseId = req.params.houseid
         reference = JSON.parse(reference);
@@ -102,18 +101,21 @@ export const editTenant = async (req, res, next) => {
         tenant.reference = reference || tenant.reference;
         tenant.mother_name = mother_name || tenant.mother_name;
 
+        let removedPath = ''
         if (req.file) {
-            await removeImage(tenant.national_id.path);
+            removedPath = tenant.national_id.path
             tenant.national_id = {
                 url: "nationalids/"+req.file.filename,
                 path: req.file.destination+"/"+req.file.filename
             }
         }
         
-        await user.save().session(session);
-        await tenant.save().session(session);
+        await user.save({session});
+        await tenant.save({session});
     
         await session.commitTransaction();
+        if (removedPath !== '')
+            await removeImage(removedPath);
         return res.status(200).json({msg: "Succssesfully updated!", data: {tenant, user}})
     } catch (error) {
         await session.abortTransaction();
@@ -135,15 +137,14 @@ export const getTenant = async (req, res, next) => {
 
         if (!user)
             throw createError(400, 'User not found');
-        if (req.role === 'owner') 
+        
+        if (req.role === 'owner')
             house = await House.findOne({owner: req.user, tenant: user._id}).select('deadline contract');
         else
             house = await House.findOne({tenant: user._id}).select('deadline contract');
-        // Limit the information here
-
+        
         if (!house)
             throw createError(400, 'Not allowed to see this tenant')
-
         const tenant = await Tenant.findOne({user: user._id});
         
         if (!tenant)

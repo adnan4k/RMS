@@ -6,6 +6,7 @@ import { createError } from "../utils/CreateError.js";
 import sendEmail from "../utils/email.js";
 import { generateToken, refresh } from "../utils/generateTokens.js";
 import Owner from '../models/Owner.js'
+import Tenant from '../models/Tenant.js'
 import dotenv from "dotenv";
 
 

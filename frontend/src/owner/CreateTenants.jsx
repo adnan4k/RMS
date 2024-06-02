@@ -1,31 +1,52 @@
 import React, { useState } from 'react';
 import { addTenant } from '../api/owner';
-import { useMutation } from '@tanstack/react-query';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Link, useLocation, useNavigate, useOutletContext } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FaX } from 'react-icons/fa6';
 import { validateForm } from '../utils/validation';
+import { editTenant } from '../api/tenant';
 
+const initialFormData = {
+    mother_name: '',
+    firstname: '',
+    lastname: '',
+    phonenumber: '',
+    email: '',
+    contract: null,
+    nationalid: null,
+} 
 
-function CreateTenants() {
-    const [formData, setFormData] = useState({
-        mother_name: '',
-        firstname: '',
-        lastname: '',
-        phonenumber: '',
-        email: '',
-        contract: null,
-        nationalid: null,
-    });
+const initialReferenceData = {
+    phonenumber:'',
+    name:'',
+    kebele:'',
+    woreda:'',
+    city:'',
+    sub_city:'',
+} 
 
-    const [referenceData ,setReference] = useState({
-        phonenumber:'',
-        name:'',
-        kebele:'',
-        woreda:'',
-        city:'',
-        sub_city:'',
-    });
+function CreateTenants({edit}) {
+    
+    if (edit) {
+        const data = useOutletContext();
+        initialFormData.mother_name = data.tenant.mother_name 
+        initialFormData.firstname = data.firstname 
+        initialFormData.lastname = data.lastname
+        initialFormData.phonenumber = data.phonenumber.slice(4)
+        initialFormData.email = data.email
+
+        initialReferenceData.name = data.tenant.reference.name
+        initialReferenceData.phonenumber = data.tenant.reference.phonenumber.slice(4)
+        initialReferenceData.city = data.tenant.reference.address.city
+        initialReferenceData.sub_city = data.tenant.reference.address.sub_city
+        initialReferenceData.woreda = data.tenant.reference.address.woreda
+        initialReferenceData.kebele = data.tenant.reference.address.kebele
+    }
+
+    const [formData, setFormData] = useState(initialFormData);
+
+    const [referenceData ,setReference] = useState(initialReferenceData);
 
   const handleReferenceChange = (e) =>{
     const {name,value} = e.target
@@ -38,16 +59,23 @@ function CreateTenants() {
     const [modalVisible, setModalVisible] = useState(false);
     const navigate = useNavigate();
 
+    const queryClient = useQueryClient();
     const { mutate, status } = useMutation({
-        mutationFn: addTenant,
+        mutationFn: edit ? editTenant: addTenant,
         onSuccess: (house) => {
-            console.log(house);
-            toast.success('Tenant added successfully!');
-            navigate('/owner/'+houseId)
+            if (edit) {
+                queryClient.invalidateQueries({queryKey: []})
+                toast.success('Tenant edited successfully!');
+                navigate('/tenant/')
+            }
+            else {
+                toast.success('Tenant added successfully!');
+                navigate('/owner/'+houseId)
+            }
         },
         onError: (err) => {
             console.log(err);
-            toast.error('Failed to add tenant.');
+            toast.error(err.reponse ? err.reponse.data.message : err.message);
         }
     });
 
@@ -93,21 +121,27 @@ function CreateTenants() {
             return toast.error(`${field} in reference info: ${referenceErrors[field]}`)
         }
 
-        if (!formData.contract)
+        if (!formData.contract && !edit)
             return toast.error(`Contract photo is required`)
-        if (!formData.nationalid)
+        if (!formData.nationalid && !edit)
             return toast.error(`National photo is required`)
 
         const data = {...formData, phonenumber: '+251'+formData.phonenumber}
         const address = {city: referenceData.city, sub_city: referenceData.sub_city, woreda: referenceData.woreda, kebele: referenceData.kebele};
         const rdata = {name: referenceData.name, phonenumber: '+251'+referenceData.phonenumber, address};
+        
         const newFormData = new FormData();
         for (const key in data) {
-            newFormData.append(key, data[key]);
+            if (data[key] !== null && data[key] !== '') {
+                newFormData.append(key, data[key]);
+            }
         }
-        
         newFormData.append('reference', JSON.stringify(rdata));
-        mutate({ formData: newFormData, houseId });
+        
+        if (edit)
+            mutate(newFormData);
+        else
+            mutate({ formData: newFormData, houseId });
     }
 
     const handleAddReference = (e) =>{
@@ -128,7 +162,7 @@ function CreateTenants() {
 
     return (
         <div>
-            <form className="max-w-md mx-auto" onSubmit={handleSubmit}>
+            <form className="max-w-md mx-auto my-4" onSubmit={handleSubmit}>
                 <div className="grid md:grid-cols-2 md:gap-6">
                     <div className="relative z-0 w-full mb-5 group">
                         <input
@@ -211,19 +245,22 @@ function CreateTenants() {
                     </div>
                 </div>
                 <div className="grid md:grid-cols-2 md:gap-6">
-                    <div className="relative z-0 w-full mb-5 group">
-                        <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="contract">Contract</label>
-                        <input
-                            className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-                            id="contract"
-                            name="contract"
-                            type="file"
-                            accept="image/*"
-                            onChange={handleChange}
-                        />
-                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">SVG, PNG, JPG (MAX. 3 MB).</p>
-                        {(displayError.has('contract') && !formData.contract)&& <p className="mt-1 text-xs text-red-600 dark:text-red-500">Please submit the contract photo</p>}
-                    </div>
+                    {
+                        !edit&&
+                        <div className="relative z-0 w-full mb-5 group">
+                            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="contract">Contract</label>
+                            <input
+                                className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                                id="contract"
+                                name="contract"
+                                type="file"
+                                accept="image/*"
+                                onChange={handleChange}
+                            />
+                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">SVG, PNG, JPG (MAX. 3 MB).</p>
+                            {(displayError.has('contract') && !formData.contract)&& <p className="mt-1 text-xs text-red-600 dark:text-red-500">Please submit the contract photo</p>}
+                        </div>
+                    }
                     <div className="relative z-0 w-full mb-5 group">
                         <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="nationalid">National Id</label>
                         <input
@@ -235,10 +272,11 @@ function CreateTenants() {
                             onChange={handleChange}
                         />
                         <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">SVG, PNG, JPG (MAX. 3 MB).</p>
-                        {(displayError.has('nationalid') && !formData.nationalid)&& <p className="mt-1 text-xs text-red-600 dark:text-red-500">Please submit the tenants national id</p>}
+                        {(!edit &&displayError.has('nationalid') && !formData.nationalid)&& <p className="mt-1 text-xs text-red-600 dark:text-red-500">Please submit the tenants national id</p>}
                     </div>
                 </div>
-                <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
+                <Link to={'/tenant'} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg w-full sm:w-auto px-5 py-3.5 text-sm text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Back</Link>
+                <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 ml-6 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
             </form>
 
             {/* Main modal */}

@@ -27,14 +27,35 @@ import { EditHouse } from './owner/EditHouse';
 import { EditImages } from './owner/EditImages';
 import { EditHouseAddress } from './owner/EditAddress';
 import { EditBankAccounts } from './owner/EditBankAccount';
-import { TenantProfile } from './owner/Tenant';
+import { TenantProfile } from './pages/TenantProfile';
+import { Maintenance } from './tenant/Maintenance';
+import { useMediaQuery } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import { useMemo } from 'react';
+
 
 // The default 404 should be done for the route
 function App() {
   const queryClient = new QueryClient();
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+
+    const theme = useMemo(
+        () =>
+        createTheme({
+            palette: {
+            mode: prefersDarkMode ? 'dark' : 'light',
+            },
+        }),
+        [prefersDarkMode],
+    );
+
   return (
     <>
+
       <ToastContainer />
+      <ThemeProvider theme={theme}>
+      <CssBaseline />
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <Routes>
@@ -59,22 +80,31 @@ function App() {
               <Route path=':houseid/edit/bank' element={<EditBankAccounts />} />
               <Route path='tenant/:tenantid' element={<TenantProfile />} />
             </Route>
+
+            
             <Route path="/" element={<Layout />}>
+              <Route index element={<Home />} />
               <Route path="/showmore" element={<Showmore />} />
               <Route path="/details" element={<DetailsHouses />} />
 
-
-              <Route index element={<Home />} />
               <Route path='profile/' element={<ProtectedRoutes />}>
                 <Route index element={<Profile />} />
                 <Route path='edit' element={<EditProfile />} />
                 <Route path='upgrade' element={<UpgradeToOwner />} />
+              </Route>
+
+              <Route path='tenant/' element={<ProtectedRoutes role='tenant'/>}>
+                <Route index element={<TenantProfile />}/>
+                <Route path='edit' element={<CreateTenants edit={true} />}/>
+                <Route path='maintenance' element={<Maintenance />}/>
+                {/* <Route path='edit' element={<CreateTenants edit={true} />}/> */}
               </Route>
             </Route>
 
           </Routes>
         </BrowserRouter>
       </QueryClientProvider>
+      </ThemeProvider>
     </>
   );
 }

@@ -5,7 +5,7 @@ import Navbar from "../components/Navbar"
 // eslint-disable-next-line react/prop-types
 function Layout() {
   return (
-    <div className="h-screen">
+    <div className="min-h-screen">
         <div className="pb-[75px]">
           <Navbar />
         </div>

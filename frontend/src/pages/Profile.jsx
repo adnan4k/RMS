@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useOutletContext } from "react-router-dom";
 import { frogetPassword, getUser } from "../api/auth";
 import { toast } from "react-toastify";
-import { Modal } from "../components/Modal";
+import Modal  from "../components/Modal";
 import { download } from "../utils/downloadImage";
 
 const Profile = () => {

@@ -52,10 +52,10 @@ export const editHouseImages = async ({houseid, form}) => {
 
 export const getTenant = async (tenantid) => {
     try {
-        
         const response = await axios.get(`tenant/${tenantid}`);
         return response.data
     } catch (error) {
         console.log(error)
+        throw error
     }
 }

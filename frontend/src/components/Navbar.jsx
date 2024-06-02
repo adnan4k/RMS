@@ -90,14 +90,36 @@ function Navbar() {
                   Contact
                 </Link>
               </li>
+                {(data && data.role === 'owner') && 
               <li>
-                {(data && data.role === 'owner') && <Link
-                  to="owner"
+                <Link
+                  to="/owner"
                   className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
                 >
                   Dashboard
-                </Link>}
+                </Link>
               </li>
+                }
+              {(data && data.role === 'tenant') &&
+              <>
+                <li>
+                  <Link
+                    to="/tenant/maintenance"
+                    className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                  >
+                    Maintenance
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/tenant/maintenance"
+                    className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                  >
+                    Payment History
+                  </Link>
+                </li>
+              </> 
+              }
             </ul>
           </div>
         </div>
