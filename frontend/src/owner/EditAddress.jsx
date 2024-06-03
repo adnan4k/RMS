@@ -36,7 +36,6 @@ export const EditHouseAddress = () => {
     });
 
     const onClick = () => {
-        console.log(addressData)
         mutate({address: addressData, houseid: state._id})
     }
     

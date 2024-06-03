@@ -8,7 +8,7 @@ import { getTenant } from "../api/tenant";
 
 // Another time
 export const ProtectedRoutes = ({role}) => {
-    // console.log('rerere')
+    
     const {data, status, refetch} = useQuery({
         queryKey: [role === 'tenant'? 'tenant':'user'],
         queryFn: role === 'tenant'? getTenant: getUser,

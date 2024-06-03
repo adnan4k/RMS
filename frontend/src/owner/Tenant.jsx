@@ -6,7 +6,7 @@ import { download } from "../utils/downloadImage";
 import { getTenant } from "../api/owner";
 import dayjs from "dayjs";
 
-export const TenantProfile = () => {
+const TenantProfile = () => {
     const [hide, setHide] = useState(true);
     const {tenantid} = useParams();
     const {data, status} = useQuery({
@@ -41,7 +41,7 @@ export const TenantProfile = () => {
 
     if (data) {
         fullname = `${data.firstname}  ${data.lastname}`
-        address = `${data.tenant.reference.address.city}, ${data.tenant.reference.address.sub_city} ${data.tenant.reference.address.woreda  ? data.tenant.reference.address.woreda : ''}  ${data.tenant.reference.address.kebele  ? ', Kebele, '+data.tenant.reference.address.kebele : ''}`
+        address = `${data.tenant.reference.address.city}, ${data.tenant.reference.address.sub_city} `
     }
 
     return (
@@ -86,6 +86,8 @@ export const TenantProfile = () => {
                         <span className="text-l text-gray-700 dark:text-gray-100 self-start my-2">Phone number: {data.tenant.reference.phonenumber}</span>
                         
                         <span className="text-l text-gray-700 dark:text-gray-100 self-start my-2">Address: {address}</span>
+                        <span className="text-l text-gray-700 dark:text-gray-100 self-start my-2">Woreda: {data.tenant.reference.address.woreda}</span>
+                        <span className="text-l text-gray-700 dark:text-gray-100 self-start my-2">Kebele: {data.tenant.reference.address.kebele}</span>
                     </div>
                 </div>
                 
@@ -105,3 +107,5 @@ export const TenantProfile = () => {
         </div>
         )
 }
+
+export default TenantProfile

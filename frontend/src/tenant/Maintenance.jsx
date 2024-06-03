@@ -1,7 +1,6 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, TextareaAutosize } from "@mui/material";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRef, useState } from "react";
-import { Link } from "react-router-dom"
+import { useState } from "react";
 import { createMaintenance, fetchMaintenance } from "../api/tenant";
 import { Loader } from "../components/Loader";
 import { FaDropbox } from "react-icons/fa6";
@@ -54,7 +53,7 @@ export const Maintenance = () => {
                     <li className="py-3 sm:py-4">
                         <div className="flex items-center">
                             <div className="flex items-center me-4">
-                                <input checked={request.status} id="green-checkbox" type="checkbox" value="" className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                                <input checked={request.status} readOnly id="green-checkbox" type="checkbox" value="" className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
                             </div>
                             <div onClick={() => {setDescription(request.description); setSelected(request._id); setOpen(true)}} className="flex-1 min-w-0 ms-4 cursor-pointer">
                                 <p className="text-sm font-medium text-gray-900 truncate dark:text-white">

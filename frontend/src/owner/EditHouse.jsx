@@ -21,7 +21,7 @@ export const EditHouse = () => {
             toast.success('Successfully updated')
             navigate('/owner/'+state._id)
         },
-        onError: (error) => {console.log(error);toast.error(error.response?error.response.data:"Something went wrong")}
+        onError: (error) => {toast.error(error.response?error.response.data:"Something went wrong")}
     })
 
     const [houseData, setHouseData] = useState({

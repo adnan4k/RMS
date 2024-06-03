@@ -29,7 +29,6 @@ function Search({ datas, status }) {
     if (status === 'error') {
         return <div>Error loading data</div>;
     }
-console.log(filteredUsers, 'hereere')
     return (
         <div>
             <form className="max-w-md my-5">

@@ -33,7 +33,6 @@ function Login() {
   
   const handleSubmit = (e) => {
     setError("");
-    console.log('1')
     e.preventDefault();
     mutation.mutate(formData);
   };

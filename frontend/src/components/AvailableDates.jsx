@@ -44,12 +44,10 @@ export const AvailableDates = ({dates, houseid}) => {
     }, [initial, dates]);
 
     const onChanged = (idx, date, type) => {
-        // console.log(idx)
         const d = date.format('HH:mm:ss')
         myschedule[idx] = {...myschedule[idx], [type]:date}
         setMyschedule([...myschedule])
     }
-    // console.log(myschedule.map((element) => element.starttime.format('HH:mm:ss')));
     const onDisplay = (idx, display) => {
         myschedule[idx] = {...myschedule[idx], display:display}
         setMyschedule([...myschedule])

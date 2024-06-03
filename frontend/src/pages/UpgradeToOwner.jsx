@@ -29,7 +29,6 @@ const UpgradeToOwner = () => {
         },
         onError: (error) => {
             const user = queryClient.getQueryData(['user']);
-            console.log('user', user);
             toast.error(error.response.data.message);
         }
     });

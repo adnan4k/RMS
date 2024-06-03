@@ -20,7 +20,7 @@ export const Houses = () => {
             </div>
         )
     if (error)
-        toast.error(error.data.message)
+        toast.error(error.response ? error.response.data.message:error.message)
 
     if (!data || data.length === 0)
         return (

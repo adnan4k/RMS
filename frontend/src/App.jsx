@@ -33,6 +33,8 @@ import { useMediaQuery } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { useMemo } from 'react';
+import { OwnerMaintenance } from './owner/Maintenance';
+import Tenant from './owner/Tenant';
 
 
 // The default 404 should be done for the route
@@ -72,13 +74,14 @@ function App() {
               <Route path="show-tenant" element={<ShowTenant />} />
 
               <Route path='edit' element={<EditOwner />} />
+              <Route path='maintenance' element={<OwnerMaintenance />} />
               <Route path=':houseid' element={<SingleHouse />} />
               <Route path=':houseid/create-tenants' element={<CreateTenants />} />
               <Route path=':houseid/edit/general' element={<EditHouse />} />
               <Route path=':houseid/edit/images' element={<EditImages />} />
               <Route path=':houseid/edit/address' element={<EditHouseAddress />} />
               <Route path=':houseid/edit/bank' element={<EditBankAccounts />} />
-              <Route path='tenant/:tenantid' element={<TenantProfile />} />
+              <Route path='tenant/:tenantid' element={<Tenant />} />
             </Route>
 
             

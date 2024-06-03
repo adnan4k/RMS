@@ -3,10 +3,10 @@ export const createowner = async (payload) => {
     const response = await axios.post('owner', payload, {headers: {'Content-Type': 'multipart/form-data'}});
 
     const {refreshtoken, accesstoken, ...savedOwner} = response.data;
-    console.log(localStorage.getItem('accesstoken'))
+    
     localStorage.setItem('refreshtoken', refreshtoken);
     localStorage.setItem('accesstoken', accesstoken);
-    console.log(localStorage.getItem('accesstoken'));
+    
     axios.defaults.headers.common['Authorization'] = `Bearer ${accesstoken}`;
 
     return savedOwner
@@ -58,4 +58,19 @@ export const getTenant = async (tenantid) => {
         console.log(error)
         throw error
     }
+}
+
+export const getMaintenance = async () => {
+    try {
+        const response = await axios.get('owner/maintenance')
+        return response.data
+    } catch (error) {
+        console.log(error)
+        throw error
+    }
+}
+
+export const changeStatus = async (id) => {
+    const response = await axios.put('owner/maintenance/'+id)
+    return response.data
 }

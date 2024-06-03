@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 export const MinimalTenant = ({tenant, houseId}) => {
-    console.log(tenant)
+    
     if (!tenant || Object.keys(tenant).length === 0)
         return <div className="m-auto text-xl w-fit">
                 No tenants assigned yet, 

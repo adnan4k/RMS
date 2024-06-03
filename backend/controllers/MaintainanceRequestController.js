@@ -48,7 +48,9 @@ export const getMaintenanceRequest = async(req,res,next) =>{
                         $replaceRoot: {
                             newRoot: {
                                 housenumber: '$housenumber',
-                                images: '$images',
+                                images: {
+                                    $arrayElemAt: ['$images', 0] 
+                                },
                                 owner: '$owner',
                             }
                         }
@@ -58,6 +60,11 @@ export const getMaintenanceRequest = async(req,res,next) =>{
             },
             {
                 $unwind: '$house'
+            },
+            {
+                $addFields: {
+                    "house.images": "$house.images.url"
+                }
             },
             {
                 $match: {
@@ -100,7 +107,9 @@ export const getMaintenanceRequest = async(req,res,next) =>{
                         description: '$requests.description',
                         createdAt: '$requests.createdAt',
                         updatedAt: '$requests.updatedAt',
-                        tenant: '$tenant',
+                        tenantid: '$tenant._id',
+                        fname: '$tenant.firstname',
+                        lname: '$tenant.lastname',
                         request_id: '$requests._id'
                     }}
                 }
@@ -137,15 +146,14 @@ export const editRequest = async (req, res, next) => {
 
 export const changeStatus = async (req, res, next) => {
     try {
-        const {status} = req.body;
-        
         let houses = await House.find({owner: req.user}).select('_id');
-        houses = houses.map(({_id})=>_id);
-        const request = await Maintenance.findOne({_id: req.params.requestid});
-        console.log(request)
-        request.status = status;
+        houses = houses.map(({_id})=>_id.toString());
+        console.log(houses)
+        const request = await Maintenance.findOne({_id: req.params.requestid, house_id: {$in: houses}});
+        request.status = true;
+        
         await request.save();
-        return res.status(200).json({msg: "Successfully updated status to "+status})
+        return res.status(200).json({msg: "Successfully updated status", id: request._id})
     } catch (error) {
         next(error)
     }
@@ -154,7 +162,7 @@ export const changeStatus = async (req, res, next) => {
 export const tenantRequests = async (req, res, next) => {
     try {
         const requests = await Maintenance.find({tenant_id: req.user}).select('createdAt status description updatedAt');
-        console.log(requests);
+
 
         return res.status(200).json(requests)
     } catch (error) {

@@ -29,11 +29,11 @@ export const EditBankAccounts = () => {
             queryClient.invalidateQueries({
                 queryKey: ['onwer-house', state._id]
             });
-            console.log(house)
+            
             toast.success('Successfully updated')
             navigate('/owner/'+state._id)
         },
-        onError: (error) => {console.log(error);toast.error(error.response?error.response.data:"Something went wrong")}
+        onError: (error) => {toast.error(error.response?error.response.data:"Something went wrong")}
     })
 
     const [CBE, setCBE] = useState([]);

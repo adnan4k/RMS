@@ -14,7 +14,7 @@ function LatestHouses() {
             <div className="grid gap-10 grid-cols-3 mx-auto">
                 {datas.map((data, index) => {
                     const image = "http://localhost:4001/" + data.images[0];
-                    // console.log(data,'data')
+
                     return (
                         <div key={index} className="container">
                             <Link

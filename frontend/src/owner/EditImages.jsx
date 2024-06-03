@@ -49,7 +49,6 @@ export const EditImages = () => {
     
     const onApplyChange = ({selectedImages, newImages, id}) => {
         const form = new FormData();
-        console.log(selectedImages);
         form.append('deletedImages',  JSON.stringify(selectedImages));
         for (let i = 0; i < newImages.length; i++) {
             form.append('images', newImages[i]);

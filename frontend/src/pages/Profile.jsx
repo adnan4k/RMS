@@ -22,7 +22,6 @@ const Profile = () => {
             toast.success('We have sent a password reset link to: '+data.email)
         },
         onError: (error) => {
-            console.log('here', error)
             toast.error('Something went wrong')
         }
     });

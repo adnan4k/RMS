@@ -10,7 +10,6 @@ function AddressData({ addressData, setAddressData, setDisplay, displayError, er
         });
     };
 
-    console.log(addressData)
     return (
         <div className='flex flex-col justify-center h-100'>
             <div className="grid md:grid-cols-2 md:gap-6">

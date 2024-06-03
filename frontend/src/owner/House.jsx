@@ -11,6 +11,7 @@ import { MinimalTenant } from "../components/MinimalTenant"
 import { Loader } from "../components/Loader";
 import { DisplayBankAccount } from "../components/DisplayBankAccount";
 import { Link } from "react-router-dom";
+import { MdErrorOutline } from "react-icons/md";
 
 export const SingleHouse = () => {
     const { houseid } = useParams();
@@ -22,9 +23,11 @@ export const SingleHouse = () => {
         queryFn: ()=>getSingleHouse(houseid)
     });
 
+
+    
     const [images, setImages] = useState([]);
     const [current, setCurrent] = useState(0);
-
+    
     const settings = {
         infinite: true,
         speed: 500,
@@ -36,7 +39,7 @@ export const SingleHouse = () => {
     };
 
     const [hide, setHide] = useState(true)
-
+    
     const handleHide = (e) => {
         if(e.target.id !== 'editdropdown')
             setHide(true)
@@ -51,7 +54,7 @@ export const SingleHouse = () => {
           document.removeEventListener('click', handleHide);
         };
     }, [data, status]);
-
+    
     const swipeImages = (idx, current) => {
         [images[current], images[idx]] = [images[idx], images[current]]
         setImages([...images])
@@ -59,11 +62,18 @@ export const SingleHouse = () => {
     
     if(status === 'pending')
         return (
-            <div className="w-full h-full flex justify-center align-center">
-                <Loader />
-            </div>
+        <div className="w-full h-full flex justify-center align-center">
+            <Loader />
+        </div>
         )
-    console.log(data);
+
+    if (status === 'error')
+        return (
+        <div className="w-64 h-64">
+            <MdErrorOutline className="w-full h-full dark:red-300 red-600" />
+            <p className="text-center">Page not found!</p>
+        </div>
+        )
     return (
         <div className="w-full h-full overflow-y-scroll overflow-x-hidden p-8 pt-4 dark:bg-gray-800 mx-32 flex flex-col">
             <div className="relative self-end">

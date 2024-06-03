@@ -48,11 +48,10 @@ const MapComponent = ({markerPosition, setMarkerPosition}) => {
       e.preventDefault();
       if (!searchQuery.current)
         return;
-      console.log(searchQuery.current.value)
       const response = await axios.get(
         `https://nominatim.openstreetmap.org/search?q=${searchQuery.current.value}, Ethiopia&format=json&countrycodes=ET&limit=5`
       );
-      console.log(response.data)
+      
       if (response.data.length > 0) {
         const { lat, lon, display_name } = response.data[0];
         changePosition(lat, lon, display_name);

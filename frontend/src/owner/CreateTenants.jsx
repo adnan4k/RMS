@@ -74,7 +74,6 @@ function CreateTenants({edit}) {
             }
         },
         onError: (err) => {
-            console.log(err);
             toast.error(err.reponse ? err.reponse.data.message : err.message);
         }
     });

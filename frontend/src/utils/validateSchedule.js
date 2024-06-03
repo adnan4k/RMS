@@ -6,6 +6,5 @@ export const validateSchedule = (schedule) => {
         if (element && element.starttime !== '' && element.endtime !== '' && element.starttime.add(1, 'hour').isAfter(element.endtime))
             error[idx] = true
     });
-    // console.log(error)
     return error
 }
