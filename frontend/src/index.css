@@ -63,6 +63,28 @@ button:focus-visible {
   top: -5px;
 }
 
+
+.scrollable::-webkit-scrollbar {
+  width: 4px; 
+  height: 4px;
+  display: block !important;
+}
+
+.scrollable::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.scrollable::-webkit-scrollbar-thumb {
+  background: #1f31f8;
+  border-radius: 10px;
+}
+
+.scrollable::-webkit-scrollbar-thumb:hover {
+  background: #0015ff;
+  cursor: pointer;
+}
+
 *::-webkit-scrollbar {
   display: none;
 }

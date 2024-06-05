@@ -53,20 +53,6 @@ export const createHouse = async (req, res, next) => {
     }
 }
 
-export const latestHouses = async (req, res, next) => {
-    try {
-        const houses = await House.find().populate({
-            path: 'owner',
-            select: '-role -password -isActive',
-            model: 'User',
-            foreignField: '_id'
-        }).sort({ createdAt: -1 }).limit(10);
-
-        res.status(200).json(houses);
-    } catch (error) {
-        next(error);
-    }
-};
 
 export const getHouse = async (req, res, next) => {
     const id = req.params.id;
@@ -96,15 +82,41 @@ export const getHouses = async (req, res, next) => {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const start = (page - 1) * limit;
+        
+        
+        const sort = req.query.sort ? {[req.query.sort]: -1} : {};
+
         // If this doesn't work use DocumentCount({tenant: null})
         const total = await House.find({ tenant: null }).estimatedDocumentCount();
 
-        const data = await House.find({ tenant: null })
+        const searchParams = {tenant: null}
+
+        if (req.query.minrooms)
+            searchParams.no_of_rooms = {...searchParams.no_of_rooms, $gte: req.query.minrooms}
+        if (req.query.maxrooms)
+            searchParams.no_of_rooms = {...searchParams.no_of_rooms, $lte: req.query.maxrooms}
+        
+        if (req.query.minprice)
+            searchParams.price = {...searchParams.price, $gte: req.query.minprice}
+        if (req.query.maxprice)
+            searchParams.rent_amount = {...searchParams.price, $lte: req.query.maxprice}
+
+        if (req.query.types) {
+            let types = typeof req.query.types === 'string' ? [req.query.types] : req.query.types;
+            types = types.map((type) => new RegExp(type, 'i'))
+            searchParams.house_type = {$in: types}
+        }
+
+
+
+        console.log(searchParams)
+        const data = await House.find(searchParams)
             .skip(start)
+            .sort(sort)
             .limit(limit).select('-occupancy_history -bankaccounts -deadline -contract -calendar')
             .populate({
                 path: 'owner',
-                select: '-role -password -isActive',
+                select: 'firstname lastname',
                 model: 'User',
                 foreignField: '_id'
             });

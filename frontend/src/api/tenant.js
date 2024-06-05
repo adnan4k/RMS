@@ -15,9 +15,15 @@ export const editTenant = async (payload) => {
     return response.data;
 }
 
-export const createMaintenance = async ({_id, description}) => {
-    let response = null 
-    if (_id)
+export const createMaintenance = async ({_id, description, status, reopen}) => {
+    let response = null
+    if (reopen && status) {
+        response = await axios.put('tenant/maintenance/edit/'+_id)
+    }
+    else if (status) {
+        response = await axios.delete('tenant/maintenance/'+_id) 
+    }
+    else if (_id)
         response = await axios.put('tenant/maintenance/'+_id, {description});
     else
         response = await axios.post('tenant/maintenance', {description});

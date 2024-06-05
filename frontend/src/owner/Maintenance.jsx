@@ -101,10 +101,12 @@ export const OwnerMaintenance = () => {
                                             Updated at: {dayjs(updatedAt).format("DD/MM/YYYY HH:mm A")}
                                         </p>
                                     </div>
-                                    <button onClick={() => handleClick(status, request_id)} type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-200 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900 mt-4 rounded-lg text-sm px-3 py-1.5 inline-flex justify-center w-full text-center">{
-                                        mstatus === 'pending'?".....":
-                                        status?"Delete request":"Change status"}
-                                    </button>
+                                    {
+                                        !status && 
+                                        <button onClick={() => handleClick(status, request_id)} type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-200 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900 mt-4 rounded-lg text-sm px-3 py-1.5 inline-flex justify-center w-full text-center">{
+                                            mstatus === 'pending'?".....":"Change status"}
+                                        </button>
+                                    }
                                 </div>
                             </div>
                             </div>

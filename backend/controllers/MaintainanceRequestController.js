@@ -144,11 +144,18 @@ export const editRequest = async (req, res, next) => {
     }
 }
 
+// Not effecient
 export const changeStatus = async (req, res, next) => {
     try {
+        if(req.role === 'tenant') {
+            const request = await Maintenance.findOne({_id: req.params.requestid, tenant_id: req.user});
+            request.status = false;
+            await request.save();
+            return res.status(200).json({msg: "Successfully updated status", id: request._id})
+        }
         let houses = await House.find({owner: req.user}).select('_id');
         houses = houses.map(({_id})=>_id.toString());
-        console.log(houses)
+        
         const request = await Maintenance.findOne({_id: req.params.requestid, house_id: {$in: houses}});
         request.status = true;
         
@@ -169,6 +176,15 @@ export const tenantRequests = async (req, res, next) => {
         next(error)
     }
 } 
+
+export const deleteRequest = async (req, res, next) => {
+    try {
+        const request = await Maintenance.deleteOne({_id: req.params.requestid, tenant_id: req.user});
+        return res.status(200).json(request)
+    } catch (error) {
+        next(error)
+    }
+}
 
 export const getAllMaintenanceRequests = async(req,res,next) =>{
     try {
