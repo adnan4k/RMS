@@ -13,10 +13,12 @@ const historySchema = new mongoose.Schema({
    },
    from: {
       type: Date,
+      default: Date.now
    },
    upto: {
       type: Date,
-      default: Date.now
    }
 });
-export default historySchema
+
+
+export default historySchema;

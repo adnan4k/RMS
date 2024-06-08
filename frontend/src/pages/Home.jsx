@@ -30,7 +30,7 @@ function Home() {
          <LatestHouses />
          </div>
         <div className="flex justify-end mr-10 my-5">
-          <Link to='/showmore' >
+          <Link to='/houses' >
           <button className=" text-white bg-[#234B9A] rounded-2xl">
             Show More
           </button>

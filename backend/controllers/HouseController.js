@@ -57,7 +57,7 @@ export const createHouse = async (req, res, next) => {
 export const getHouse = async (req, res, next) => {
     const id = req.params.id;
     try {
-        const house = await House.findById(id).select('-occupancy_history -bankaccounts -deadline -contract');
+        const house = await House.findById(id).select('-bankaccounts -occupancy_history -deadline -contract -housenumber');
         if (!house)
             throw createError(404, 'house not found');
 
@@ -70,8 +70,9 @@ export const getHouse = async (req, res, next) => {
                 select: '-role -password -isActive'
             }
         });
-
-        return res.status(200).json(house);
+        
+        const count = await House.countDocuments({tenant: null, owner: house.owner.user._id})
+        return res.status(200).json({house, count});
     } catch (error) {
         return next(error);
     }
@@ -92,14 +93,19 @@ export const getHouses = async (req, res, next) => {
         const searchParams = {tenant: null}
 
         if (req.query.minrooms)
-            searchParams.no_of_rooms = {...searchParams.no_of_rooms, $gte: req.query.minrooms}
+            searchParams.no_of_rooms = {...searchParams.no_of_rooms, $gte: parseInt(req.query.minrooms)}
         if (req.query.maxrooms)
-            searchParams.no_of_rooms = {...searchParams.no_of_rooms, $lte: req.query.maxrooms}
+            searchParams.no_of_rooms = {...searchParams.no_of_rooms, $lte: parseInt(req.query.maxrooms)}
         
         if (req.query.minprice)
-            searchParams.price = {...searchParams.price, $gte: req.query.minprice}
+            searchParams.rent_amount = {...searchParams.rent_amount, $gte: parseInt(req.query.minprice)}
         if (req.query.maxprice)
-            searchParams.rent_amount = {...searchParams.price, $lte: req.query.maxprice}
+            searchParams.rent_amount = {...searchParams.rent_amount, $lte: parseInt(req.query.maxprice)}
+
+        if (req.query.minsize) 
+            searchParams.area = {...searchParams.area, $gte: parseFloat(req.query.minsize)}
+        if (req.query.maxsize)
+            searchParams.area = {...searchParams.area, $lte: parseFloat(req.query.maxsize)}
 
         if (req.query.types) {
             let types = typeof req.query.types === 'string' ? [req.query.types] : req.query.types;
@@ -107,19 +113,73 @@ export const getHouses = async (req, res, next) => {
             searchParams.house_type = {$in: types}
         }
 
+        let address = []
+        if (req.query.city) 
+            address.push({"address.city": new RegExp(req.query.city, 'i')})
+        if (req.query.sub_city) 
+            address.push({"address.sub_city": new RegExp(req.query.sub_city, 'i')})
+        if (req.query.woreda) 
+            address.push({"address.woreda": new RegExp(req.query.woreda, 'i')})
+        if (req.query.kebele) 
+            address.push ({"address.kebele": new RegExp(req.query.kebele, 'i')})
 
+        if (address.length > 0) {
+            searchParams.$or = address
+        }
 
-        console.log(searchParams)
-        const data = await House.find(searchParams)
-            .skip(start)
-            .sort(sort)
-            .limit(limit).select('-occupancy_history -bankaccounts -deadline -contract -calendar')
-            .populate({
-                path: 'owner',
-                select: 'firstname lastname',
-                model: 'User',
-                foreignField: '_id'
-            });
+        if (req.query.q) {
+            const q = new RegExp(req.query.q, 'i')
+            const fields = [
+                {'description':q},
+                {'address.city':q},
+                {'address.sub_city':q},
+                {'address.woreda':q},
+                {'address.kebele':q},
+                {'house_type':q},
+            ]
+            searchParams.$or = fields
+        }
+
+        if (req.query.owner) {
+            if (mongoose.Types.ObjectId.isValid(req.query.owner))
+                searchParams.owner = new mongoose.Types.ObjectId(req.query.owner)
+        }
+
+        // Callculate the number of results
+        const data = await House.aggregate([
+            {$addFields: {
+                area: { $multiply: ['$width', '$length'] },
+                images: "$images.url",
+            }},
+            {$match: searchParams},
+            {$skip: start},
+            {$limit: limit},
+            {$lookup: {
+                from: 'users',
+                localField: 'owner',
+                foreignField: '_id',
+                pipeline: [{
+                    $replaceRoot: {
+                        newRoot: {
+                            firstname: '$firstname',
+                            lastname: '$lastname',
+                            _id: '$_id'
+                        },
+                    },
+                }],
+                as: 'owner',
+            }},
+            {$unwind: '$owner'},
+            {$project: {
+                occupancy_history: 0,
+                bankaccounts: 0,
+                deadline: 0,
+                contract: 0,
+                calendar: 0,
+                housenumebr: 0,
+                description: 0
+            }}
+        ])
         const result = paginate(page, limit, total, data);
         return res.status(200).json(result);
     } catch (error) {
@@ -233,10 +293,8 @@ export const getHouseVisits = async (req, res, next) => {
         if (req.headers.authorization) {
             const access_token = req.headers.authorization.split(' ')[1];
             jwt.verify(access_token, process.env.JWT_ACCESS_TOKEN, (err, decoded) => {
-                if (err)
-                    return res.status(401).json('Unauthenticated access');
-
-                req.user = decoded.user;
+                if (!err)
+                    req.user = decoded.user;
             });
         }
 

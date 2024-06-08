@@ -7,6 +7,7 @@ import sendEmail from "../utils/email.js";
 import {refresh} from '../utils/generateTokens.js'
 import { removeImage } from "../utils/fileProcessing.js";
 import Token from "../models/Tokens.js"
+import History from "../models/History.js";
 
 export const addTenant = async(req, res, next) => {
     
@@ -41,6 +42,12 @@ export const addTenant = async(req, res, next) => {
         const tenant = await Tenant.create([{ user, reference, national_id, mother_name }], {session});
         const house = await House.findById(houseId);
         
+        house.occpancy_history.push({
+            tenant: user._id,
+            contract_photo: photo,
+            from: Date.now()
+        });
+
         if (!house)
             throw createError(400, "House not found!");
         if (house.tenant)
@@ -168,12 +175,12 @@ export const deleteTenant = async (req, res, next) => {
 
         
         
-        const history = {
-            tenant,
-            from: house.contract.startdate,
-            contract_photo: house.contract.photo
-        }
-        house.occupancy_history.push(history);
+        house.occupancy_history = house.occpancy_history.map((history) => {
+            if (history.tenant.toString() === tenant.toString())
+                history.upto = Date.now()
+            return history
+        });
+        
         house.tenant = null;
         house.contract = null;
         house.deadline = null;
@@ -194,9 +201,10 @@ export const deleteTenant = async (req, res, next) => {
     }
 }
 
+// Haven't used this so delete it
 export const getHouse = async (req, res, next) => {
     try {
-        const house = await House.findOne({tenant: req.user}).select('-occupancy_history -callendar -tenant').populate({
+        const house = await House.findOne({tenant: req.user}).select('-callendar -tenant').populate({
             path: 'owner', foreignField: 'user', populate: {
                 path: 'user',
                 select: '-password -isActive -role'

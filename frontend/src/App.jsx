@@ -19,7 +19,7 @@ import { ProtectedRoutes } from './components/ProtectedRoutes';
 import EditOwner from './pages/EditOwner';
 import { Houses } from './owner/Houses';
 import { SingleHouse } from './owner/House';
-import Showmore from './pages/Showmore';
+import AllHouses from './pages/Showmore';
 import DetailsHouses from './pages/DetailsHouses';
 import CreateTenants from './owner/CreateTenants';
 import ShowTenant from './tenant/ShowTenant';
@@ -35,6 +35,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { useMemo } from 'react';
 import { OwnerMaintenance } from './owner/Maintenance';
 import Tenant from './owner/Tenant';
+import { DetailHouse2 } from './pages/DetailPage2';
 
 
 // The default 404 should be done for the route
@@ -87,8 +88,10 @@ function App() {
             
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
-              <Route path="/showmore" element={<Showmore />} />
+              <Route path="/houses" element={<AllHouses />} />
+              <Route path="/houses/:houseid" element={<DetailHouse2 />} />
               <Route path="/details" element={<DetailsHouses />} />
+              <Route path='/'/>
 
               <Route path='profile/' element={<ProtectedRoutes />}>
                 <Route index element={<Profile />} />

@@ -1,8 +1,10 @@
+import { Link } from "react-router-dom"
 
-export const HouseAdv = ({image, house_type, address, rent_amount, no_of_rooms, no_of_bath_rooms, width, length, owner, latest}) => {
+export const HouseAdv = ({image, house_type, address, rent_amount, no_of_rooms, no_of_bath_rooms, width, length, owner, latest, _id}) => {
+    
     
     return (
-        <div className={"container border rounded-lg flex flex-col max-h-[500px] min-h-[500px] " + (latest? "min-w-96 max-w-96": "min-w-80")}>
+        <Link to={'/houses/'+_id} className={"container border rounded-lg flex flex-col max-h-[500px] min-h-[500px] "+(latest && 'min-w-80')}>
             <div className="flex-1 h-1">
               <img src={image} className="min-h-full max-h-full min-w-full max-w-full rounded-t-lg" alt="home" />
             </div>
@@ -37,6 +39,6 @@ export const HouseAdv = ({image, house_type, address, rent_amount, no_of_rooms, 
                 <span className="font-semibold">{owner.firstname} {owner.lastname}</span>
               </h3>
             </div>
-          </div>
+        </Link>
     )
 } 

@@ -22,7 +22,7 @@ function LatestHouses() {
                     const image = "http://localhost:4001/" + data.images[0];
 
                     return (
-                        <HouseAdv key={index} image={image} {...data}/>
+                        <HouseAdv key={index} image={image} {...data} latest/>
                     );
                 })}
             </div>

@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {useSearchParams} from 'react-router-dom';
 import { FaAngleUp } from "react-icons/fa6"
 
 const DEFAULT_ROOMS = ["1", "2", "3", "4", "5"];
 
-export const FilterByRoom = () => {
+export const FilterByRoom = ({signal}) => {
     const [searchParams, setSearchParams] = useSearchParams({minrooms: '', maxrooms: ''});
     const [minrooms, setMinrooms] = useState(searchParams.get('minrooms'));
     const [maxrooms, setMaxrooms] = useState(searchParams.get('maxrooms'));
@@ -22,9 +22,13 @@ export const FilterByRoom = () => {
         }
     }
 
+    useEffect(() => {
+        setMaxrooms('')
+        setMinrooms('')
+    }, [signal])
 
     return (
-        <div className={"relative min-w-64 max-w-64 flex flex-col my-3 p-2 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 overflow-hidden transition duration-300 " + (collapse ? "h-10" : "")}>
+        <div className={"min-h-64 relative min-w-64 max-w-64 flex flex-col my-3 p-2 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 overflow-hidden transition duration-300 " + (collapse ? "max-h-10 min-h-10" : "")}>
             <div onClick={() => setCollapse(!collapse)} className={'w-6 absolute top-2 right-2 h-6 cursor-pointer dark:hover:bg-gray-700 hover:bg-gray-100 rounded-full p-1 duration-300 transform ' + (collapse ? "rotate-180" : "")}>
                 <FaAngleUp className='w-full h-full'/>
             </div>

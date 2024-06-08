@@ -2,7 +2,7 @@ import { useState } from 'react';
 import {useSearchParams} from 'react-router-dom';
 import { FaAngleUp } from "react-icons/fa6"
 
-const DEFAULT_TYPES = ["Apartment", "Condo", "Duplex", "House", "Mansion", "Penthouse", "Shared Apartment", "Studio", "Villa", "Bedsitter", "Chalet", "Farn House", "Room", "Building"];
+const DEFAULT_TYPES = ["Apartment", "Condo", "Duplex", "House", "Mansion", "Penthouse", "Shared Apartment", "Studio", "Villa", "Bedsitter", "Chalet", "Farm House", "Room", "Building"];
 
 export const FilterByType = () => {
     const [searchParams, setSearchParams] = useSearchParams({});
@@ -26,7 +26,7 @@ export const FilterByType = () => {
 
     
     return (
-        <div className={"max-h-80 relative min-w-64 max-w-64 flex my-3  flex-col p-2 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 overflow-hidden transition duration-300 " + (collapse ? "h-10" : "")}>
+        <div className={"min-h-80 relative min-w-64 max-w-64 flex my-3  flex-col p-2 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 overflow-hidden transition duration-300 " + (collapse ? "max-h-10 min-h-10" : "")}>
             <div onClick={() => setCollapse(!collapse)} className={'w-6 absolute top-2 right-2 h-6 cursor-pointer dark:hover:bg-gray-700 hover:bg-gray-100 rounded-full p-1 duration-300 transform ' + (collapse ? "rotate-180" : "")}>
                 <FaAngleUp className='w-full h-full'/>
             </div>

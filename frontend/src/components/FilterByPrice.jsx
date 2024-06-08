@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {useSearchParams} from 'react-router-dom'
 import { FaAngleUp } from "react-icons/fa6"
 
 const DEFAULT_PRICES = [{max: 5000}, {min: 5000, max: 10000}, {min: 10000, max: 15000}, {min: 15000, max: 20000}, {min: 20000, max:25000}, {min: 25000}];
 
-export const FilterByPrice = () => {
+export const FilterByPrice = ({signal}) => {
     const [searchParams, setSearchParams] = useSearchParams({});
     const [minprice, setMinprice] = useState(searchParams.get('minprice') || '');
     const [maxprice, setMaxprice] = useState(searchParams.get('maxprice') || '');
@@ -31,9 +31,15 @@ export const FilterByPrice = () => {
         }
     }
 
+
+    useEffect(() => {
+        setMaxprice('')
+        setMinprice('')
+    }, [signal])
+
     // console.log(searchParams.get("minprice") ===  && searchParams.get("maxprice") === 10000)
     return (
-        <div className={"relative min-w-64 max-w-64 my-3 flex flex-col p-2 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 overflow-hidden transition duration-300 " + (collapse ? "h-10" : "")}>
+        <div className={"min-h-64 relative min-w-64 max-w-64 my-3 flex flex-col p-2 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 overflow-hidden transition duration-300 " + (collapse ? "max-h-10 min-h-10" : "")}>
             <div onClick={() => setCollapse(!collapse)} className={'w-6 absolute top-2 right-2 h-6 cursor-pointer dark:hover:bg-gray-700 hover:bg-gray-100 rounded-full p-1 duration-300 transform ' + (collapse ? "rotate-180" : "")}>
                 <FaAngleUp className='w-full h-full'/>
             </div>

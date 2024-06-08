@@ -22,6 +22,7 @@ const ownerSchema = new mongoose.Schema({
 })
 
 ownerSchema.set('toJSON', {transform: (doc, ret, options) => {
+    if (ret.national_id)
     ret.national_id = ret.national_id.url;
     return ret
 }});

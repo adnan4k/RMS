@@ -7,7 +7,7 @@ export const createMaintainance = async(req,res,next)=>{
     const {description} = req.body;
      try {
         const tenantid = req.user;
-        const house = await House.findOne({tenant: tenantid}).select('-calendar -occupancy_history')
+        const house = await House.findOne({tenant: tenantid}).select('_id')
 
         const maintainace = new Maintenance({
             house_id: house._id,

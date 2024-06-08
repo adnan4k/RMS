@@ -2,11 +2,12 @@ import mongoose, { get } from "mongoose";
 import addressSchema from "./commons/Address.js";
 import BankAccountSchema from "./commons/BankAccount.js";
 import ContractSchema from "./commons/Contract.js";
-import historySchema from "./History.js";
 import Maintenance from "./Maintenance.js";
 import Requests from "./VisitorRequest.js";
 import { removeImage } from "../utils/fileProcessing.js";
 import User from "./User.js";
+import Tenant from "./Tenant.js";
+import historySchema from './History.js'
 
 export const HouseTypes = [
     'villa',
@@ -102,36 +103,36 @@ houseSchema.pre('deleteOne', { document: true, query: false }, async function() 
     await Maintenance.deleteMany({house_id: this._id});
     await Requests.deleteMany({house: this._id});
     
-    // Remove tenant and clear history
-    const tenants = this.occupancy_history.map(({tenant_id}) => tenant_id);
-    if (this.tenant) tenants.push(this.tenant);
+    const tenants = this.occupancy_history.map(({tenant}) => tenant);
     
-    await User.deleteMany({_id: {$in: tenants}});
-    // Don't forget to delete the National id and Contracts too from history
-    // Remove all images of the house
-    this.images.forEach(async element => {
+    for (let index = 0; index < this.occupancy_history.length; index++) {
+        const element = this.occupancy_history[index].contract_photo;
         await removeImage(element.path)
-    });
+    }
+
+    await Tenant.deleteMany({user: {$in: tenants}})
+    await User.deleteMany({_id: {$in: tenants}});
+    for (let index = 0; index < this.images.length; index++) {
+        const element = this.images[index];
+        await removeImage(element.path)
+    }
+    
 });
 
 
 houseSchema.pre('save', function(next) {
     // remove duplicate images ?
-    const images = []
     const imageSet = new Set()
     this.images.forEach((image) => {
-        if (imageSet.has(image.url))
-            return
-        images.push(image)
         imageSet.add(image.url)
     })
 
-    this.images = images
+    this.images = [...imageSet]
     next();
 });
 
 houseSchema.set('toJSON', {transform: (doc, ret, options) => {
-    if (ret.images)
+    if (ret.images && ret.images.length > 0)
         ret.images = ret.images.map(({url}) => url);
     if (ret.contract && ret.contract.photo)
         ret.contract.photo = ret.contract.photo.url;

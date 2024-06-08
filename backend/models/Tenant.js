@@ -44,5 +44,10 @@ tenantSchema.set('toJSON', {transform: (doc, ret, options) => {
   return ret
 }});
 
+tenantSchema.pre('deleteMany', {document: true, query: false}, async function(query) {
+  console.log('In delete many tenant')
+  console.log('document', this)
+  console.log('query', query)
+})
 
 export default mongoose.model("Tenant", tenantSchema);

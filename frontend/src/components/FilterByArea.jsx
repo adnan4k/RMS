@@ -1,13 +1,18 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {useSearchParams} from 'react-router-dom'
 
-export const FilterByArea = () => {
-    const [searchParams, setSearchParams] = useSearchParams({minsize: '', maxsize: ''});
+export const FilterByArea = ({signal}) => {
+    const [searchParams, setSearchParams] = useSearchParams({});
     const [minsize, setMinsize] = useState(searchParams.get('minsize'));
     const [maxsize, setMaxsize] = useState(searchParams.get('maxsize'));
 
+    
+    useEffect(() => {
+        setMaxsize('')
+        setMinsize('')
+    }, [signal])
     return (
-        <div className="max-h-64 min-w-64 max-w-64 flex flex-col my-3 p-2 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 overflow-hidden">
+        <div className="min-h-32 min-w-64 max-w-64 flex flex-col my-3 p-2 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 overflow-hidden">
             <div className='font-bold mb-3 text-[17px]'>Filter by Area</div>
             <div className="flex">
                 <div class="relative border">
