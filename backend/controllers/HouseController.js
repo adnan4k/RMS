@@ -84,7 +84,6 @@ export const getHouses = async (req, res, next) => {
         const limit = parseInt(req.query.limit) || 10;
         const start = (page - 1) * limit;
         
-        
         const sort = req.query.sort ? {[req.query.sort]: -1} : {};
 
         // If this doesn't work use DocumentCount({tenant: null})
@@ -112,7 +111,7 @@ export const getHouses = async (req, res, next) => {
             types = types.map((type) => new RegExp(type, 'i'))
             searchParams.house_type = {$in: types}
         }
-
+        
         let address = []
         if (req.query.city) 
             address.push({"address.city": new RegExp(req.query.city, 'i')})
@@ -127,6 +126,7 @@ export const getHouses = async (req, res, next) => {
             searchParams.$or = address
         }
 
+        const ownerParams = {}
         if (req.query.q) {
             const q = new RegExp(req.query.q, 'i')
             const fields = [
@@ -144,7 +144,7 @@ export const getHouses = async (req, res, next) => {
             if (mongoose.Types.ObjectId.isValid(req.query.owner))
                 searchParams.owner = new mongoose.Types.ObjectId(req.query.owner)
         }
-
+        
         // Callculate the number of results
         const data = await House.aggregate([
             {$addFields: {
@@ -152,8 +152,6 @@ export const getHouses = async (req, res, next) => {
                 images: "$images.url",
             }},
             {$match: searchParams},
-            {$skip: start},
-            {$limit: limit},
             {$lookup: {
                 from: 'users',
                 localField: 'owner',
@@ -170,6 +168,16 @@ export const getHouses = async (req, res, next) => {
                 as: 'owner',
             }},
             {$unwind: '$owner'},
+            {$group: {
+                _id: null,
+                results: {
+                    $push: '$$ROOT'
+                },
+                total: {$sum: 1}
+            }},
+            {$project: {_id: 0}},
+            {$skip: start},
+            {$limit: limit},
             {$project: {
                 occupancy_history: 0,
                 bankaccounts: 0,
@@ -180,9 +188,10 @@ export const getHouses = async (req, res, next) => {
                 description: 0
             }}
         ])
-        const result = paginate(page, limit, total, data);
+        const result = paginate(page, limit, data.length > 0?data[0].total:0, data.length>0?data[0].results:[]);
         return res.status(200).json(result);
     } catch (error) {
+        console.log(error)
         return next(error);
     }
 };
@@ -342,7 +351,11 @@ export const getHouseVisits = async (req, res, next) => {
             }
         ]);
 
-        return res.status(200).json(requests);
+        let date = null
+        if (req.user) {
+            date = await Requests.findOne({visitor: req.user, house}).select('date message');
+        }
+        return res.status(200).json({requests, date});
     } catch (error) {
         next(error);
     }

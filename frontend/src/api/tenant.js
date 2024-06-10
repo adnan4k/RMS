@@ -30,7 +30,12 @@ export const createMaintenance = async ({_id, description, status, reopen}) => {
     return response.data;
 }
 
-export const fetchMaintenance = async (payload) => {
-    const response = await axios.get('tenant/maintenance', payload);
+export const fetchMaintenance = async () => {
+    const response = await axios.get('tenant/maintenance');
     return response.data;
+}
+
+export const fetchOwner = async () => {
+    const response = await axios.get('tenant/owner')
+    return response.data
 }

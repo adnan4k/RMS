@@ -9,12 +9,7 @@ import User from "./User.js";
 import Tenant from "./Tenant.js";
 import historySchema from './History.js'
 
-export const HouseTypes = [
-    'villa',
-    'building',
-    'l-shape',
-    'small'
-]
+export const HouseTypes = ["apartment", "condo", "duplex", "house", "mansion", "penthouse", "shared apartment", "studio", "villa", "bedsitter", "chalet", "farm house", "room", "building"];
 
 function timegetter(date) {
     return new Date(date);
@@ -52,7 +47,8 @@ export const houseSchema = new mongoose.Schema({
     house_type:{
         type:String,
         enum: HouseTypes,
-        lowercase: true
+        lowercase: true,
+        default: 'house'
     },
     address:{
         type:addressSchema

@@ -2,7 +2,7 @@ import express from "express";
 import { addOwner, currentTenant, deleteOwner, editProfile, getHouses, getOwner, getSingleHouse, occupancyHistory } from "../controllers/OwnerController.js";
 import verifyToken from "../utils/verifyToken.js";
 import uploader from "../utils/fileProcessing.js"
-import { getVisitRequests } from "../controllers/VisitorController.js";
+import { getOwnerRequests, getVisitRequests } from "../controllers/VisitorController.js";
 import { addHouseCalendar, editHouseImages, editHouseInfo } from "../controllers/HouseController.js";
 import { addTenant, deleteTenant } from "../controllers/TenantController.js";
 import { changeStatus, getMaintenanceRequest } from "../controllers/MaintainanceRequestController.js";
@@ -15,7 +15,7 @@ ownerRouter.get('/maintenance',verifyToken('owner'), getMaintenanceRequest);
 ownerRouter.get('/payment', verifyToken('owner'), paymentStats);
 ownerRouter.get('/houses', verifyToken('owner'), getHouses);
 ownerRouter.get('/houses/:houseid', verifyToken('owner'), getSingleHouse);
-ownerRouter.get('/:houseid/requests', verifyToken('owner'), getVisitRequests);
+ownerRouter.get('/requests', verifyToken('owner'), getOwnerRequests);
 ownerRouter.post('/:houseid/calendar', verifyToken('owner'), addHouseCalendar);
 ownerRouter.get('/history', verifyToken('owner'), occupancyHistory);
 ownerRouter.get('/:houseid/tenant', verifyToken('owner'), currentTenant);

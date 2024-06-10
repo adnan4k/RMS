@@ -13,7 +13,7 @@ return <div className='absolute bottom-4 rounded-full p-1 z-[1000] cursor-pointe
 
 function HouseMap({lat, lng}) {
 
-    return <MapContainer center={[lat || 9.0358287, lng || 38.7524127]} zoom={13} style={{ height: '100%', width: '100%' , zIndex: 0}} >
+    return <MapContainer center={[lat || 9.0358287, lng || 38.7524127]} className="rounded-r-lg" zoom={13} style={{ height: '100%', width: '100%' , zIndex: 0}} >
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 <Marker position={[lat || 9.0358287, lng || 38.7524127]}>
                     <Popup>Houses location</Popup>

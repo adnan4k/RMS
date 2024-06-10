@@ -74,3 +74,13 @@ export const changeStatus = async (id) => {
     const response = await axios.put('owner/maintenance/'+id)
     return response.data
 }
+
+export const getVisitors = async () => {
+    try {
+        const response = await axios.get('owner/requests')
+        return response.data
+    } catch (error) {
+        console.log(error)
+        throw error
+    }
+}

@@ -3,18 +3,22 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from '@tanstack/react-query' 
 import { logout } from "../api/auth";
 import {toast} from 'react-toastify';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const showProfile = ({username, role}) => {
     const queryClient = useQueryClient();
     const [hide, sethide] = useState(true);
+    const navigate = useNavigate();
     
     const {mutate, status} = useMutation({
         mutationFn: logout,
         onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['user'], exact:true });
+            toast.success('Successfully Logged out!');
+            navigate('/', {replace: true});
+        },
+        onMutate: () => {
             queryClient.setQueryData(['user'], null);
-            queryClient.invalidateQueries({ queryKey: ['user'] })
-            toast.success('Successfully Logged out!')
         }
     })
     
@@ -49,7 +53,7 @@ const showProfile = ({username, role}) => {
             {username}
         </button>
         
-        <div className={"z-50 my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 absolute min-w-16 "+(hide&&'hidden')}>
+        <div className={"z-[10000] right-0 my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 absolute min-w-16 "+(hide&&'hidden')}>
             <ul className="py-2 font-medium min-w-max" role="none">
                 <li>
                     <Link to={role === 'tenant'?"/tenant":"/profile"} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">
@@ -58,8 +62,7 @@ const showProfile = ({username, role}) => {
                     </div>
                     </Link>
                 </li>
-                {
-                    role === 'user'&&
+                {role === 'user'&&
                     <li>
                         <Link to="profile/upgrade" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">
                         <div className="inline-flex items-center">

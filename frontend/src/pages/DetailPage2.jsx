@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { getSingleHouse } from "../api/house";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -13,9 +13,11 @@ import HouseMap from "../components/HouseMap";
 import ScheduleVisit from "../components/ScheduleVisit";
 
 export const DetailHouse2 = () => {
+    const {state} = useLocation();
+
     const { houseid } = useParams();
     const housePics = useRef(null);
-    const [tabIndex, setTabIndex] = useState(0);
+    const [tabIndex, setTabIndex] = useState(state || 0);
     const [images, setImages] = useState([]);
     
     const {data, status, error} = useQuery({
@@ -42,7 +44,6 @@ export const DetailHouse2 = () => {
                 i.push(i[0]) 
             setImages(i)
         }
-        
     }, [data, status]);
     
     const swipeImages = (idx, current) => {
@@ -52,22 +53,24 @@ export const DetailHouse2 = () => {
 
     if(status === 'pending')
         return (
-        <div className="w-full h-full flex justify-center align-center">
+        <div className="w-full min-h-full flex justify-center align-center fullh">
             <Loader />
         </div>
         )
 
     if (status === 'error')
         return (
-        <div className="w-64 h-64">
-            <MdErrorOutline className="w-full h-full dark:red-300 red-600" />
-            <p className="text-center">Page not found!</p>
+        <div className="min-w-full fullh flex justify-center items-center">
+            <div className="w-64 h-64">
+                <MdErrorOutline className="w-full h-full dark:red-300 red-600" />
+                <p className="text-center">Page not found!</p>
+            </div>
         </div>
         )
     return (
-        <div className="flex max-w-full px-8 py-4 min-h-screen max-h-screen">
+        <div className="flex max-w-full px-8 py-4 fullh rounded-lg">
 
-            <div className="max-w-1/2 max-h-full overflow-y-scroll overflow-x-hidden p-8 pt-4 dark:bg-gray-800 flex flex-col">
+            <div className="max-w-1/2 max-h-full overflow-y-scroll rounded-l-lg overflow-x-hidden p-8 pt-4 dark:bg-gray-800 flex flex-col">
 
                 <div className="flex justify-between mb-4">
                     <div>
@@ -141,12 +144,12 @@ export const DetailHouse2 = () => {
                 </div>
                 <div className="border-t border-gray-500 w-3/4 mx-auto my-2"></div>
                 <div className="mt-6 min-h-32 mb-4">
-                    {tabIndex === 0 && <div className="px-4 font-normal">{data.house.description}</div>}
+                    {tabIndex === 0 && <div className="px-4 font-normal min-h-64">{data.house.description}</div>}
                     {tabIndex === 1 && <MinimalOwner count={data.count} owner={data.house.owner} />}
                     {tabIndex === 2 && <ScheduleVisit calendar={data.house.calendar} id={data.house._id}/>}
                 </div>
             </div>
-            <div className="min-w-[550px] flex-1 max-h-full">
+            <div className="min-w-[550px] flex-1 max-h-full rounded-r-lg">
                 <HouseMap lat={data.house.address.latitude} lng={data.house.address.longitude} />
             </div>
         </div>

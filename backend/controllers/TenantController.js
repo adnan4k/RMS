@@ -228,3 +228,20 @@ export const getTenants = async (req, res, next) => {
         return next(error);
     }
 }
+
+export const getOwner = async (req, res, next) => {
+    try {
+        const tenant = await Tenant.findById(req.user);
+        const house = await House.findOne({tenant: tenant._id}).select('owner').populate({
+            path: 'owner', populate: {
+                path: 'user', select: '-password -isActive'
+            }
+        });
+
+        if (!house || !house.owner)
+            throw createError("Owner not found!!")
+        return res.status(200).json(house.owner);
+    } catch (error) {
+        next(error)
+    }
+}

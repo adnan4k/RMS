@@ -18,3 +18,8 @@ export const getHouseVisits = async (houseid) => {
   const response = await axios.get('house/'+houseid+'/visitrequests');
   return response.data;
 }
+
+export const createHouseVisitRequest = async ({houseid, date, message}) => {
+  const response = await axios.post('user/'+houseid, {date, message});
+  return response.data;
+}

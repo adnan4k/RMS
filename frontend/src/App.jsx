@@ -6,7 +6,6 @@ import Home from './pages/Home';
 import { ToastContainer, toast } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.css';
-import VisitorRequest from './pages/visitorRequest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Layout from './layout/Layout';
 import ForgetPassword from './pages/ForgotPassword';
@@ -36,6 +35,9 @@ import { useMemo } from 'react';
 import { OwnerMaintenance } from './owner/Maintenance';
 import Tenant from './owner/Tenant';
 import { DetailHouse2 } from './pages/DetailPage2';
+import OwnerProfile from './pages/OwnerProfile';
+import MyRequests from './pages/MyRequests';
+import { VisitorRequests } from './owner/VisitorRequests';
 
 
 // The default 404 should be done for the route
@@ -56,7 +58,7 @@ function App() {
   return (
     <>
 
-      <ToastContainer />
+      <ToastContainer className='top-[75px]' />
       <ThemeProvider theme={theme}>
       <CssBaseline />
       <QueryClientProvider client={queryClient}>
@@ -67,7 +69,6 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/forget" element={<ForgetPassword />} />
             <Route path="/resetpassword/:token" element={<ResetPassword />} />
-            <Route path="/request" element={<VisitorRequest />} />
 
             <Route path='/owner/' element={<ProtectedRoutes role='owner' />}>
               <Route index element={<Houses />} />
@@ -76,6 +77,7 @@ function App() {
 
               <Route path='edit' element={<EditOwner />} />
               <Route path='maintenance' element={<OwnerMaintenance />} />
+              <Route path='visitors' element={<VisitorRequests />} />
               <Route path=':houseid' element={<SingleHouse />} />
               <Route path=':houseid/create-tenants' element={<CreateTenants />} />
               <Route path=':houseid/edit/general' element={<EditHouse />} />
@@ -91,19 +93,20 @@ function App() {
               <Route path="/houses" element={<AllHouses />} />
               <Route path="/houses/:houseid" element={<DetailHouse2 />} />
               <Route path="/details" element={<DetailsHouses />} />
-              <Route path='/'/>
+              <Route path='user/:id' element={<Profile />}/>
 
               <Route path='profile/' element={<ProtectedRoutes />}>
                 <Route index element={<Profile />} />
                 <Route path='edit' element={<EditProfile />} />
                 <Route path='upgrade' element={<UpgradeToOwner />} />
+                <Route path='requests' element={<MyRequests />}/>
               </Route>
 
               <Route path='tenant/' element={<ProtectedRoutes role='tenant'/>}>
                 <Route index element={<TenantProfile />}/>
                 <Route path='edit' element={<CreateTenants edit={true} />}/>
                 <Route path='maintenance' element={<Maintenance />}/>
-                {/* <Route path='edit' element={<CreateTenants edit={true} />}/> */}
+                <Route path='owner' element={<OwnerProfile />}/>
               </Route>
             </Route>
 

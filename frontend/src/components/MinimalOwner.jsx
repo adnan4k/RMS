@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 export const MinimalOwner = ({owner, count}) => {
     
-    return <div className="flex flex-col">
+    return <div className="flex flex-col min-h-64">
         <h6 className="mb-1 font-bold tracking-tight text-gray-900 dark:text-white">Email: <span className="ml-4">{owner.user.email}</span></h6> 
         <p className="font-normal text-gray-700 dark:text-gray-400">Full name: <span className="ml-4">{owner.user.firstname} {owner.user.lastname}</span></p>
         <p className="font-normal text-gray-700 dark:text-gray-400">Phone number: <span className="ml-4">{owner.user.phonenumber}</span></p>

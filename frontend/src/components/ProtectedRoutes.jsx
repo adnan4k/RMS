@@ -21,9 +21,6 @@ export const ProtectedRoutes = ({role}) => {
             toast.error('You need to login to access this page')
             navigate('/login')
         }
-        if (status === 'success' && !data) {
-            navigate('/')
-        }
         if (data && role && data.role != role) {
             toast.error('Not authorized to see this page')
             navigate('/')

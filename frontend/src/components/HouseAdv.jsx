@@ -4,7 +4,7 @@ export const HouseAdv = ({image, house_type, address, rent_amount, no_of_rooms, 
     
     
     return (
-        <Link to={'/houses/'+_id} className={"container border rounded-lg flex flex-col max-h-[500px] min-h-[500px] "+(latest && 'min-w-80')}>
+        <Link to={'/houses/'+_id} className={"container border rounded-lg flex flex-col max-h-[500px] dark:text-white min-h-[500px] "+(latest && 'min-w-80')}>
             <div className="flex-1 h-1">
               <img src={image} className="min-h-full max-h-full min-w-full max-w-full rounded-t-lg" alt="home" />
             </div>
@@ -14,7 +14,7 @@ export const HouseAdv = ({image, house_type, address, rent_amount, no_of_rooms, 
               </h3>
               <h3>
                 <span className="mx-2 text-[15px] font-semibold">Price:</span>
-                <span className="font-semibold">{rent_amount}</span>
+                <span className="font-semibold">{rent_amount} ETB</span>
               </h3>
               <h3>
                 <span className="mx-2 text-[15px] font-semibold">Bathrooms:</span>

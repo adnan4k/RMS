@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import House from "../models/House.js";
 import User from "../models/User.js";
 import Requests from "../models/VisitorRequest.js";
@@ -8,12 +9,12 @@ export const createVisitorRequest = async (req, res, next) => {
         const date = new Date(req.body.date);
         const message = req.body.message;
 
-        const house = await House.findById(req.params.houseid);
+        const house = await House.findById(req.params.houseid).select('calendar');
         const visitor = await User.findById(req.user);
 
-        const schedule = house.calendar.schedule;
-
-        const day = schedule[date.getDay()];
+        const {schedule} = house.calendar;
+        
+        const day = schedule[(6+date.getDay()) % 7];
         if (!day)
             throw createError(400, "The house have no schedule this day");
 
@@ -106,7 +107,7 @@ export const getVisitRequests = async (req, res, next) => {
             throw createError(400, 'House not found!!');
         const requests = await Requests.find({
             house: house._id
-        }).populate({ path: 'visitor', select: '-password -role -isActive'});
+        }).sort({date: 1}).populate({ path: 'visitor', select: '-password -role -isActive'});
         
         return res.status(200).json(requests);
     } catch (error) {
@@ -120,17 +121,101 @@ export const getRequests = async (req, res, next) => {
             visitor: req.user
         }).populate({
             path: 'house', 
-            select: 'images housenumber address owner _id',
-            populate: {
-                path: 'owner', 
-                foreignField: 'user',
-                select: '-national_id',
-                populate: {
-                    path: 'user',
-                    select: '-role -password -isActive'
-                }
-            }
+            select: 'images address rent_amount no_of_rooms house_type _id',
         });
+        return res.status(200).json(requests);
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const deleteRequest = async (req, res, next) => {
+    try {
+        await Requests.deleteOne({house: req.params.id, visitor:req.user});
+        return res.status(200).json('Deleted the request for ');
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const getOwnerRequests = async (req, res, next) => {
+    try {
+        const ownerId = new mongoose.Types.ObjectId(req.user)
+        const requests = await Requests.aggregate([
+            {$group: {
+                    _id: "$house",
+                    requests: {$push: "$$ROOT"}
+                }
+            },
+            {$project: {
+                    'requests.house': 0,
+                }
+            },
+            {$lookup: {
+                    from: 'houses',
+                    localField: '_id',
+                    foreignField: '_id',
+                    pipeline: [{
+                        $replaceRoot: {
+                            newRoot: {
+                                housenumber: '$housenumber',
+                                images: {
+                                    $arrayElemAt: ['$images', 0] 
+                                },
+                                owner: '$owner'
+                            }
+                        }
+                    }],
+                    as: 'house',
+                }
+            },
+            {$unwind: '$house'},
+            {$addFields: {
+                    "house.images": "$house.images.url"
+                }
+            },
+            {$match: {
+                    "house.owner": ownerId, 
+                }
+            },
+            {$unwind: '$requests'},
+            {$lookup: {
+                from: 'users',
+                foreignField: '_id',
+                localField: 'requests.visitor',
+                pipeline: [
+                    {
+                        $project: {
+                            password: 0,
+                            isActive: 0,
+                            role: 0
+                        }
+                    }
+                ],
+                as: 'visitor'
+            }},
+            {$sort: {
+                'requests.date': 1
+            }},
+            { $unwind: '$visitor' },
+            {$group: {
+                _id: '$house',
+                requests: {$push: {
+                    message: '$requests.message',
+                    visitor: '$visitor._id',
+                    fname: '$visitor.firstname',
+                    lname: '$visitor.lastname',
+                    request_id: '$requests._id',
+                    date: '$requests.date',
+                }}
+            }},
+            {$project: {
+                house: '$_id',
+                _id: 0,
+                requests: 1
+            }},
+        ]);
+
         return res.status(200).json(requests);
     } catch (error) {
         next(error)

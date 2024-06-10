@@ -24,9 +24,12 @@ export const login = async (payload) => {
 
 }
 
-export const getUser = async () => {
+export const getUser = async (id) => {
     try {
-        const response = await axios.get('user');
+        let q = 'user'
+        if (id && typeof id === 'string')
+            q += '/'+id
+        const response = await axios.get(q);
         return response.data;
     } catch (error) {
         console.log(error)
