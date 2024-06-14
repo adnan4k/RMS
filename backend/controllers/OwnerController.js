@@ -134,11 +134,33 @@ export const deleteOwner = async(req,res,next) =>{
 
 export const occupancyHistory = async (req, res, next) => {
     try {
-        const history = await House.find({owner: req.user}).select('occupancy_history')
-        .populate(
-            {path: 'occupancy_history.tenant', foreignField: '_id', model: 'User', select: 'firstname lastname'}
-        );
 
+        const searchParams = {}
+        if (req.query.q) {
+            const q = new RegExp(req.query.q, 'i')
+            const fields = [
+                {firstname:q},
+                {lastname:q},
+                {email: q},
+                {phonenumber: q}
+            ]
+            searchParams.$or = fields
+        }
+        let history = await House.find({owner: req.user, occupancy_history: {$ne: []}}).select('housenumber tenant occupancy_history.tenant occupancy_history.from occupancy_history.upto')
+        .populate(
+            {
+                path: 'occupancy_history.tenant', 
+                foreignField: '_id',
+                model: 'User', 
+                select: 'firstname lastname email phonenumber', 
+                match: searchParams,
+            }
+        );
+        
+        history = history.map(his => {
+            his.occupancy_history = his.occupancy_history.filter(({tenant}) => tenant !== null)
+            return his
+        });
         return res.status(200).json(history);
     } catch (error) {
         next(error)

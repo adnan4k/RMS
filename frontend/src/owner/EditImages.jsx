@@ -57,20 +57,20 @@ export const EditImages = () => {
     }
     
     return (
-        <div className="h-screen flex flex-col justify-between">
+        <div className="min-h-screen flex flex-col justify-between flex-1">
             <div>
                 Please Select images you want to remove
                 <div className="grid md:grid-cols-3 sm:grid-col-1 gap-4 mt-4">
                     {state.images.map((image, idx) =>
                         <div key={idx} className="relative">
-                            <img className="max-h-64 min-h-64 min-w-64 max-w-full rounded-lg dark:bg-white" src={'http://localhost:4001/'+image} alt="" />
+                            <img className="max-h-64 min-h-64 min-w-64 max-w-full w-full rounded-lg dark:bg-white" src={'http://localhost:4001/'+image} alt="" />
                             <input onChange={(e)=>onChange(e, image)} checked={selectedImages.includes(image)} type="checkbox" value="" className="w-4 h-4 cursor-pointer absolute top-2 right-2 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
                         </div>
                             
                     )}
                 </div>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between mt-8">
                 <div className="relative z-0 group">
                     <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="national_id">Add Images</label>
                     <input
@@ -80,7 +80,7 @@ export const EditImages = () => {
                         accept="image/*"
                         multiple
                     />    
-                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">Upto 10 images in total (SVG, PNG, JPG (MAX. 3 MB)).</p>    
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">Upto 10 images in total (JPEG, PNG, JPG (MAX. 3 MB)).</p>    
                 </div>
                 <div>
                     <Link to={'/owner/'+state._id} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 mt-8 mb-4 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Back</Link>

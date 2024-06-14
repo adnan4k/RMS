@@ -5,7 +5,6 @@ export const getTenant = async (tenantid) => {
         const response = await axios.get(`tenant/id`);
         return response.data
     } catch (error) {
-        console.log(error)
         throw error
     }
 }

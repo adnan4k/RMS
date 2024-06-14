@@ -144,7 +144,11 @@ export const DetailHouse2 = () => {
                 </div>
                 <div className="border-t border-gray-500 w-3/4 mx-auto my-2"></div>
                 <div className="mt-6 min-h-32 mb-4">
-                    {tabIndex === 0 && <div className="px-4 font-normal min-h-64">{data.house.description}</div>}
+                    {tabIndex === 0 && <ul className="px-4 font-normal min-h-64 list-disc list-inside">
+                        {data.house.description.split('\n').map(d => 
+                            <li>{d}</li>
+                        )}
+                    </ul>}
                     {tabIndex === 1 && <MinimalOwner count={data.count} owner={data.house.owner} />}
                     {tabIndex === 2 && <ScheduleVisit calendar={data.house.calendar} id={data.house._id}/>}
                 </div>

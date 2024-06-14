@@ -18,7 +18,6 @@ export const login = async (payload) => {
         axios.defaults.headers.common['Authorization'] = `Bearer ${accesstoken}`
         return data
     } catch (error) {
-        console.log(error);
         throw error
     }
 
@@ -32,7 +31,6 @@ export const getUser = async (id) => {
         const response = await axios.get(q);
         return response.data;
     } catch (error) {
-        console.log(error)
         throw error
     }
 }
@@ -42,7 +40,6 @@ export const frogetPassword = async (email) => {
         const response = await axios.post('user/forgetpassword', {identifier: email});
         return response.data
     } catch (error) {
-        console.log(error)
         throw error
     }
 }
@@ -56,7 +53,6 @@ export const resetPassword = async (payload) => {
         axios.defaults.headers.common['Authorization'] = `Bearer ${accesstoken}`
         return data
     } catch (error) {
-        console.log(error)
         throw error
     }
 }
@@ -69,7 +65,6 @@ export const logout = async () => {
         localStorage.removeItem('accesstoken')
         return response;
     } catch (error) {
-        console.log(error)
         throw error
     }
 }

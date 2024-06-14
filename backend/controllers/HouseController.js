@@ -191,7 +191,6 @@ export const getHouses = async (req, res, next) => {
         const result = paginate(page, limit, data.length > 0?data[0].total:0, data.length>0?data[0].results:[]);
         return res.status(200).json(result);
     } catch (error) {
-        console.log(error)
         return next(error);
     }
 };

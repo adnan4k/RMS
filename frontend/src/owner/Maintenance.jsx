@@ -48,7 +48,7 @@ export const OwnerMaintenance = () => {
     
     if (status === 'pending')
         return (
-            <div className="w-full h-full flex justify-center align-center">
+            <div className="w-full h-full flex justify-center align-center flex-1">
                 <Loader />
             </div>
         )
@@ -58,13 +58,13 @@ export const OwnerMaintenance = () => {
 
     if (!data || data.length === 0)
         return (
-            <div className="w-64 h-64">
+            <div className="w-64 h-64 self-center flex-1">
                 <FaDropbox className="w-full h-full" />
                 <p className="text-center">No maintenance requests yet</p>
             </div>
         )
 
-    return <div className="grid gap-10 grid-cols-3 mx-10 self-start mt-4">
+    return <div className="grid gap-10 grid-cols-3 w-full flex-1 mx-10 self-start mt-4">
         {data.map(({house, requests}, idx) => 
             <HouseCard {...house} requests={requests} onClick={setOpen} setRequests={setRequests} key={idx}/>
         )}

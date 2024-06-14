@@ -69,11 +69,14 @@ export const SingleHouse = () => {
 
     if (status === 'error')
         return (
-        <div className="w-64 h-64">
-            <MdErrorOutline className="w-full h-full dark:red-300 red-600" />
-            <p className="text-center">Page not found!</p>
-        </div>
+            <div className="w-full h-full flex justify-center align-center">
+                <div className="w-64 h-64">
+                    <MdErrorOutline className="w-full h-full dark:red-300 red-600" />
+                    <p className="text-center">Page not found!</p>
+                </div>
+            </div>
         )
+
     return (
         <div className="w-full h-full overflow-y-scroll overflow-x-hidden p-8 pt-4 dark:bg-gray-800 mx-32 flex flex-col">
             <div className="relative self-end">
@@ -110,6 +113,9 @@ export const SingleHouse = () => {
                     <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                         {data.address.city}, {data.address.sub_city}, {data.address.woreda} {data.address.kebele && "kebele, "+data.address.kebele}
                     </p>
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        House type: {data.house_type.toUpperCase()}
+                    </p>
                 </div>
                 <div>
                     <h4>
@@ -120,7 +126,7 @@ export const SingleHouse = () => {
                     </p>
                 </div>
             </div>
-            <Slider {...settings} className="min-w-full mx-2 mt-2">
+            <Slider {...settings} className="min-w-full mt-2">
                 {
                     images.map((image, idx) => 
                         <img key={idx} src={"http://localhost:4001/"+image} className="min-h-80 max-h-80 min-w-fill max-w-fill dark:bg-white object-fill rounded-lg" alt="" />
@@ -174,9 +180,11 @@ export const SingleHouse = () => {
             </div>
             <div className="border-t border-gray-500 w-3/4 mx-auto my-2"></div>
             <div className="mt-6 min-h-32 mb-4">
-                {tabIndex === 0 && <div className="px-4 font-normal">
-                        {data.description}
-                </div>}
+                {tabIndex === 0 && <ul className="px-4 font-normal list-disc list-inside">
+                        {data.description.split('\n').map(d => 
+                            <li>{d}</li>
+                        )}
+                </ul>}
                 {tabIndex === 1 && <AvailableDates dates={data.calendar} houseid={data._id} />}
                 {tabIndex === 2 && <MinimalTenant houseId={data._id} tenant={data.tenant} />}
                 {tabIndex === 3 && <DisplayBankAccount bankaccounts={data.bankaccounts} />}

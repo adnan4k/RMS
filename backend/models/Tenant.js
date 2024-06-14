@@ -13,11 +13,13 @@ export const tenantSchema = new mongoose.Schema({
   },
   reference: {
     type: {
-      name: String,
+      name: {
+        type: String, 
+        required: [true, "Reference full name is required"]
+      },
       phonenumber:{
         type: String,
         required: [true, "Reference phone number is required"],
-        unique: true,
         validate: {
             validator: phone => {
                 const checker = /^\+(2519|2517)\d{8}$/;

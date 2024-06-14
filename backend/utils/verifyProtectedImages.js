@@ -67,8 +67,7 @@ export const verifyNationalId = async (req, res, next) => {
             }
             
             const tenant = await Tenant.findOne({'national_id.url': req.originalUrl});
-            const house = await House.findOne({'occupancy_history.tenant': tenant._id, owner: req.user});
-            
+            const house = await House.findOne({'occupancy_history.tenant': tenant.user, owner: req.user});
             if (house) {
                 next()
                 return

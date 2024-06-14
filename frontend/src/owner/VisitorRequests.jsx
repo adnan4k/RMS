@@ -18,33 +18,6 @@ export const VisitorRequests = () => {
         queryFn: getVisitors
     })
 
-    const queryClient = useQueryClient();
-    
-    // const {mutate, status: mstatus} = useMutation({
-    //     mutationFn: changeStatus,
-    //     onError: (error) => {
-    //         toast.error(error.response ? error.response.data.message: error.message);
-    //     },
-    //     onSuccess: ({id}) => {
-    //         toast.success('Updated the status');
-    //         queryClient.invalidateQueries({
-    //             queryKey: ['owner', 'maintenance']
-    //         });
-    //         setRequests(
-    //             requests.map((req) => {
-    //                 if (req.request_id === id)
-    //                     req.status = true
-    //                 return req 
-    //             })
-    //         )
-    //     }
-    // })
-    // const handleClick = (status, id) => {
-    //     if (status)
-    //         console.log("Delete")
-    //     else
-    //         mutate(id)
-    // }
     
     if (status === 'pending')
         return (
@@ -92,7 +65,7 @@ export const VisitorRequests = () => {
                                 <div className='flex flex-col justify-between'>
                                     <div>
                                         <p className="text mb-3 text-gray-500 truncate font-medium dark:text-gray-400">
-                                            Date: {dayjs(date).format("DD/MMM/YYYY HH:mm A")}
+                                            Schedule: {dayjs(date).format("DD/MMM/YYYY HH:mm A")}
                                         </p>
                                     </div>
                                 </div>

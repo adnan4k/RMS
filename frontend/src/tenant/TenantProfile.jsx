@@ -53,17 +53,18 @@ export const TenantProfile = () => {
     if (data) {
         fullname = `${data.firstname}  ${data.lastname}`
         address = `${data.tenant.reference.address.city}, ${data.tenant.reference.address.sub_city}`
-        remainingdays.month = dayjs(data.house.deadline).diff(new Date(), 'M')
-        remainingdays.day = dayjs(data.house.deadline).diff(new Date(), 'd')
+        remainingdays.day = dayjs(data.house?.deadline).diff(new Date(), 'd')%30
+        remainingdays.month = Math.floor(dayjs(data.house?.deadline).diff(new Date(), 'd') / 30);
     }
-
+    
+    console.log(data, 'house')
     return (
         <div className="min-w-[23rem] w-[70%] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 self-center mx-auto px-5 text-center pb-5">
 
             {data&&
             <div className="flex flex-col items-center">
                 <div className={"py-2.5 px-5 me-2 my-4 self-end text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:z-10 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 "+(remainingdays.day < 0 && 'text-red-900 border-red-200 dark:text-red-500 dark:border-red-400')}>
-                    {remainingdays.month > 0? remainingdays.month + " months and":''} {remainingdays.day>-1?remainingdays.day+' days until the deadline':Math.abs(remainingdays.day)+' days past the deadline'}
+                    {remainingdays.month > 0? remainingdays.month + " months and":''} {remainingdays.day>-1?remainingdays.day+' days until next deadline':Math.abs(remainingdays.day)+' days past the deadline'}
                 </div>
                 {urlStatus === 'success' ? 
                     <div className="w-[100%] h-64 mb-3 shadow-lg overflow-hidden bg-gray-100 dark:bg-gray-600">
@@ -84,8 +85,8 @@ export const TenantProfile = () => {
                         <span className="text-l text-gray-700 dark:text-gray-100 self-start my-2">Username: <span className="ml-4">{data.username}</span></span>
                         <span className="text-l text-gray-700 dark:text-gray-100 self-start my-2 divider">Phone: <span className="ml-4">{data.phonenumber}</span></span>
                         <span className="text-l text-gray-700 dark:text-gray-100 self-start my-2">Mother Name: <span className="ml-4">{data.tenant.mother_name}</span></span>
-                        <span className="text-l text-gray-700 dark:text-gray-100 self-start my-2 divider">Next Deadline: <span className="ml-4">{dayjs(data.house.deadline).format('YYYY-MM-DD')}</span></span>
-                        <span className="text-l text-gray-700 dark:text-gray-100 self-start my-2 divider">Start Date: <span className="ml-4">{dayjs(data.house.contract.startdate).format('YYYY-MM-DD')} </span></span>
+                        <span className="text-l text-gray-700 dark:text-gray-100 self-start my-2 divider">Next Deadline: <span className="ml-4">{dayjs(data.house?.deadline).format('YYYY-MM-DD')}</span></span>
+                        <span className="text-l text-gray-700 dark:text-gray-100 self-start my-2 divider">Start Date: <span className="ml-4">{dayjs(data.house?.contract.startdate).format('YYYY-MM-DD')} </span></span>
                     </div>
                     <hr />
                     <div className="flex flex-col border-gray-200 dark:border-gray-700 text-lg dark:text-white text-gray-900">
@@ -103,14 +104,18 @@ export const TenantProfile = () => {
                 
 
                 <div className="flex mt-4 md:mt-6 w-full justify-around pb-4 border-b dark:border-gray-600 border-gray-200 relative">
-                    <p className="text-xs absolute p-0.5 -bottom-2 right-0 bg-white dark:bg-gray-800 dark:text-gray-400 text-gray-900"> Accounts acction</p>
+                    <p className="text-xs absolute p-0.5 -bottom-2 right-0 bg-white dark:bg-gray-800 dark:text-gray-400 text-gray-900"> Account actions</p>
                     <button id='changepassword' onClick={()=> {setchangeHide(false)}} className={`py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 ${isPending&&'cursor-not-allowed'}`} disabled={isPending}>{isPending?'...':'Change Password'}</button>
                     <Link to={"/tenant/edit"} className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Edit Profile</Link>
-                    <button onClick={()=> {setHide(false)}} className={`py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700`}>See Contract</button>
+                    <button onClick={()=> {console.log('hrehe');setHide(false)}} className={`py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700`}>See Contract</button>
+                </div>
+                <div className="flex mt-4 md:mt-6 w-full justify-around pb-4 border-b dark:border-gray-600 border-gray-200 relative">
+                    <p className="text-xs absolute p-0.5 -bottom-2 right-0 bg-white dark:bg-gray-800 dark:text-gray-400 text-gray-900"> House actions</p>
+                    <Link to={"/tenant/edit"} className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Owner detail</Link>    
                 </div>
                 
                 <ChangeModal hide={changeHide} title={'Are you sure you want to change your password'} message={'Please click yes if you want to change your password and we will send you an email to help you reset your password or click back if you don\'t want anything'} email={data.email} submit={mutate}/>
-                <Modal open={!hide && contractStatus === 'success'} onClose={()=>setHide(true)}>
+                <Modal open={!hide && contractStatus === 'success'} className="!z-[10001]" onClose={()=>setHide(true)}>
                     <div className="w-[70%] h-full p-8 bg-gray-800 dark:border-gray-200 m-auto">
                         <img src={contractUrl} alt="" className="min-w-full max-w-full min-h-full max-h-full"/>
                     </div>

@@ -93,7 +93,7 @@ function ScheduleVisit({calendar, id}) {
                             let starttime = dayjs(c.starttime)
                             starttime = dayjs().set('hour', starttime.hour())
                             let endtime = dayjs(c.endtime)
-                            endtime = dayjs().set('hour', endtime.hour()-1)
+                            endtime = dayjs().set('hour', endtime.hour() - (endtime.minute() > 0 ? 0: 1))
                             const now = dayjs().set('hour', time.hour())
                             
                             if (now.isAfter(endtime) || now.isBefore(starttime))
@@ -114,7 +114,7 @@ function ScheduleVisit({calendar, id}) {
                             
                             const s = scehdulesToMap[time.format('YYYY-MM-DD')]
                             if (s) {
-                                if (s.filter(({date}) =>  time.isSame(dayjs(date)) || (time.isAfter(dayjs(date)) && time.isBefore(dayjs(date).add(1,'hour')))).length > 0)
+                                if (s.filter(({date}) =>  (time.isBefore(dayjs(date).subtract(1, 'hour')) || time.isBefore(dayjs(date).add(1,'hour')))).length > 0)
                                     return true
                             }
                             return false

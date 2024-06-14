@@ -87,7 +87,7 @@ function Houses() {
                 
                 <p className='mb-2 text-lg'>{isFetching? '...':datas.total + " results"}</p>
                     
-                <div className="grid gap-10 grid-cols-3 w-full">
+                <div className="grid gap-10 grid-cols-3 w-full px-2">
                     {datas.data.length === 0 || status === 'error'? 
                     <>
                         <div className='w-64 h-1'></div>
@@ -108,7 +108,7 @@ function Houses() {
                     datas.data.length > 0 &&
                 <div class="flex flex-col items-center self-end p-2">
                     <span class="text-sm text-gray-700 dark:text-gray-400">
-                        Showing <span class="font-semibold text-gray-900 dark:text-white">{1+(page - 1) * limit}</span> to <span class="font-semibold text-gray-900 dark:text-white">{page*limit}</span> of <span class="font-semibold text-gray-900 dark:text-white">{datas?.total}</span> Entries
+                        Showing <span class="font-semibold text-gray-900 dark:text-white">{1+(page - 1) * limit}</span> to <span class="font-semibold text-gray-900 dark:text-white">{Math.min(page*limit, datas?.total)}</span> of <span class="font-semibold text-gray-900 dark:text-white">{datas?.total}</span> Entries
                     </span>
                     <div class="inline-flex mt-2 xs:mt-0">
                         {datas.prev &&

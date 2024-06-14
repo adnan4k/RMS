@@ -69,7 +69,7 @@ function MyRequests() {
                         <div className="flex-shrink-0">
                             <img className="w-64 h-32 rounded-lg" src={"http://localhost:4001/"+house.images[0]} alt="Neil image" />
                         </div>
-                        <Link to={'/houses/'+house._id} className="flex-1 h-32 flex flex-col justify-around min-w-0">
+                        <Link to={'/houses/'+house._id} state={2} className="flex-1 h-32 flex flex-col justify-around min-w-0">
                             <p className="text-xl font-bold text-gray-900 dark:text-white">
                             {house.no_of_rooms} room {house.house_type.toUpperCase()} at {house.address.city}, {house.address.sub_city}
                             </p>
@@ -97,9 +97,8 @@ function MyRequests() {
             )
             }
         </ul>
-        <Modal open={open} onClose={() => setOpen(false)}>
-        
-                <div className="relative bg-white mx-32 my-20 rounded-lg shadow dark:bg-gray-700">
+        <Modal className="overflow-y-scroll" open={open} onClose={() => setOpen(false)}>
+                <div className="relative bg-white mx-32 my-20 rounded-lg shadow dark:bg-gray-700 max-w-full">
 
                     <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
                         <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
@@ -114,10 +113,10 @@ function MyRequests() {
                     </div>
 
                     <div className="p-4 md:p-5 space-y-4">
-                    <Slider {...settings} className="min-w-full mt-2">
+                    <Slider {...settings} className="min-w-full mt-2 max-h-96">
                         {
                             images.map((image, idx) => 
-                                <img key={idx} src={"http://localhost:4001/"+image} className="min-w-fill max-w-fill dark:bg-white object-fill rounded-lg" alt="house image" />
+                                <img key={idx} src={"http://localhost:4001/"+image} className="min-w-fill max-w-fill max-h-96 dark:bg-white object-fill rounded-lg" alt="house image" />
                             )
                         }
                     </Slider>

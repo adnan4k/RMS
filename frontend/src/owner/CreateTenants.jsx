@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { addTenant } from '../api/owner';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Link, useLocation, useNavigate, useOutletContext } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FaX } from 'react-icons/fa6';
 import { validateForm } from '../utils/validation';
@@ -64,7 +64,7 @@ function CreateTenants({edit}) {
         mutationFn: edit ? editTenant: addTenant,
         onSuccess: (house) => {
             if (edit) {
-                queryClient.invalidateQueries({queryKey: []})
+                queryClient.invalidateQueries({queryKey: ['tenant']})
                 toast.success('Tenant edited successfully!');
                 navigate('/tenant/')
             }
@@ -74,14 +74,14 @@ function CreateTenants({edit}) {
             }
         },
         onError: (err) => {
-            toast.error(err.reponse ? err.reponse.data.message : err.message);
+            toast.error(err.response ? err.response.data.message : err.message);
+            console.log(err)
         }
     });
-
-    const { state } = useLocation();
-    const houseId = state?.houseId;
-
+    const { houseid:houseId } = useParams();
+    
     const [displayError, setDisplayError] = useState(new Set());
+    const [checked, setChecked] = useState(false);
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
@@ -156,11 +156,12 @@ function CreateTenants({edit}) {
         setModalVisible(false);
     };
 
-    const tenantErrors = validateForm(formData, ['mother_name', 'nationalid', 'contract']);
+    const nonrequired = checked?['mother_name', 'nationalid', 'contract', 'firstname', 'lastname', 'phonenumber'] : ['mother_name', 'nationalid', 'contract']
+    const tenantErrors = validateForm(formData, nonrequired);
     const referenceErrors = validateForm(referenceData, ['kebele', 'woreda']);
 
     return (
-        <div>
+        <div className='w-full flex-1'>
             <form className="max-w-md mx-auto my-4" onSubmit={handleSubmit}>
                 <div className="grid md:grid-cols-2 md:gap-6">
                     <div className="relative z-0 w-full mb-5 group">
@@ -172,7 +173,8 @@ function CreateTenants({edit}) {
                             onChange={handleChange}
                             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                             placeholder=" "
-                            required
+                            required={!checked}
+                            disabled={checked}
                         />
                         <label htmlFor="firstname" className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">First name</label>
                         {(displayError.has('firstname') && tenantErrors.firstname !== '')&& <p className="mt-1 text-xs text-red-600 dark:text-red-500">{tenantErrors.firstname}</p>}
@@ -186,7 +188,8 @@ function CreateTenants({edit}) {
                             onChange={handleChange}
                             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                             placeholder=" "
-                            required
+                            required={!checked}
+                            disabled={checked}
                         />
                         <label htmlFor="lastname" className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Last name</label>
                         {(displayError.has('lastname') &&tenantErrors.lastname !== '')&& <p className="mt-1 text-xs text-red-600 dark:text-red-500">{tenantErrors.lastname}</p>}
@@ -227,7 +230,7 @@ function CreateTenants({edit}) {
                             <span className="inline-flex items-center px-1 text-sm text-gray-900 bg-gray-200 border border-e-0 border-gray-300 rounded-s-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
                             +251
                             </span>
-                            <input type="tel" pattern="[0-9]{9}" value={formData.phonenumber} onChange={handleChange} name="phonenumber" id="phonenumber" className="block py-2.5 px-1 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-black dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+                            <input type="tel" pattern="[0-9]{9}" value={formData.phonenumber} onChange={handleChange} name="phonenumber" id="phonenumber" className="block py-2.5 px-1 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-black dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required={!checked} disabled={checked} />
                             <label htmlFor="phonenumber" className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-7 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:translate-x-11 peer-focus:scale-75 peer-focus:-translate-y-7 peer-focus:-translate-x-0">Phone number (935556072)</label>
                     </div>
                         {(displayError.has('phonenumber') &&tenantErrors.phonenumber !== '')&& <p className="mt-1 text-xs text-red-600 dark:text-red-500">{tenantErrors.phonenumber}</p>}
@@ -256,12 +259,12 @@ function CreateTenants({edit}) {
                                 accept="image/*"
                                 onChange={handleChange}
                             />
-                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">SVG, PNG, JPG (MAX. 3 MB).</p>
+                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">JPEG, PNG, JPG (MAX. 3 MB).</p>
                             {(displayError.has('contract') && !formData.contract)&& <p className="mt-1 text-xs text-red-600 dark:text-red-500">Please submit the contract photo</p>}
                         </div>
                     }
                     <div className="relative z-0 w-full mb-5 group">
-                        <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="nationalid">National Id</label>
+                        <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="nationalid">{edit?"Change ":''}National Id</label>
                         <input
                             className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
                             id="nationalid"
@@ -270,12 +273,35 @@ function CreateTenants({edit}) {
                             accept="image/*"
                             onChange={handleChange}
                         />
-                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">SVG, PNG, JPG (MAX. 3 MB).</p>
+                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">JPEG, PNG, JPG (MAX. 3 MB).</p>
                         {(!edit &&displayError.has('nationalid') && !formData.nationalid)&& <p className="mt-1 text-xs text-red-600 dark:text-red-500">Please submit the tenants national id</p>}
                     </div>
                 </div>
-                <Link to={'/tenant'} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg w-full sm:w-auto px-5 py-3.5 text-sm text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Back</Link>
+                {!edit&&
+                    <div className="flex items-start my-3">
+                  <div className="flex items-center h-5">
+                    <input
+                      onChange={(e) => setChecked(e.target.checked)}
+                      value={checked}
+                      id="remember"
+                      aria-describedby="remember"
+                      type="checkbox"
+                      className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800"
+                      required=""
+                    />
+                  </div>
+                  <div className="ml-3 text-sm">
+                    <label
+                      htmlFor="remember"
+                      className="text-gray-500 dark:text-gray-300"
+                    >
+                      Aleady have an account (If the tenant have an account, only the email is needed)
+                    </label>
+                  </div>
+                </div>}
+                <Link to={edit?'/tenant':'/owner'} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg w-full sm:w-auto px-5 py-3.5 text-sm text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Back</Link>
                 <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 ml-6 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
+                
             </form>
 
             {/* Main modal */}

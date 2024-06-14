@@ -20,7 +20,7 @@ function HouseMap({lat, lng}) {
                 </Marker>
                 {(!lng || !lat)&&
                     <div className="absolute top-0 z-[1001] pointer-events-none bg-[#1c00007b] bottom-0 flex justify-center items-center left-0 right-0">
-                        <p className="m-auto text-2xl text-white font-bold"> An Error Occured  </p>
+                        <p className="m-auto text-2xl text-white font-bold"> No map data available  </p>
                     </div>
                 }
                 <FindMe lat={lat} lng={lng}/>

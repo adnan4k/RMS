@@ -18,16 +18,19 @@ export const addTenant = async(req, res, next) => {
         const houseId = req.params.houseid
         reference = JSON.parse(reference);
 
-        let national_id = req.files['nationalid'][0]
-        let contract_photo = req.files['contract'][0]
+        let national_id = req.files['nationalid']
+        let contract_photo = req.files['contract']
+        
+        if (!national_id || !contract_photo)
+            throw createError(400, 'Both national id and contract are required')
         
         national_id = {
-            url: 'nationalids/'+national_id.filename,
-            path: national_id.destination+"/"+national_id.filename
+            url: 'nationalids/'+national_id[0].filename,
+            path: national_id[0].destination+"/"+national_id[0].filename
         }
         contract_photo = {
-            url: 'contracts/'+contract_photo.filename,
-            path: contract_photo.destination+"/"+contract_photo.filename
+            url: 'contracts/'+contract_photo[0].filename,
+            path: contract_photo[0].destination+"/"+contract_photo[0].filename
         }
         
         let user =  await User.findOne({email: email}).select('-password');
@@ -42,30 +45,34 @@ export const addTenant = async(req, res, next) => {
         const tenant = await Tenant.create([{ user, reference, national_id, mother_name }], {session});
         const house = await House.findById(houseId);
         
-        house.occpancy_history.push({
-            tenant: user._id,
-            contract_photo: photo,
-            from: Date.now()
-        });
-
+        
         if (!house)
             throw createError(400, "House not found!");
         if (house.tenant)
             throw createError(400, "You have to remove that tenant before adding a new one");
-        const today = new Date();
 
+        
+        house.occupancy_history = [...house.occupancy_history, {
+            tenant: user._id,
+            contract_photo: contract_photo,
+            from: Date.now()
+        }]
+
+        const today = new Date();
+        
         house.tenant = user;
         house.contract = {
             startdate: today,
             photo: contract_photo,
         }
 
+
         const onemonth = new Date(today);
         onemonth.setMonth(today.getMonth()+1);
         onemonth.setDate(today.getDate()+1);
         onemonth.setHours(0,0,0,0);
-
         house.deadline = onemonth; 
+
         await house.save({session});
         
         const token = refresh({id: user._id}, '60m' );
@@ -75,9 +82,11 @@ export const addTenant = async(req, res, next) => {
         return res.status(200).json({msg: 'Successfully added tenant', data: tenant})
     } catch (error) {
         await session.abortTransaction();
-        if (req.files && Object.keys(req.files) > 1) {
-            await removeImage(req.files['nationalid'][0].destination+'/'+req.files['nationalid'][0].filename);
-            await removeImage(req.files['contract'][0].destination+'/'+req.files['contract'][0].filename);
+        if (req.files) {
+            if (req.files.nationalid)   
+                await removeImage(req.files['nationalid'][0].destination+'/'+req.files['nationalid'][0].filename);
+            if (req.files.contract)
+                await removeImage(req.files['contract'][0].destination+'/'+req.files['contract'][0].filename);
         }
         next(error);
     } finally {
@@ -121,6 +130,7 @@ export const editTenant = async (req, res, next) => {
         await tenant.save({session});
     
         await session.commitTransaction();
+        
         if (removedPath !== '')
             await removeImage(removedPath);
         return res.status(200).json({msg: "Succssesfully updated!", data: {tenant, user}})
@@ -140,16 +150,34 @@ export const getTenant = async (req, res, next) => {
         if (req.role === 'tenant')
             user = await User.findOne({_id: req.user, isActive:true}).select('-password');
         else
-            user = await User.findOne({_id: req.params.id, isActive: true}).select('-password');
+            user = await User.findOne({_id: req.params.id}).select('-password');
 
         if (!user)
             throw createError(400, 'User not found');
         
+
         if (req.role === 'owner')
-            house = await House.findOne({owner: req.user, tenant: user._id}).select('deadline contract');
+            house = await House.aggregate([
+                {$match: 
+                    {owner: new mongoose.Types.ObjectId(req.user), 'occupancy_history.tenant': new mongoose.Types.ObjectId(user._id)}}, 
+                {$project:
+                    {occupancy_history: 1, deadline: 1, contract: 1}},
+                {$unwind: '$occupancy_history'},
+                {$match:
+                    {'occupancy_history.tenant': new mongoose.Types.ObjectId(user._id)}},
+                {$addFields:{
+                    'contract.photo': '$occupancy_history.contract_photo.url',
+                    'contract.startdate': '$occupancy_history.from',
+                    'contract.enddate': '$occupancy_history.upto'
+                }},
+                {$project: {
+                    occupancy_history: 0
+                }}
+            ]);
+
         else
-            house = await House.findOne({tenant: user._id}).select('deadline contract');
-        
+            house = [await House.findOne({tenant: user._id}).select('deadline contract')];
+
         if (!house)
             throw createError(400, 'Not allowed to see this tenant')
         const tenant = await Tenant.findOne({user: user._id});
@@ -157,7 +185,7 @@ export const getTenant = async (req, res, next) => {
         if (!tenant)
             throw createError(400, 'Not a tenant')
         
-        return res.status(200).json({tenant, ...user._doc, house});
+        return res.status(200).json({tenant, ...user._doc, house:house[0]});
     } catch (error) {
         return next(error);
     }
@@ -173,9 +201,7 @@ export const deleteTenant = async (req, res, next) => {
         if (!tenant)
             throw createError(400, "This house doesn't have a tenant!!");
 
-        
-        
-        house.occupancy_history = house.occpancy_history.map((history) => {
+        house.occupancy_history = house.occupancy_history.map((history) => {
             if (history.tenant.toString() === tenant.toString())
                 history.upto = Date.now()
             return history
@@ -231,15 +257,16 @@ export const getTenants = async (req, res, next) => {
 
 export const getOwner = async (req, res, next) => {
     try {
-        const tenant = await Tenant.findById(req.user);
+        const tenant = await User.findById(req.user);
+
         const house = await House.findOne({tenant: tenant._id}).select('owner').populate({
-            path: 'owner', populate: {
+            path: 'owner', foreignField: "user", populate: {
                 path: 'user', select: '-password -isActive'
             }
         });
-
+        
         if (!house || !house.owner)
-            throw createError("Owner not found!!")
+            throw createError(400, "Owner not found!!")
         return res.status(200).json(house.owner);
     } catch (error) {
         next(error)

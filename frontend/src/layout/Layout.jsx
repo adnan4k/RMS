@@ -9,7 +9,7 @@ function Layout() {
         <div className="pb-[75px]">
           <Navbar />
         </div>
-        <div className="h-full flex flex-col justify-between">
+        <div className="minfullh flex flex-col justify-between">
           <Outlet />
           <Footer />
         </div>

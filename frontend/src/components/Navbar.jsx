@@ -100,7 +100,7 @@ function Navbar() {
                 </Link>
               </li>
                 }
-              {data &&
+              {(data && data.role !== 'tenant') &&
                 <li>
                   <Link
                     to="/profile/requests"

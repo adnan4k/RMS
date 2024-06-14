@@ -1,6 +1,6 @@
 import React from 'react'
 
-const DEFAULT_TYPES = ["Apartment", "Condo", "Duplex", "House", "Mansion", "Penthouse", "Shared Apartment", "Studio", "Villa", "Bedsitter", "Chalet", "Farm House", "Room", "Building"];
+const DEFAULT_TYPES = ["Apartment", "Condo", "Duplex", "House", "Mansion", "Penthouse", "Studio", "Villa", "Bedsitter", "Chalet", "Farm House", "Room", "Building"];
 
 
 function HouseForm({ houseData, setHouseData, selectedOption, setSelectedOption, images, setImages, setShowDropDown, showDropDown, edit, errors, setDisplay, displayError }) {
@@ -76,7 +76,7 @@ function HouseForm({ houseData, setHouseData, selectedOption, setSelectedOption,
                     {!edit&&<div className="relative z-0 w-full mb-5 group">
                         <label className={`block p-1.5 text-xs absolute text-gray-500 dark:text-gray-400 w-[110px] bg-gray-50 dark:bg-gray-700 dark:text-white ${images.length>0?'left-[96px]':'left-[93px] w-[133px] p-0 py-1.5 rounded-r-lg'}`} htmlFor="images">{images.length>0?`${images.length} photos`:"Upload house photos"}</label>
                         <input onChange={handleFileChange} accept="image/*" className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="images" type="file" multiple />
-                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">Up to 10 photos (SVG, PNG, JPG (MAX. 3 MB)).</p>
+                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">Up to 10 photos (JPEG, PNG, JPG (MAX. 3 MB)).</p>
                         {(displayError.has('images') &&images.length < 2)&& <p className="mt-1 text-xs text-red-600 dark:text-red-500">Please choose atleast two images</p>}
                     </div>}
                 </div>

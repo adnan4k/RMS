@@ -55,7 +55,6 @@ export const getTenant = async (tenantid) => {
         const response = await axios.get(`tenant/${tenantid}`);
         return response.data
     } catch (error) {
-        console.log(error)
         throw error
     }
 }
@@ -65,7 +64,6 @@ export const getMaintenance = async () => {
         const response = await axios.get('owner/maintenance')
         return response.data
     } catch (error) {
-        console.log(error)
         throw error
     }
 }
@@ -80,7 +78,11 @@ export const getVisitors = async () => {
         const response = await axios.get('owner/requests')
         return response.data
     } catch (error) {
-        console.log(error)
         throw error
     }
+}
+
+export const getHistory = async (q) => {
+    const response = await axios.get('owner/history/?'+q)
+    return response.data
 }
