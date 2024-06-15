@@ -63,6 +63,13 @@ button:focus-visible {
   top: -5px;
 }
 
+label[data-shrink=false]+.MuiInputBase-formControl .css-p51h6s-MuiInputBase-input-MuiOutlinedInput-input{
+  padding: 10px;
+}
+
+.MuiInputBase-input.MuiOutlinedInput-input.css-p51h6s-MuiInputBase-input-MuiOutlinedInput-input {
+  padding: 10px;
+}
 
 .scrollable::-webkit-scrollbar {
   width: 4px; 

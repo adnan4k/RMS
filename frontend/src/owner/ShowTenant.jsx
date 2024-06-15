@@ -39,11 +39,11 @@ function ShowTenant() {
   }
 
   return (
-    <div class="relative flex-1 mr-2 min-h-screen shadow-md">
+    <div className="relative flex-1 mr-2 min-h-screen shadow-md">
       <div className='flex justify-between items-center'>
         <div className="flex my-4 w-80 items-center peer border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-700 mb-3 dark:border-gray-600">
           <svg className="w-8 h-8 p-1 pointer-events-none text-gray-500 dark:text-gray-400 rounded-l-lg m-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
           </svg>
           <input type="text" id="search" value={search} onChange={(e)=>setSearch(e.target.value)} className="block w-full p-2 text-sm text-gray-900 border border-gray-300 bg-gray-50 outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search by email, name, phone..."/>
           <button onClick={() => setSearchParams(prev => {prev.set('q', search); return prev})} className='p-1 bg-blue-500 mx-1 text-sm rounded-lg border'>
@@ -61,8 +61,8 @@ function ShowTenant() {
         {data.map(house => 
         <>
           <input key={house._id} type='checkbox' hidden onChange={(e) => onClick(house._id, e.target.checked)} id={house._id}/> 
-          <table key={house._id} class="max-w-full w-full text-sm text-left rtl:text-right my-1 text-gray-500 dark:text-gray-400">
-              <caption class="p-5 text-lg font-semibold text-left min-w-full rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">
+          <table key={house._id} className="max-w-full w-full text-sm text-left rtl:text-right my-1 text-gray-500 dark:text-gray-400">
+              <caption className="p-5 text-lg font-semibold text-left min-w-full rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">
                   <div className='flex w-full justify-between'>
                     <Link to={'/owner/'+house._id} className='dark:text-white'>House Number: {house.housenumber}</Link>
                     <div className='flex gap-4'>
@@ -71,47 +71,47 @@ function ShowTenant() {
                     </div>
                   </div>
               </caption>
-              <thead hidden={collapsed.get(house._id)} class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 max-h-0">
+              <thead hidden={collapsed.get(house._id)} className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 max-h-0">
                 <tr>
-                  <th scope="col" class="px-6 py-3">
+                  <th scope="col" className="px-6 py-3">
                       Email
                   </th>
-                  <th scope="col" class="px-6 py-3">
+                  <th scope="col" className="px-6 py-3">
                       First Name
                   </th>
-                  <th scope="col" class="px-6 py-3">
+                  <th scope="col" className="px-6 py-3">
                       Last Name
                   </th>
-                  <th scope="col" class="px-6 py-3">
+                  <th scope="col" className="px-6 py-3">
                       Phone number
                   </th>
-                  <th scope="col" class="px-6 py-3">
+                  <th scope="col" className="px-6 py-3">
                       From
                   </th>
-                  <th scope="col" class="px-6 py-3">
+                  <th scope="col" className="px-6 py-3">
                       Upto
                   </th>
                 </tr>
               </thead>
               <tbody hidden={collapsed.get(house._id)}>
                   {house.occupancy_history.slice().reverse().map(history => 
-                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                      <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                      <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                         <Link to={'/owner/tenant/'+history.tenant._id} className='text-gray-900 dark:text-white hover:underline'>{history.tenant.email.split(' ')[0]}</Link>
                       </th>
-                      <th scope="row" class="px-6 py-4">
+                      <th scope="row" className="px-6 py-4">
                         {history.tenant.firstname}
                       </th>
-                      <td class="px-6 py-4 font-medium">
+                      <td className="px-6 py-4 font-medium">
                       {history.tenant.lastname}
                       </td>
-                      <td class="px-6 py-4 font-medium">
+                      <td className="px-6 py-4 font-medium">
                         {history.tenant.phonenumber.split(' ')[0]}
                       </td>
-                      <td class="px-6 py-4">
+                      <td className="px-6 py-4">
                         {dayjs(history.from).format('DD-MMM-YYYY')}
                       </td>
-                      <td class="px-6 py-4">
+                      <td className="px-6 py-4">
                         {history.upto?dayjs(history.upto).format('DD-MMM-YYYY'): 'Current'}
                       </td>
                     </tr>

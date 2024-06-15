@@ -40,7 +40,7 @@ function Houses() {
             return getHouses(query)
         },
     });
-    // console.log(isFetching) Use this to display the fetching
+
     const searchHouse = () => {
         setSearchParams(prev => {
             if (search != '')
@@ -53,14 +53,14 @@ function Houses() {
     
     const page = searchParams.get('page') || 1
     const limit = searchParams.get('limit') || 10
-    // console.log(isFetching)
+
     if(datas)
     return (
         <div className="flex justify-between h-screen">
             <div className='flex flex-col mr-3 min-w-64 overflow-y-scroll'>
                 <div className="flex items-center peer border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-700 mb-3 dark:border-gray-600">
                     <svg className="w-8 h-8 p-1 pointer-events-none text-gray-500 dark:text-gray-400 rounded-l-lg m-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
                     </svg>
                     <input type="text" id="search" onChange={(e) => setSearch(e.target.value)} value={search} className="block w-full p-2 text-sm text-gray-900 border border-gray-300 bg-gray-50 outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search house, ..."/>
                     <button onClick={searchHouse} className='p-1 bg-blue-500 mx-1 text-sm rounded-lg border'>Search</button>
@@ -106,11 +106,11 @@ function Houses() {
                 </div>
                 {
                     datas.data.length > 0 &&
-                <div class="flex flex-col items-center self-end p-2">
-                    <span class="text-sm text-gray-700 dark:text-gray-400">
-                        Showing <span class="font-semibold text-gray-900 dark:text-white">{1+(page - 1) * limit}</span> to <span class="font-semibold text-gray-900 dark:text-white">{Math.min(page*limit, datas?.total)}</span> of <span class="font-semibold text-gray-900 dark:text-white">{datas?.total}</span> Entries
+                <div className="flex flex-col items-center self-end p-2">
+                    <span className="text-sm text-gray-700 dark:text-gray-400">
+                        Showing <span className="font-semibold text-gray-900 dark:text-white">{1+(page - 1) * limit}</span> to <span className="font-semibold text-gray-900 dark:text-white">{Math.min(page*limit, datas?.total)}</span> of <span className="font-semibold text-gray-900 dark:text-white">{datas?.total}</span> Entries
                     </span>
-                    <div class="inline-flex mt-2 xs:mt-0">
+                    <div className="inline-flex mt-2 xs:mt-0">
                         {datas.prev &&
                             <button onClick={()=>setSearchParams((prev) => {
                                 prev.set('page', datas.prev)

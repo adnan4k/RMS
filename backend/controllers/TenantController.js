@@ -6,8 +6,7 @@ import { createError } from "../utils/CreateError.js";
 import sendEmail from "../utils/email.js";
 import {refresh} from '../utils/generateTokens.js'
 import { removeImage } from "../utils/fileProcessing.js";
-import Token from "../models/Tokens.js"
-import History from "../models/History.js";
+import Token from "../models/Tokens.js";
 
 export const addTenant = async(req, res, next) => {
     

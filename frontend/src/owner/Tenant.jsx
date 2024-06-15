@@ -65,7 +65,7 @@ const TenantProfile = () => {
             <>
             {
                 data.isActive?
-                <div className={"py-2.5 px-5 me-2 my-4 self-end text-sm font-medium text-gray-900 max-w-fit bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:z-10 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 "+(remainingdays.day < 0 && 'text-red-900 border-red-200 dark:text-red-500 dark:border-red-400')}>
+                <div className={"py-2.5 px-5 my-4 self-end text-sm font-medium text-gray-900 max-w-fit bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:z-10 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 "+(remainingdays.day < 0 && 'text-red-900 border-red-200 dark:text-red-500 dark:border-red-400')}>
                     {remainingdays.month > 0? remainingdays.month + " months and":''} {remainingdays.day>-1?remainingdays.day+' days until next deadline':Math.abs(remainingdays.day)+' days past the deadline'}
                 </div>
                 :
@@ -74,7 +74,7 @@ const TenantProfile = () => {
                 </div>
 
             }
-                <div className="flex flex-col items-center py-10">
+                <div className="flex flex-col items-center py-4">
                     {urlStatus === 'success' ? 
                         <div className="w-[100%] h-64 mb-3 shadow-lg overflow-hidden bg-gray-100 dark:bg-gray-600">
                             <img src={url} className="w-full h-full" />    
@@ -117,8 +117,8 @@ const TenantProfile = () => {
                         <button onClick={()=> {setHide(false)}} className={`py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700`}>See Contract</button>
                     </div>
                     <Modal open={!hide && contractStatus === 'success'} onClose={()=>setHide(true)}>
-                        <div className="w-[70%] h-[70%] p-8 bg-gray-800 dark:border-gray-200 m-auto">
-                            <img src={contractUrl} alt="" className="min-w-full max-w-full min-h-full max-h-full"/>
+                        <div className="w-[70%] h-full p-8 bg-gray-800 dark:border-gray-200 m-auto">
+                            <img src={contractUrl} alt="" className="min-w-full max-w-full min-h-full max-h-full object-cover"/>
                         </div>
                     </Modal>
                 </div>

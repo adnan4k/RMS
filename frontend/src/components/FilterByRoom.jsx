@@ -6,8 +6,8 @@ const DEFAULT_ROOMS = ["1", "2", "3", "4", "5"];
 
 export const FilterByRoom = ({signal}) => {
     const [searchParams, setSearchParams] = useSearchParams({minrooms: '', maxrooms: ''});
-    const [minrooms, setMinrooms] = useState(searchParams.get('minrooms'));
-    const [maxrooms, setMaxrooms] = useState(searchParams.get('maxrooms'));
+    const [minrooms, setMinrooms] = useState(searchParams.get('minrooms') || '');
+    const [maxrooms, setMaxrooms] = useState(searchParams.get('maxrooms') || '');
     const [collapse, setCollapse] = useState(false);
     
     const onChange = (e, room) => {
@@ -36,12 +36,12 @@ export const FilterByRoom = ({signal}) => {
             <div className="flex">
                 <div className="relative border">
                     <input type="number" id="small_outlined" onChange={(e) => setMinrooms(e.target.value)} value={minrooms} className="block px-2.5 pb-1.5 pt-3 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " />
-                    <label for="small_outlined" className="absolute pointer-events-none text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-3 scale-75 top-1 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-1 peer-focus:scale-75 peer-focus:-translate-y-3 start-1 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">Min</label>
+                    <label htmlFor="small_outlined" className="absolute pointer-events-none text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-3 scale-75 top-1 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-1 peer-focus:scale-75 peer-focus:-translate-y-3 start-1 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">Min</label>
                 </div>
                 <p className="mx-2 self-center">-</p>
                 <div className="relative border">
                     <input type="number" id="small_outlined" onChange={(e) => setMaxrooms(e.target.value)} value={maxrooms} className="block px-2.5 pb-1.5 pt-3 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " />
-                    <label for="small_outlined" className="absolute text-sm pointer-events-none text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-3 scale-75 top-1 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-1 peer-focus:scale-75 peer-focus:-translate-y-3 start-1 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">Max</label>
+                    <label htmlFor="small_outlined" className="absolute text-sm pointer-events-none text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-3 scale-75 top-1 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-1 peer-focus:scale-75 peer-focus:-translate-y-3 start-1 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">Max</label>
                 </div>
             </div>
 
@@ -50,7 +50,7 @@ export const FilterByRoom = ({signal}) => {
                     DEFAULT_ROOMS.map((room) => 
                         <div key={room} className="flex items-center m-1.5">
                             <input checked={searchParams.get("minrooms") === searchParams.get("maxrooms") && searchParams.get("maxrooms") === room} onChange={(e) => onChange(e, room)} id={room} type="radio" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600 "/>
-                            <label for={room} className="ms-2 font-medium text-gray-900 dark:text-gray-300">{room} rooms</label>
+                            <label htmlFor={room} className="ms-2 font-medium text-gray-900 dark:text-gray-300">{room} rooms</label>
                         </div>
                     )
                 }

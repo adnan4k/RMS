@@ -73,9 +73,10 @@ export const changeStatus = async (id) => {
     return response.data
 }
 
-export const getVisitors = async () => {
+export const getVisitors = async (q) => {
     try {
-        const response = await axios.get('owner/requests')
+        console.log(q)
+        const response = await axios.get('owner/requests?'+q)
         return response.data
     } catch (error) {
         throw error

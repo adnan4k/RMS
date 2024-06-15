@@ -141,7 +141,22 @@ export const deleteRequest = async (req, res, next) => {
 export const getOwnerRequests = async (req, res, next) => {
     try {
         const ownerId = new mongoose.Types.ObjectId(req.user)
+
+        const searchParam = {}
+        const searchName = {}
+
+        if (req.query.start)
+            searchParam.date = {...searchParam.date, $gte: new Date(req.query.start)}
+        if (req.query.end)
+            searchParam.date = {...searchParam.date, $lte: new Date(req.query.end)}
+        
+        if (req.query.name && req.query.name !== '') {
+            const q = new RegExp(req.query.name, 'i')
+            searchName.fullname = q
+        }
+
         const requests = await Requests.aggregate([
+            {$match: searchParam},
             {$group: {
                     _id: "$house",
                     requests: {$push: "$$ROOT"}
@@ -184,16 +199,18 @@ export const getOwnerRequests = async (req, res, next) => {
                 foreignField: '_id',
                 localField: 'requests.visitor',
                 pipeline: [
-                    {
-                        $project: {
-                            password: 0,
-                            isActive: 0,
-                            role: 0
-                        }
-                    }
+                    {$project: {
+                        password: 0,
+                        isActive: 0,
+                        role: 0
+                    }}
                 ],
                 as: 'visitor'
             }},
+            {$addFields: {
+                fullname: {$concat: [{$first:'$visitor.firstname'}, ' ', {$first:'$visitor.lastname'}]}
+            }},
+            {$match: searchName},
             {$sort: {
                 'requests.date': 1
             }},
@@ -207,7 +224,7 @@ export const getOwnerRequests = async (req, res, next) => {
                     lname: '$visitor.lastname',
                     request_id: '$requests._id',
                     date: '$requests.date',
-                }}
+                }},
             }},
             {$project: {
                 house: '$_id',
