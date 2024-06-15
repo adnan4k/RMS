@@ -1,14 +1,17 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { Modal } from "@mui/material";
 import { download } from "../utils/downloadImage";
-import { getTenant } from "../api/owner";
+import { getTenant, removeTenant } from "../api/owner";
 import dayjs from "dayjs";
 import { Loader } from "../components/Loader";
+import { toast } from "react-toastify";
+import CustomModal from '../components/Modal'
 
 const TenantProfile = () => {
     const [hide, setHide] = useState(true);
+    const [another, setAnother] = useState(true)
     const {tenantid} = useParams();
     const {data, status, error} = useQuery({
         queryKey: ['tenant', tenantid],
@@ -27,9 +30,29 @@ const TenantProfile = () => {
         queryFn: () => download(data.house.contract.photo)
     });
 
+    const qc = useQueryClient();
 
+    const {mutate, status:mstatus} = useMutation({
+        mutationFn: removeTenant,
+        onSuccess: () => {
+            qc.invalidateQueries({queryKey: ['owner-house', data?.house?._id], exact: true});
+            qc.invalidateQueries({queryKey: ['owner', 'history']});
+            qc.invalidateQueries({queryKey: ['tenant', tenantid]});
+            toast.success('Tenant removed');
+            navigate('/owner')
+        },
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || error.message)
+        }
+    });
+
+    const handleHide = (e) => {
+        if(e.target.id !== 'removetenant')
+            setAnother(true)
+    }
 
     useEffect(()=> {
+        document.addEventListener('click', handleHide);
         return () => {
             if (url) 
                 URL.revokeObjectURL(url);
@@ -46,7 +69,7 @@ const TenantProfile = () => {
         remainingdays.day = dayjs(data.house?.deadline).diff(new Date(), 'd')%30
         remainingdays.month = Math.floor(dayjs(data.house?.deadline).diff(new Date(), 'd') / 30);
     }
-
+console.log(data)
     return (
         <div className="min-w-[23rem] w-[70%] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 self-center mx-auto px-5 text-center py-5">
             {status === 'pending' && 
@@ -69,9 +92,14 @@ const TenantProfile = () => {
                     {remainingdays.month > 0? remainingdays.month + " months and":''} {remainingdays.day>-1?remainingdays.day+' days until next deadline':Math.abs(remainingdays.day)+' days past the deadline'}
                 </div>
                 :
-                <div className={"py-2.5 px-5 me-2 my-4 self-end text-sm font-medium text-gray-900 max-w-fit bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:z-10 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 text-red-500 border-red-200 dark:text-red-200 dark:border-red-400"}>
-                    This user was removed {Math.floor(dayjs().diff(dayjs(data.house.contract.enddate), 'd') / 30)} months and {dayjs().diff(dayjs(data.house.contract.enddate), 'd') % 30} days ago.
-                </div>
+                data.verified ?
+                    <div className={"py-2.5 px-5 me-2 my-4 self-end text-sm font-medium text-gray-900 max-w-fit bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:z-10 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 text-red-500 border-red-200 dark:text-red-200 dark:border-red-400"}>
+                        This user was removed {Math.floor(dayjs().diff(dayjs(data.house.contract.enddate), 'd') / 30)} months and {dayjs().diff(dayjs(data.house.contract.enddate), 'd') % 30} days ago.
+                    </div>
+                    :
+                    <div className={"py-2.5 px-5 me-2 my-4 self-end text-sm font-medium text-gray-900 max-w-fit bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:z-10 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 text-red-500 border-red-200 dark:text-red-200 dark:border-red-400"}>
+                        This user is not verified yet
+                    </div>
 
             }
                 <div className="flex flex-col items-center py-4">
@@ -102,7 +130,6 @@ const TenantProfile = () => {
                             <h6 className="self-start font-bold pb-2 border-b border-gray-200 dark:border-gray-700 w-full">Refference Data</h6>
                             <span className="text-l text-gray-700 dark:text-gray-100 self-start my-2">Full Name: {data.tenant.reference.name}</span>
                             
-                            
                             <span className="text-l text-gray-700 dark:text-gray-100 self-start my-2">Phone number: {data.tenant.reference.phonenumber}</span>
                             
                             <span className="text-l text-gray-700 dark:text-gray-100 self-start my-2">Address: {address}</span>
@@ -111,16 +138,19 @@ const TenantProfile = () => {
                         </div>
                     </div>
                     
-
                     <div className="flex mt-4 md:mt-6 w-full justify-around">
                         <button onClick={()=>navigate(-1)} className={`py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700`}>Back</button>
                         <button onClick={()=> {setHide(false)}} className={`py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700`}>See Contract</button>
+                        {data.isActive || !data.verified &&
+                            <button onClick={()=> setAnother(false)} id="removetenant" className={`py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700`}>Remove Tenant</button>
+                        }
                     </div>
                     <Modal open={!hide && contractStatus === 'success'} onClose={()=>setHide(true)}>
                         <div className="w-[70%] h-full p-8 bg-gray-800 dark:border-gray-200 m-auto">
                             <img src={contractUrl} alt="" className="min-w-full max-w-full min-h-full max-h-full object-cover"/>
                         </div>
                     </Modal>
+                    <CustomModal hide={another} message={"Are you sure you want to remove this tenant from the house?"} title={'Remove Tenant'} submit={mutate} email={data?.house?._id}/>
                 </div>
             </>
             }

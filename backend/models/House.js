@@ -8,6 +8,7 @@ import { removeImage } from "../utils/fileProcessing.js";
 import User from "./User.js";
 import Tenant from "./Tenant.js";
 import historySchema from './History.js'
+import Payment from "./Payment.js";
 
 export const HouseTypes = ["apartment", "condo", "duplex", "house", "mansion", "penthouse", "shared apartment", "studio", "villa", "bedsitter", "chalet", "farm house", "room", "building"];
 
@@ -95,14 +96,17 @@ export const houseSchema = new mongoose.Schema({
     timestamps: true,
 })
 
-houseSchema.pre('deleteOne', { document: true, query: false }, async function() {
+houseSchema.pre('deleteOne', { document: true, query: false }, async function(next) {
+    console.log('here')
     await Maintenance.deleteMany({house_id: this._id});
+    await Payment.deleteMany({house_id: this._id});
     await Requests.deleteMany({house: this._id});
     
     const tenants = this.occupancy_history.map(({tenant}) => tenant);
     
     for (let index = 0; index < this.occupancy_history.length; index++) {
         const element = this.occupancy_history[index].contract_photo;
+        console.log(element.path)
         await removeImage(element.path)
     }
 
@@ -112,7 +116,7 @@ houseSchema.pre('deleteOne', { document: true, query: false }, async function() 
         const element = this.images[index];
         await removeImage(element.path)
     }
-    
+    next()
 });
 
 

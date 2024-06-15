@@ -6,8 +6,15 @@ export const payRent = async (req, res, next) => {
     try {
         const house = await House.findOne({tenant: req.user});
 
-        const {paid_from, paid_to} = req.body;
-
+        const {paid_to, month} = req.body;
+        if (!req.file)
+            throw createError(400, 'Verificaiton is needed')
+        
+        const verification = {
+            url: 'verifications/'+req.file.filename,
+            path: req.file.destination+"/"+req.file.filename
+        };
+        
         if (!house)
             throw createError(400, 'House not found');
 
@@ -16,19 +23,42 @@ export const payRent = async (req, res, next) => {
             amount: house.rent_amount,
             house_id: house._id,
             tenant_id: req.user,
-            paid_from: paid_from,
-            paid_to: paid_to 
+            paid_to: paid_to,
+            month: month || 1,
+            verification
         });
-
-        const newDeadline = new Date(house.deadline);
-        newDeadline.setMonth(newDeadline.getMonth()+1);
-        house.deadline = newDeadline;
         
-        await house.save();
-
         return res.status(200).json(payment)
     } catch (error) {
         next(error)
+    }
+}
+
+export const verifyPayment = async (req, res, next) => {
+    try {
+        const house = await House.findOne({_id: req.params.houseid, owner: req.user});
+
+        if (!house)
+            throw createError(400, 'House not found');
+
+        const payment = await Payment.findOne({_id: req.params.paymentid, house_id: house._id});
+        if (!payment)
+            throw createError(400, 'Wrong payment id');
+        
+        if (payment.status)
+            return res.status(200).json('Already paid');
+        
+        payment.status = true;
+        
+        const old_deadline = new Date(house.deadline);
+        old_deadline.setMonth(old_deadline.getMonth()+payment.month);
+        house.deadline = old_deadline;
+        await payment.save();
+        await house.save();
+    
+        return res.status(200).json('Successfully verified date');
+    } catch (error) {
+        next(error);
     }
 }
 

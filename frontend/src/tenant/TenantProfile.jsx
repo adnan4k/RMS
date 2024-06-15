@@ -111,7 +111,7 @@ export const TenantProfile = () => {
                 </div>
                 <div className="flex mt-4 md:mt-6 w-full justify-around pb-4 border-b dark:border-gray-600 border-gray-200 relative">
                     <p className="text-xs absolute p-0.5 -bottom-2 right-0 bg-white dark:bg-gray-800 dark:text-gray-400 text-gray-900"> House actions</p>
-                    <Link to={"/tenant/edit"} className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Owner detail</Link>    
+                    <Link to={"/tenant/owner"} className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Owner detail</Link>    
                 </div>
                 
                 <ChangeModal hide={changeHide} title={'Are you sure you want to change your password'} message={'Please click yes if you want to change your password and we will send you an email to help you reset your password or click back if you don\'t want anything'} email={data.email} submit={mutate}/>

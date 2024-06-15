@@ -87,3 +87,8 @@ export const getHistory = async (q) => {
     const response = await axios.get('owner/history/?'+q)
     return response.data
 }
+
+export const removeTenant = async (id) => {
+    const response = await axios.delete('owner/'+id+'/tenant');
+    return response.data;
+}

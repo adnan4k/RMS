@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import { getSingleHouse } from "../api/owner";
+import { getSingleHouse, removeTenant } from "../api/owner";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
@@ -22,8 +22,6 @@ export const SingleHouse = () => {
         queryKey: ['owner-house', houseid],
         queryFn: ()=>getSingleHouse(houseid)
     });
-
-
     
     const [images, setImages] = useState([]);
     const [current, setCurrent] = useState(0);
@@ -47,7 +45,7 @@ export const SingleHouse = () => {
 
     useEffect(() => {
         if (data) {
-            setImages(data.images)
+            setImages(data?.images)
         }
         document.addEventListener('click', handleHide);
         return () => {
@@ -93,13 +91,13 @@ export const SingleHouse = () => {
                         <Link to="edit/general" state={data} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">General Info</Link>
                     </li>
                     <li>
-                        <Link to="edit/address" state={{address: data.address, _id: data._id}} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Address</Link>
+                        <Link to="edit/address" state={{address: data?.address, _id: data?._id}} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Address</Link>
                     </li>
                     <li>
-                        <Link to="edit/bank" state={{bankaccounts: data.bankaccounts, _id: data._id}} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Bank Accounts</Link>
+                        <Link to="edit/bank" state={{bankaccounts: data?.bankaccounts, _id: data?._id}} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Bank Accounts</Link>
                     </li>
                     <li>
-                        <Link to="edit/images" state={{images: data.images, _id: data._id}} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Images</Link>
+                        <Link to="edit/images" state={{images: data?.images, _id: data?._id}} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Images</Link>
                     </li>
                     </ul>
                 </div>
@@ -108,18 +106,18 @@ export const SingleHouse = () => {
             <div className="flex justify-between mb-4">
                 <div>
                     <h4>
-                        House Number {data.housenumber}
+                        House Number {data?.housenumber}
                     </h4>
                     <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        {data.address.city}, {data.address.sub_city}, {data.address.woreda} {data.address.kebele && "kebele, "+data.address.kebele}
+                        {data?.address.city}, {data?.address.sub_city}, {data?.address.woreda} {data?.address.kebele && "kebele, "+data?.address.kebele}
                     </p>
                     <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        House type: {data.house_type.toUpperCase()}
+                        House type: {data?.house_type.toUpperCase()}
                     </p>
                 </div>
                 <div>
                     <h4>
-                        {data.rent_amount || 0} $
+                        {data?.rent_amount || 0} $
                     </h4>
                     <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                         Per month
@@ -160,15 +158,15 @@ export const SingleHouse = () => {
                 <div className="flex border-dashed p-2 rounded">
                     <div className="flex flex-col items-center ml-2 mr-1 min-w-max border-gray-300 bg-gray-100 rounded-lg p-1 dark:bg-gray-700">
                         <FaBed className="min-h-8 min-w-8"/>
-                        <span className="text-xs mt-1">{data.no_of_rooms} bed rooms</span>
+                        <span className="text-xs mt-1">{data?.no_of_rooms} bed rooms</span>
                     </div>
                     <div className="flex flex-col items-center mx-1 min-w-max border-gray-300 bg-gray-100 rounded-lg p-1 dark:bg-gray-700">
                         <FaToilet className="min-h-8 min-w-8"/>
-                        <span className="text-xs mt-1">{data.no_of_bath_rooms} bath rooms</span>
+                        <span className="text-xs mt-1">{data?.no_of_bath_rooms} bath rooms</span>
                     </div>
                     <div className="flex flex-col items-center mx-1 min-w-max border-gray-300 bg-gray-100 rounded-lg p-1 dark:bg-gray-700">
                         <FaArrowsLeftRightToLine className="min-h-8 min-w-8"/>
-                        <span className="text-xs mt-1">{data.width * data.length} m<sup>2</sup></span>
+                        <span className="text-xs mt-1">{data?.width * data?.length} m<sup>2</sup></span>
                     </div>
                 </div>
             </div>
@@ -181,13 +179,13 @@ export const SingleHouse = () => {
             <div className="border-t border-gray-500 w-3/4 mx-auto my-2"></div>
             <div className="mt-6 min-h-32 mb-4">
                 {tabIndex === 0 && <ul className="px-4 font-normal list-disc list-inside">
-                        {data.description.split('\n').map(d => 
+                        {data?.description.split('\n').map(d => 
                             <li>{d}</li>
                         )}
                 </ul>}
-                {tabIndex === 1 && <AvailableDates dates={data.calendar} houseid={data._id} />}
-                {tabIndex === 2 && <MinimalTenant houseId={data._id} tenant={data.tenant} />}
-                {tabIndex === 3 && <DisplayBankAccount bankaccounts={data.bankaccounts} />}
+                {tabIndex === 1 && <AvailableDates dates={data?.calendar} houseid={data?._id} />}
+                {tabIndex === 2 && <MinimalTenant houseId={data?._id} tenant={data?.tenant} />}
+                {tabIndex === 3 && <DisplayBankAccount bankaccounts={data?.bankaccounts} />}
             </div>
         </div>
     )

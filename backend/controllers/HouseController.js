@@ -86,9 +86,6 @@ export const getHouses = async (req, res, next) => {
         
         const sort = req.query.sort ? {[req.query.sort]: -1} : {};
 
-        // If this doesn't work use DocumentCount({tenant: null})
-        const total = await House.find({ tenant: null }).estimatedDocumentCount();
-
         const searchParams = {tenant: null}
 
         if (req.query.minrooms)

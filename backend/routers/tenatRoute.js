@@ -11,7 +11,7 @@ tenantRouter.get('/maintenance', verifyToken('tenant'), tenantRequests);
 tenantRouter.put('/maintenance/edit/:requestid', verifyToken('tenant'), changeStatus);
 tenantRouter.delete('/maintenance/:requestid', verifyToken('tenant'), deleteRequest);
 tenantRouter.put('/maintenance/:requestid', verifyToken('tenant'), editRequest);
-tenantRouter.post('/payrent', verifyToken('tenant'), payRent);
+tenantRouter.post('/payrent', verifyToken('tenant'), uploader.single('verification'), payRent);
 tenantRouter.get('/owner', verifyToken('tenant'), getOwner);
 tenantRouter.delete('/:id', verifyToken('owner'), deleteTenant);
 tenantRouter.get('/:id', verifyToken('tenant', 'owner'), getTenant);

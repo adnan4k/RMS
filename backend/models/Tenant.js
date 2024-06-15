@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import addressSchema from "./commons/Address.js";
+import { removeImage } from "../utils/fileProcessing.js";
 
 export const tenantSchema = new mongoose.Schema({
   user: {
@@ -46,10 +47,13 @@ tenantSchema.set('toJSON', {transform: (doc, ret, options) => {
   return ret
 }});
 
-tenantSchema.pre('deleteMany', {document: true, query: false}, async function(query) {
+tenantSchema.pre('deleteMany', {document: true, query: true}, async function(next) {
   console.log('In delete many tenant')
-  console.log('document', this)
-  console.log('query', query)
+  const tenants = await this.model.find(this.getQuery())
+  console.log(tenants)
+  for (let index = 0; index < tenants.length; index++) {
+    await removeImage(tenants[index].national_id.path)
+  }
 })
 
 export default mongoose.model("Tenant", tenantSchema);

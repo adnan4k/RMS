@@ -28,6 +28,8 @@ const destination = function (req, file, cb) {
         return cb(null, __dirname+'/../contracts')
     if (file.fieldname === 'nationalid')
         return cb(null, __dirname+'/../nationalids')
+    if (file.fieldname === 'verification')
+        return cb(null, __dirname+'/../verifications')
     return cb(null, __dirname+'/../uploads')
 }
 

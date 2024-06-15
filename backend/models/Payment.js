@@ -15,10 +15,6 @@ const paymentSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
-    paid_from:{
-        type:BankAccount,
-        required:true
-    },
     paid_to:{
         type:BankAccount,
         required:true
@@ -30,6 +26,21 @@ const paymentSchema = new mongoose.Schema({
     tenant_id:{
         type:mongoose.Schema.Types.ObjectId,
         ref: 'Tenant'
+    },
+    status: {
+        type: Boolean,
+        default: false
+    },
+    verification: {
+        type: {
+            url: String,
+            path: String,
+        },
+        required: true,
+    },
+    month: {
+        type: Number,
+        default: 1
     }
 })
 export default mongoose.model("Payment",paymentSchema)

@@ -3,6 +3,7 @@ import House from "../models/House.js";
 import Owner from "../models/Owner.js";
 import Tenant from "../models/Tenant.js";
 import { createError } from "./CreateError.js";
+import Payment from "../models/Payment.js";
 
 export const verifyContract = async (req, res, next) => {
     try {
@@ -80,3 +81,30 @@ export const verifyNationalId = async (req, res, next) => {
         next(error)
     }
 }
+
+export const verifyPaymentVerification = async (req, res, next) => {
+    try {
+        req.originalUrl = req.originalUrl.slice(1)
+        if (req.role === 'tenant') {
+            const payment = await Payment.findOne({tenant_id: req.user, 'verification.url':req.originalUrl});
+            if (!payment)
+                throw createError(400, 'Payment not found')
+            next()
+            return
+        }
+        if (req.role === 'owner') {
+            const payment = await Payment.findOne({'verification.url': req.originalUrl});
+            if (!payment)
+                throw createError(400, 'Payment not found')
+
+            const owner = await House.findOne({'occupancy_history.tenant': payment.tenant_id, owner: req.user});
+            if (!owner)
+                throw createError(400, 'Payment not found')
+            next()
+            return
+        }
+        next()
+    } catch (error) {
+        next(error)   
+    }
+} 
