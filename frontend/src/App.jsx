@@ -35,6 +35,8 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { useMemo } from 'react';
 import { OwnerMaintenance } from './owner/Maintenance';
 import Tenant from './owner/Tenant';
+import PaymentOptions from './pages/payment/PaymentOptions';
+import { UserProvider } from './context/UserContext';
 
 
 // The default 404 should be done for the route
@@ -56,12 +58,14 @@ function App() {
     <>
 
       <ToastContainer />
+      <UserProvider >
       <ThemeProvider theme={theme}>
       <CssBaseline />
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <Routes>
             <Route path="/signup" element={<Signup />} />
+          
 
             <Route path="/login" element={<Login />} />
             <Route path="/forget" element={<ForgetPassword />} />
@@ -86,6 +90,9 @@ function App() {
 
             
             <Route path="/" element={<Layout />}>
+                {/* payment routes */}
+            <Route path="/payment-options" element={<PaymentOptions />} />
+
               <Route index element={<Home />} />
               <Route path="/showmore" element={<Showmore />} />
               <Route path="/details" element={<DetailsHouses />} />
@@ -108,6 +115,7 @@ function App() {
         </BrowserRouter>
       </QueryClientProvider>
       </ThemeProvider>
+      </UserProvider>
     </>
   );
 }

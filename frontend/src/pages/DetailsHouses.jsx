@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Slider from "react-slick";
 
 
@@ -75,7 +75,7 @@ const DetailsHouses = () => {
                             <p className="text-sm leading-none text-gray-600 mr-3">{house.price}</p>
                         </div>
                     </div>
-                    <button className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 text-base flex items-center justify-center leading-none text-white bg-gray-800 w-full py-4 hover:bg-gray-700">
+                    <Link to='/payment-options' className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 text-base flex items-center justify-center leading-none text-white bg-gray-800 w-full py-4 hover:bg-gray-700">
                         <svg
                             className="mr-3"
                             width="16"
@@ -102,7 +102,7 @@ const DetailsHouses = () => {
                             <path d="M11.333 11.5V11.5083" stroke="white" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                         Rent it
-                    </button>
+                    </Link>
                     <div>
                         <p className="xl:pr-48 text-base lg:leading-tight leading-normal text-gray-600 mt-7">
                             {house.description}
