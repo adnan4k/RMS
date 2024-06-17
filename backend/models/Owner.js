@@ -1,5 +1,6 @@
-import mongoose, { get } from "mongoose";
+import mongoose from "mongoose";
 import addressSchema from "./commons/Address.js";
+import BankAccountSchema from "./commons/BankAccount.js";
 
 const ownerSchema = new mongoose.Schema({
     user: {
@@ -8,22 +9,25 @@ const ownerSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    address:{
-        type:addressSchema,
-        required:true
+    address: {
+        type: addressSchema,
+        required: true
     },
-    national_id:{ 
+    national_id: { 
         type: {
             url: String,
             path: String
         },
-        required:true,
-    }
-})
+        required: true,
+    },
+    bankAccounts: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'BankAccount',
+    },});
 
 ownerSchema.set('toJSON', {transform: (doc, ret, options) => {
     ret.national_id = ret.national_id.url;
-    return ret
+    return ret;
 }});
 
-export default mongoose.model("Owner",ownerSchema)
+export default mongoose.model("Owner", ownerSchema);

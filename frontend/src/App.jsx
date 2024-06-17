@@ -36,7 +36,7 @@ import { useMemo } from 'react';
 import { OwnerMaintenance } from './owner/Maintenance';
 import Tenant from './owner/Tenant';
 import PaymentOptions from './pages/payment/PaymentOptions';
-import { UserProvider } from './context/UserContext';
+// import { UserProvider } from './context/UserContext';
 
 
 // The default 404 should be done for the route
@@ -58,7 +58,7 @@ function App() {
     <>
 
       <ToastContainer />
-      <UserProvider >
+      {/* <UserProvider > */}
       <ThemeProvider theme={theme}>
       <CssBaseline />
       <QueryClientProvider client={queryClient}>
@@ -115,7 +115,7 @@ function App() {
         </BrowserRouter>
       </QueryClientProvider>
       </ThemeProvider>
-      </UserProvider>
+      {/* </UserProvider> */}
     </>
   );
 }

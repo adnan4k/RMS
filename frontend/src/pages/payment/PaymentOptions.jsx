@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { intilizePayment } from '../../api/payment';
-import { useUser } from '../../context/UserContext';
+// import { useUser } from '../../context/UserContext';
 function PaymentOptions() {
 
     const [selectedGateway, setSelectedGateway] = useState(1);
