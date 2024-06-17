@@ -38,6 +38,7 @@ import { DetailHouse2 } from './pages/DetailPage2';
 import OwnerProfile from './tenant/OwnerProfile';
 import MyRequests from './pages/MyRequests';
 import { VisitorRequests } from './owner/VisitorRequests';
+import PayRent  from './tenant/PayRent'
 
 
 // The default 404 should be done for the route
@@ -107,6 +108,7 @@ function App() {
                 <Route path='edit' element={<CreateTenants edit={true} />}/>
                 <Route path='maintenance' element={<Maintenance />}/>
                 <Route path='owner' element={<OwnerProfile />}/>
+                <Route path='payrent' element={<PayRent />}/>
               </Route>
             </Route>
 

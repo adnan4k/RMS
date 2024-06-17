@@ -147,7 +147,7 @@ console.log(data)
                     </div>
                     <Modal open={!hide && contractStatus === 'success'} onClose={()=>setHide(true)}>
                         <div className="w-[70%] h-full p-8 bg-gray-800 dark:border-gray-200 m-auto">
-                            <img src={contractUrl} alt="" className="min-w-full max-w-full min-h-full max-h-full object-cover"/>
+                            <img src={contractUrl} alt="" className="min-w-full max-w-full min-h-full max-h-full object-fit"/>
                         </div>
                     </Modal>
                     <CustomModal hide={another} message={"Are you sure you want to remove this tenant from the house?"} title={'Remove Tenant'} submit={mutate} email={data?.house?._id}/>

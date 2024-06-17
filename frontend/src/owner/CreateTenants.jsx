@@ -259,7 +259,7 @@ function CreateTenants({edit}) {
                                 accept="image/*"
                                 onChange={handleChange}
                             />
-                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">JPEG, PNG, JPG (MAX. 3 MB).</p>
+                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">JPEG, WEBP, PNG, JPG (MAX. 3 MB).</p>
                             {(displayError.has('contract') && !formData.contract)&& <p className="mt-1 text-xs text-red-600 dark:text-red-500">Please submit the contract photo</p>}
                         </div>
                     }
@@ -273,7 +273,7 @@ function CreateTenants({edit}) {
                             accept="image/*"
                             onChange={handleChange}
                         />
-                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">JPEG, PNG, JPG (MAX. 3 MB).</p>
+                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">JPEG, WEBP, PNG, JPG (MAX. 3 MB).</p>
                         {(!edit &&displayError.has('nationalid') && !formData.nationalid)&& <p className="mt-1 text-xs text-red-600 dark:text-red-500">Please submit the tenants national id</p>}
                     </div>
                 </div>

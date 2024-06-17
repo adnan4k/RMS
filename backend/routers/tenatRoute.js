@@ -1,5 +1,5 @@
 import express from "express";
-import { deleteTenant, editTenant, getOwner, getTenant } from "../controllers/TenantController.js";
+import { deleteTenant, editTenant, getHouse, getOwner, getTenant } from "../controllers/TenantController.js";
 import uploader from "../utils/fileProcessing.js";
 import verifyToken from "../utils/verifyToken.js";
 import { changeStatus, createMaintainance, deleteRequest, editRequest, tenantRequests } from "../controllers/MaintainanceRequestController.js";
@@ -13,6 +13,7 @@ tenantRouter.delete('/maintenance/:requestid', verifyToken('tenant'), deleteRequ
 tenantRouter.put('/maintenance/:requestid', verifyToken('tenant'), editRequest);
 tenantRouter.post('/payrent', verifyToken('tenant'), uploader.single('verification'), payRent);
 tenantRouter.get('/owner', verifyToken('tenant'), getOwner);
+tenantRouter.get('/house', verifyToken('tenant'), getHouse);
 tenantRouter.delete('/:id', verifyToken('owner'), deleteTenant);
 tenantRouter.get('/:id', verifyToken('tenant', 'owner'), getTenant);
 tenantRouter.put('/', verifyToken('tenant'), uploader.single('nationalid'), editTenant);

@@ -38,3 +38,17 @@ export const fetchOwner = async () => {
     const response = await axios.get('tenant/owner')
     return response.data
 }
+
+export const getHouse = async () => {
+    const response = await axios.get('tenant/house')
+    return response.data
+}
+
+export const payrent = async (payload) => {
+    const form = new FormData();
+    payload.paid_to = JSON.stringify(payload.paid_to)
+    Object.entries(payload).forEach(([key, val]) => {form.append(key, val)});
+    
+    const response = await axios.post('tenant/payrent', form, {headers: {'Content-Type': 'multipart/form-data'}});
+    return response.data;
+}

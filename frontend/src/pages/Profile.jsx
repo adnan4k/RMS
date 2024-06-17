@@ -17,7 +17,7 @@ const Profile = () => {
         queryFn: () => {console.log(id); return getUser(id)}
     });
 
-    const {data:url, status} = useQuery({
+    const {data:url, status, error} = useQuery({
         enabled: data?.owner !== undefined,
         queryKey: ['user', 'national_id'],
         queryFn: () => download(data.owner.national_id)
@@ -78,7 +78,7 @@ const Profile = () => {
         <div className="min-w-[23rem] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 self-center mx-auto px-5 text-center py-5">
             {data&&
             <div className="flex flex-col items-center pb-10">
-                {status === 'success' ? 
+                {status === 'success' ?
                     <div className="w-[100%] h-64 mb-3 shadow-lg overflow-hidden bg-gray-100 dark:bg-gray-600">
                         <img src={url} className="w-full h-full" />    
                     </div>
@@ -91,10 +91,10 @@ const Profile = () => {
                 <span className="text-l text-gray-700 dark:text-gray-100 self-start my-2">Email: {data.email}</span>
                 <span className="text-l text-gray-700 dark:text-gray-100 self-start my-2">Username: {data.username}</span>
                 <span className="text-l text-gray-700 dark:text-gray-100 self-start my-2">Phone: {data.phonenumber}</span>
-                {data.owner && 
+                {data.owner &&
                 <span className="text-l text-gray-700 dark:text-gray-100 self-start my-2">Address: {address}</span>
                 }
-                {data.owner && 
+                {data.owner &&
                 <span className="text-l text-gray-700 dark:text-gray-100 self-start my-2">Woreda: {woreda}</span>
                 }
                 {kebele&&<span className="text-l text-gray-700 dark:text-gray-100 self-start my-2">Kebele: {kebele}</span>}
@@ -102,7 +102,6 @@ const Profile = () => {
                 {!id&&
                 <>
                     <div className="flex mt-4 md:mt-6 w-full justify-around">
-
                         <Link to={data.role === 'owner'?"/owner/edit":"edit"} className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Edit Profile</Link>
                         <button id='changepassword' onClick={()=> {setHide(false)}} className={`py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 ${isPending&&'cursor-not-allowed'}`} disabled={isPending}>{isPending?'...':'Change Password'}</button>
                     </div>

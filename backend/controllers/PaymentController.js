@@ -6,7 +6,9 @@ export const payRent = async (req, res, next) => {
     try {
         const house = await House.findOne({tenant: req.user});
 
-        const {paid_to, month} = req.body;
+        let {paid_to, month} = req.body;
+        paid_to = JSON.parse(paid_to);
+        
         if (!req.file)
             throw createError(400, 'Verificaiton is needed')
         
