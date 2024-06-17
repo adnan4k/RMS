@@ -10,8 +10,7 @@ import ownerRouter from "./routers/ownerRoutes.js";
 import cookieParser from "cookie-parser";
 import maintainanceRouter from "./routers/maintainance.js";
 import verifyToken from "./utils/verifyToken.js";
-import { verifyContract, verifyNationalId } from "./utils/verifyProtectedImages.js";
-import paymentRouter from "./routers/paymentRoutes.js";
+import { verifyContract, verifyNationalId, verifyPaymentVerification } from "./utils/verifyProtectedImages.js";
 
 process.env.TZ = 'UTC';
 
@@ -22,6 +21,7 @@ app.use(bodyParser.json());
 app.use(cookieParser())
 app.use('/photos', express.static('uploads'))
 app.use('/contracts', verifyToken('admin', 'tenant', 'owner'), verifyContract, express.static('contracts'))
+app.use('/verifications', verifyToken('admin', 'tenant', 'owner'), verifyPaymentVerification, express.static('verifications'))
 app.use('/nationalids', verifyToken('admin', 'tenant', 'owner'), verifyNationalId, express.static('nationalids'))
 
 dotenv.config();

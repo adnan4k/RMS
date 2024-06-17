@@ -6,7 +6,6 @@ import mongoose from "mongoose";
 import House from "../models/House.js";
 import { generateToken } from "../utils/generateTokens.js";
 import Token from "../models/Tokens.js";
-import Tenant from "../models/Tenant.js";
 
 
 export const addOwner = async(req, res, next) => {
@@ -116,10 +115,13 @@ export const deleteOwner = async(req,res,next) =>{
             await house.deleteOne().session(session);
         });
         await Owner.findOneAndDelete({user: ownerId}).session(session);
-        await User.findByIdAndDelete(owner.user).session(session)
+        await User.findByIdAndDelete(owner.user).session(session);
+
+        const path = owner.national_id.path;
 
         await session.commitTransaction();
         await session.endSession();
+        await removeImage(path);
         
         return res.status(200).json({msg: 'Successfully Deleted This owner'});
 
@@ -132,14 +134,33 @@ export const deleteOwner = async(req,res,next) =>{
 
 export const occupancyHistory = async (req, res, next) => {
     try {
-        const history = await House.findOne({owner: req.user, _id: req.params.houseid}).select('occupancy_history')
-        .populate(
-            {path: 'occupancy_history.tenant', foreignField: 'user', populate: {
-                path: 'user',
-                select: '-password -role'
-            }}
-        );
 
+        const searchParams = {}
+        if (req.query.q) {
+            const q = new RegExp(req.query.q, 'i')
+            const fields = [
+                {firstname:q},
+                {lastname:q},
+                {email: q},
+                {phonenumber: q}
+            ]
+            searchParams.$or = fields
+        }
+        let history = await House.find({owner: req.user, occupancy_history: {$ne: []}}).select('housenumber tenant occupancy_history.tenant occupancy_history.from occupancy_history.upto')
+        .populate(
+            {
+                path: 'occupancy_history.tenant', 
+                foreignField: '_id',
+                model: 'User', 
+                select: 'firstname lastname email phonenumber', 
+                match: searchParams,
+            }
+        );
+        
+        history = history.map(his => {
+            his.occupancy_history = his.occupancy_history.filter(({tenant}) => tenant !== null)
+            return his
+        });
         return res.status(200).json(history);
     } catch (error) {
         next(error)

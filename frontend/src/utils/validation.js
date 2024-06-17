@@ -7,7 +7,7 @@ export const validateForm = (formData, notRequired) => {
             errors[key] = 'This field is required!'
     });
 
-    if (formData.phonenumber && ! /^(9|7)\d{8}$/.test(formData.phonenumber))
+    if (!notRequired.includes('phonenumber')&&formData.phonenumber && ! /^(9|7)\d{8}$/.test(formData.phonenumber))
         errors.phonenumber = "Wrong phone number format: (it's 9 digits and starts with 9 or 7)";
     if (formData.email && ! /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
         errors.email = "Wrong email format";

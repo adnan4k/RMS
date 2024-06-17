@@ -9,7 +9,6 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendEmail = async (to, token) => {
-    // Front end's url
     const url = "http://localhost:5173/resetpassword/"+token;
     let mailOptions = {
       from: '"Rental Management System" <imo60067035@gmail.com>',
@@ -49,7 +48,7 @@ const sendEmail = async (to, token) => {
     <p>Remember this link will expire after one hour.</p>
   </div>
 </body>
-`
+ `
     };
     
     return transporter.sendMail(mailOptions);

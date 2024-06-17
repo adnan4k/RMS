@@ -6,7 +6,6 @@ import Home from './pages/Home';
 import { ToastContainer, toast } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.css';
-import VisitorRequest from './pages/visitorRequest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Layout from './layout/Layout';
 import ForgetPassword from './pages/ForgotPassword';
@@ -19,15 +18,15 @@ import { ProtectedRoutes } from './components/ProtectedRoutes';
 import EditOwner from './pages/EditOwner';
 import { Houses } from './owner/Houses';
 import { SingleHouse } from './owner/House';
-import Showmore from './pages/Showmore';
+import AllHouses from './pages/Showmore';
 import DetailsHouses from './pages/DetailsHouses';
 import CreateTenants from './owner/CreateTenants';
-import ShowTenant from './tenant/ShowTenant';
+import ShowTenant from './owner/ShowTenant';
 import { EditHouse } from './owner/EditHouse';
 import { EditImages } from './owner/EditImages';
 import { EditHouseAddress } from './owner/EditAddress';
 import { EditBankAccounts } from './owner/EditBankAccount';
-import { TenantProfile } from './pages/TenantProfile';
+import { TenantProfile } from './tenant/TenantProfile';
 import { Maintenance } from './tenant/Maintenance';
 import { useMediaQuery } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -35,8 +34,11 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { useMemo } from 'react';
 import { OwnerMaintenance } from './owner/Maintenance';
 import Tenant from './owner/Tenant';
-import PaymentOptions from './pages/payment/PaymentOptions';
-// import { UserProvider } from './context/UserContext';
+import { DetailHouse2 } from './pages/DetailPage2';
+import OwnerProfile from './tenant/OwnerProfile';
+import MyRequests from './pages/MyRequests';
+import { VisitorRequests } from './owner/VisitorRequests';
+import PayRent  from './tenant/PayRent'
 
 
 // The default 404 should be done for the route
@@ -57,8 +59,7 @@ function App() {
   return (
     <>
 
-      <ToastContainer />
-      {/* <UserProvider > */}
+      <ToastContainer className='top-[75px]' />
       <ThemeProvider theme={theme}>
       <CssBaseline />
       <QueryClientProvider client={queryClient}>
@@ -70,7 +71,6 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/forget" element={<ForgetPassword />} />
             <Route path="/resetpassword/:token" element={<ResetPassword />} />
-            <Route path="/request" element={<VisitorRequest />} />
 
             <Route path='/owner/' element={<ProtectedRoutes role='owner' />}>
               <Route index element={<Houses />} />
@@ -79,6 +79,7 @@ function App() {
 
               <Route path='edit' element={<EditOwner />} />
               <Route path='maintenance' element={<OwnerMaintenance />} />
+              <Route path='visitors' element={<VisitorRequests />} />
               <Route path=':houseid' element={<SingleHouse />} />
               <Route path=':houseid/create-tenants' element={<CreateTenants />} />
               <Route path=':houseid/edit/general' element={<EditHouse />} />
@@ -94,20 +95,24 @@ function App() {
             <Route path="/payment-options" element={<PaymentOptions />} />
 
               <Route index element={<Home />} />
-              <Route path="/showmore" element={<Showmore />} />
+              <Route path="/houses" element={<AllHouses />} />
+              <Route path="/houses/:houseid" element={<DetailHouse2 />} />
               <Route path="/details" element={<DetailsHouses />} />
+              <Route path='user/:id' element={<Profile />}/>
 
               <Route path='profile/' element={<ProtectedRoutes />}>
                 <Route index element={<Profile />} />
                 <Route path='edit' element={<EditProfile />} />
                 <Route path='upgrade' element={<UpgradeToOwner />} />
+                <Route path='requests' element={<MyRequests />}/>
               </Route>
 
               <Route path='tenant/' element={<ProtectedRoutes role='tenant'/>}>
                 <Route index element={<TenantProfile />}/>
                 <Route path='edit' element={<CreateTenants edit={true} />}/>
                 <Route path='maintenance' element={<Maintenance />}/>
-                {/* <Route path='edit' element={<CreateTenants edit={true} />}/> */}
+                <Route path='owner' element={<OwnerProfile />}/>
+                <Route path='payrent' element={<PayRent />}/>
               </Route>
             </Route>
 

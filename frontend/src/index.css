@@ -63,6 +63,44 @@ button:focus-visible {
   top: -5px;
 }
 
+label[data-shrink=false]+.MuiInputBase-formControl .css-p51h6s-MuiInputBase-input-MuiOutlinedInput-input{
+  padding: 10px;
+}
+
+.MuiInputBase-input.MuiOutlinedInput-input.css-p51h6s-MuiInputBase-input-MuiOutlinedInput-input {
+  padding: 10px;
+}
+
+.scrollable::-webkit-scrollbar {
+  width: 4px; 
+  height: 4px;
+  display: block !important;
+}
+
+.scrollable::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.scrollable::-webkit-scrollbar-thumb {
+  background: #1f31f8;
+  border-radius: 10px;
+}
+
+.scrollable::-webkit-scrollbar-thumb:hover {
+  background: #0015ff;
+  cursor: pointer;
+}
+
+.fullh {
+  height: calc(100vh - 75px);
+  max-height: calc(100vh - 75px);
+}
+
+.minfullh {
+  min-height: calc(100vh - 75px);
+}
+
 *::-webkit-scrollbar {
   display: none;
 }

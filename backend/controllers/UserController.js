@@ -75,12 +75,12 @@ export const forgetPassword = async (req, res, next) => {
     if (!identifier)
       throw createError(400, "Required field missing!");
     
-    const user = await User.findOne({$or: [{email: identifier} , {username: identifier}]});
+    const user = await User.findOne({$or: [{email: identifier, isActive: true}, {username: identifier, isActive: true}, {email: identifier, verified: false}, {email: identifier, verified: false}]});
     
     if (!user)
       throw createError(400, "User not found");
     
-    const token = refresh({ user: user._id }, '60m');
+    const token = refresh({ id: user._id }, '60m');
 
     await sendEmail(user.email, token);
     return res.status(201).json({msg: 'Email for reseting password sent!!', email: user.email});
@@ -97,7 +97,8 @@ export const resetPassword = async (req, res, next) => {
     
     jwt.verify(token, process.env.JWT_ACCESS_TOKEN, (err, decoded) => {
       if (err)
-        return res.status(401).json({msg: 'Invalid token'})
+        return res.status(401).json({msg: 'Invalid token'});
+        
         req.user = decoded.id;
     });
     const user = await User.findById(req.user);
@@ -193,6 +194,17 @@ export const getUser = async (req, res, next) => {
     }
 
     return res.status(200).json(user);    
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getUserById = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id).select('-password -isActive');
+    if (!user)
+      throw createError(400, 'User not found')
+    return res.status(200).json(user);
   } catch (error) {
     next(error)
   }

@@ -53,25 +53,11 @@ export const createHouse = async (req, res, next) => {
     }
 }
 
-export const latestHouses = async (req, res, next) => {
-    try {
-        const houses = await House.find().populate({
-            path: 'owner',
-            select: '-role -password -isActive',
-            model: 'User',
-            foreignField: '_id'
-        }).sort({ createdAt: -1 }).limit(10);
-
-        res.status(200).json(houses);
-    } catch (error) {
-        next(error);
-    }
-};
 
 export const getHouse = async (req, res, next) => {
     const id = req.params.id;
     try {
-        const house = await House.findById(id).select('-occupancy_history -bankaccounts -deadline -contract');
+        const house = await House.findById(id).select('-bankaccounts -occupancy_history -deadline -contract -housenumber');
         if (!house)
             throw createError(404, 'house not found');
 
@@ -84,8 +70,9 @@ export const getHouse = async (req, res, next) => {
                 select: '-role -password -isActive'
             }
         });
-
-        return res.status(200).json(house);
+        
+        const count = await House.countDocuments({tenant: null, owner: house.owner.user._id})
+        return res.status(200).json({house, count});
     } catch (error) {
         return next(error);
     }
@@ -96,19 +83,109 @@ export const getHouses = async (req, res, next) => {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const start = (page - 1) * limit;
-        // If this doesn't work use DocumentCount({tenant: null})
-        const total = await House.find({ tenant: null }).estimatedDocumentCount();
+        
+        const sort = req.query.sort ? {[req.query.sort]: -1} : {};
 
-        const data = await House.find({ tenant: null })
-            .skip(start)
-            .limit(limit).select('-occupancy_history -bankaccounts -deadline -contract -calendar')
-            .populate({
-                path: 'owner',
-                select: '-role -password -isActive',
-                model: 'User',
-                foreignField: '_id'
-            });
-        const result = paginate(page, limit, total, data);
+        const searchParams = {tenant: null}
+
+        if (req.query.minrooms)
+            searchParams.no_of_rooms = {...searchParams.no_of_rooms, $gte: parseInt(req.query.minrooms)}
+        if (req.query.maxrooms)
+            searchParams.no_of_rooms = {...searchParams.no_of_rooms, $lte: parseInt(req.query.maxrooms)}
+        
+        if (req.query.minprice)
+            searchParams.rent_amount = {...searchParams.rent_amount, $gte: parseInt(req.query.minprice)}
+        if (req.query.maxprice)
+            searchParams.rent_amount = {...searchParams.rent_amount, $lte: parseInt(req.query.maxprice)}
+
+        if (req.query.minsize) 
+            searchParams.area = {...searchParams.area, $gte: parseFloat(req.query.minsize)}
+        if (req.query.maxsize)
+            searchParams.area = {...searchParams.area, $lte: parseFloat(req.query.maxsize)}
+
+        if (req.query.types) {
+            let types = typeof req.query.types === 'string' ? [req.query.types] : req.query.types;
+            types = types.map((type) => new RegExp(type, 'i'))
+            searchParams.house_type = {$in: types}
+        }
+        
+        let address = []
+        if (req.query.city) 
+            address.push({"address.city": new RegExp(req.query.city, 'i')})
+        if (req.query.sub_city) 
+            address.push({"address.sub_city": new RegExp(req.query.sub_city, 'i')})
+        if (req.query.woreda) 
+            address.push({"address.woreda": new RegExp(req.query.woreda, 'i')})
+        if (req.query.kebele) 
+            address.push ({"address.kebele": new RegExp(req.query.kebele, 'i')})
+
+        if (address.length > 0) {
+            searchParams.$or = address
+        }
+
+        const ownerParams = {}
+        if (req.query.q) {
+            const q = new RegExp(req.query.q, 'i')
+            const fields = [
+                {'description':q},
+                {'address.city':q},
+                {'address.sub_city':q},
+                {'address.woreda':q},
+                {'address.kebele':q},
+                {'house_type':q},
+            ]
+            searchParams.$or = fields
+        }
+
+        if (req.query.owner) {
+            if (mongoose.Types.ObjectId.isValid(req.query.owner))
+                searchParams.owner = new mongoose.Types.ObjectId(req.query.owner)
+        }
+        
+        // Callculate the number of results
+        const data = await House.aggregate([
+            {$addFields: {
+                area: { $multiply: ['$width', '$length'] },
+                images: "$images.url",
+            }},
+            {$match: searchParams},
+            {$lookup: {
+                from: 'users',
+                localField: 'owner',
+                foreignField: '_id',
+                pipeline: [{
+                    $replaceRoot: {
+                        newRoot: {
+                            firstname: '$firstname',
+                            lastname: '$lastname',
+                            _id: '$_id'
+                        },
+                    },
+                }],
+                as: 'owner',
+            }},
+            {$unwind: '$owner'},
+            {$group: {
+                _id: null,
+                results: {
+                    $push: '$$ROOT'
+                },
+                total: {$sum: 1}
+            }},
+            {$project: {_id: 0}},
+            {$skip: start},
+            {$limit: limit},
+            {$project: {
+                occupancy_history: 0,
+                bankaccounts: 0,
+                deadline: 0,
+                contract: 0,
+                calendar: 0,
+                housenumebr: 0,
+                description: 0
+            }}
+        ])
+        const result = paginate(page, limit, data.length > 0?data[0].total:0, data.length>0?data[0].results:[]);
         return res.status(200).json(result);
     } catch (error) {
         return next(error);
@@ -221,10 +298,8 @@ export const getHouseVisits = async (req, res, next) => {
         if (req.headers.authorization) {
             const access_token = req.headers.authorization.split(' ')[1];
             jwt.verify(access_token, process.env.JWT_ACCESS_TOKEN, (err, decoded) => {
-                if (err)
-                    return res.status(401).json('Unauthenticated access');
-
-                req.user = decoded.user;
+                if (!err)
+                    req.user = decoded.user;
             });
         }
 
@@ -272,7 +347,11 @@ export const getHouseVisits = async (req, res, next) => {
             }
         ]);
 
-        return res.status(200).json(requests);
+        let date = null
+        if (req.user) {
+            date = await Requests.findOne({visitor: req.user, house}).select('date message');
+        }
+        return res.status(200).json({requests, date});
     } catch (error) {
         next(error);
     }

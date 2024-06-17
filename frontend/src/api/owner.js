@@ -55,7 +55,6 @@ export const getTenant = async (tenantid) => {
         const response = await axios.get(`tenant/${tenantid}`);
         return response.data
     } catch (error) {
-        console.log(error)
         throw error
     }
 }
@@ -65,7 +64,6 @@ export const getMaintenance = async () => {
         const response = await axios.get('owner/maintenance')
         return response.data
     } catch (error) {
-        console.log(error)
         throw error
     }
 }
@@ -73,4 +71,24 @@ export const getMaintenance = async () => {
 export const changeStatus = async (id) => {
     const response = await axios.put('owner/maintenance/'+id)
     return response.data
+}
+
+export const getVisitors = async (q) => {
+    try {
+        console.log(q)
+        const response = await axios.get('owner/requests?'+q)
+        return response.data
+    } catch (error) {
+        throw error
+    }
+}
+
+export const getHistory = async (q) => {
+    const response = await axios.get('owner/history/?'+q)
+    return response.data
+}
+
+export const removeTenant = async (id) => {
+    const response = await axios.delete('owner/'+id+'/tenant');
+    return response.data;
 }

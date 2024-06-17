@@ -48,7 +48,7 @@ export const OwnerMaintenance = () => {
     
     if (status === 'pending')
         return (
-            <div className="w-full h-full flex justify-center align-center">
+            <div className="w-full h-full flex justify-center align-center flex-1">
                 <Loader />
             </div>
         )
@@ -58,13 +58,13 @@ export const OwnerMaintenance = () => {
 
     if (!data || data.length === 0)
         return (
-            <div className="w-64 h-64">
+            <div className="w-64 h-64 self-center flex-1">
                 <FaDropbox className="w-full h-full" />
                 <p className="text-center">No maintenance requests yet</p>
             </div>
         )
 
-    return <div className="grid gap-10 grid-cols-3 mx-10 self-start mt-4">
+    return <div className="grid gap-10 grid-cols-3 w-full flex-1 mx-10 self-start mt-4">
         {data.map(({house, requests}, idx) => 
             <HouseCard {...house} requests={requests} onClick={setOpen} setRequests={setRequests} key={idx}/>
         )}
@@ -101,10 +101,12 @@ export const OwnerMaintenance = () => {
                                             Updated at: {dayjs(updatedAt).format("DD/MM/YYYY HH:mm A")}
                                         </p>
                                     </div>
-                                    <button onClick={() => handleClick(status, request_id)} type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-200 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900 mt-4 rounded-lg text-sm px-3 py-1.5 inline-flex justify-center w-full text-center">{
-                                        mstatus === 'pending'?".....":
-                                        status?"Delete request":"Change status"}
-                                    </button>
+                                    {
+                                        !status && 
+                                        <button onClick={() => handleClick(status, request_id)} type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-200 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900 mt-4 rounded-lg text-sm px-3 py-1.5 inline-flex justify-center w-full text-center">{
+                                            mstatus === 'pending'?".....":"Change status"}
+                                        </button>
+                                    }
                                 </div>
                             </div>
                             </div>
