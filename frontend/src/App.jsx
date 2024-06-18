@@ -41,6 +41,7 @@ import { VisitorRequests } from './owner/VisitorRequests';
 import PayRent from './tenant/PayRent'
 import Contact from './pages/static-pages/Contact';
 import Service from './pages/static-pages/Service';
+import About from './pages/static-pages/About';
 
 
 // The default 404 should be done for the route
@@ -96,6 +97,8 @@ function App() {
                 {/* <Route path="/payment-options" element={<paymentOpi/>} /> */}
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/service" element={<Service />} />
+                <Route path="/about" element={<About/>} />
+
 
 
                 <Route index element={<Home />} />
