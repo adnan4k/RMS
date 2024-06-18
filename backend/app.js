@@ -11,6 +11,7 @@ import cookieParser from "cookie-parser";
 import maintainanceRouter from "./routers/maintainance.js";
 import verifyToken from "./utils/verifyToken.js";
 import { verifyContract, verifyNationalId, verifyPaymentVerification } from "./utils/verifyProtectedImages.js";
+import paymentRouter from "./routers/paymentRoutes.js";
 
 process.env.TZ = 'UTC';
 
@@ -34,6 +35,7 @@ app.use('/tenant',tenantRouter);
 app.use('/house',houseRouter)
 app.use('/owner', ownerRouter);
 app.use('/maintenance', maintainanceRouter);
+app.use('/payment',paymentRouter);
 
 //error handler
 app.use((err,req,res,next) =>{
