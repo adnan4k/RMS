@@ -38,7 +38,8 @@ import { DetailHouse2 } from './pages/DetailPage2';
 import OwnerProfile from './tenant/OwnerProfile';
 import MyRequests from './pages/MyRequests';
 import { VisitorRequests } from './owner/VisitorRequests';
-import PayRent  from './tenant/PayRent'
+import PayRent from './tenant/PayRent'
+import Contact from './pages/static-pages/Contact';
 
 
 // The default 404 should be done for the route
@@ -46,79 +47,79 @@ function App() {
   const queryClient = new QueryClient();
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
-    const theme = useMemo(
-        () =>
-        createTheme({
-            palette: {
-            mode: prefersDarkMode ? 'dark' : 'light',
-            },
-        }),
-        [prefersDarkMode],
-    );
+  const theme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode: prefersDarkMode ? 'dark' : 'light',
+        },
+      }),
+    [prefersDarkMode],
+  );
 
   return (
     <>
 
       <ToastContainer className='top-[75px]' />
       <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/signup" element={<Signup />} />
-          
+        <CssBaseline />
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/signup" element={<Signup />} />
 
-            <Route path="/login" element={<Login />} />
-            <Route path="/forget" element={<ForgetPassword />} />
-            <Route path="/resetpassword/:token" element={<ResetPassword />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/forget" element={<ForgetPassword />} />
+              <Route path="/resetpassword/:token" element={<ResetPassword />} />
 
-            <Route path='/owner/' element={<ProtectedRoutes role='owner' />}>
-              <Route index element={<Houses />} />
-              <Route path="create-house" element={<StepperForm />} />
-              <Route path="show-tenant" element={<ShowTenant />} />
+              <Route path='/owner/' element={<ProtectedRoutes role='owner' />}>
+                <Route index element={<Houses />} />
+                <Route path="create-house" element={<StepperForm />} />
+                <Route path="show-tenant" element={<ShowTenant />} />
 
-              <Route path='edit' element={<EditOwner />} />
-              <Route path='maintenance' element={<OwnerMaintenance />} />
-              <Route path='visitors' element={<VisitorRequests />} />
-              <Route path=':houseid' element={<SingleHouse />} />
-              <Route path=':houseid/create-tenants' element={<CreateTenants />} />
-              <Route path=':houseid/edit/general' element={<EditHouse />} />
-              <Route path=':houseid/edit/images' element={<EditImages />} />
-              <Route path=':houseid/edit/address' element={<EditHouseAddress />} />
-              <Route path=':houseid/edit/bank' element={<EditBankAccounts />} />
-              <Route path='tenant/:tenantid' element={<Tenant />} />
-            </Route>
+                <Route path='edit' element={<EditOwner />} />
+                <Route path='maintenance' element={<OwnerMaintenance />} />
+                <Route path='visitors' element={<VisitorRequests />} />
+                <Route path=':houseid' element={<SingleHouse />} />
+                <Route path=':houseid/create-tenants' element={<CreateTenants />} />
+                <Route path=':houseid/edit/general' element={<EditHouse />} />
+                <Route path=':houseid/edit/images' element={<EditImages />} />
+                <Route path=':houseid/edit/address' element={<EditHouseAddress />} />
+                <Route path=':houseid/edit/bank' element={<EditBankAccounts />} />
+                <Route path='tenant/:tenantid' element={<Tenant />} />
+              </Route>
 
-            
-            <Route path="/" element={<Layout />}>
+
+              <Route path="/" element={<Layout />}>
                 {/* payment routes */}
-            <Route path="/payment-options" element={<PaymentOptions />} />
+                {/* <Route path="/payment-options" element={<paymentOpi/>} /> */}
+                <Route path="/contact" element={<Contact />} />
 
-              <Route index element={<Home />} />
-              <Route path="/houses" element={<AllHouses />} />
-              <Route path="/houses/:houseid" element={<DetailHouse2 />} />
-              <Route path="/details" element={<DetailsHouses />} />
-              <Route path='user/:id' element={<Profile />}/>
+                <Route index element={<Home />} />
+                <Route path="/houses" element={<AllHouses />} />
+                <Route path="/houses/:houseid" element={<DetailHouse2 />} />
+                <Route path="/details" element={<DetailsHouses />} />
+                <Route path='user/:id' element={<Profile />} />
 
-              <Route path='profile/' element={<ProtectedRoutes />}>
-                <Route index element={<Profile />} />
-                <Route path='edit' element={<EditProfile />} />
-                <Route path='upgrade' element={<UpgradeToOwner />} />
-                <Route path='requests' element={<MyRequests />}/>
+                <Route path='profile/' element={<ProtectedRoutes />}>
+                  <Route index element={<Profile />} />
+                  <Route path='edit' element={<EditProfile />} />
+                  <Route path='upgrade' element={<UpgradeToOwner />} />
+                  <Route path='requests' element={<MyRequests />} />
+                </Route>
+
+                <Route path='tenant/' element={<ProtectedRoutes role='tenant' />}>
+                  <Route index element={<TenantProfile />} />
+                  <Route path='edit' element={<CreateTenants edit={true} />} />
+                  <Route path='maintenance' element={<Maintenance />} />
+                  <Route path='owner' element={<OwnerProfile />} />
+                  <Route path='payrent' element={<PayRent />} />
+                </Route>
               </Route>
 
-              <Route path='tenant/' element={<ProtectedRoutes role='tenant'/>}>
-                <Route index element={<TenantProfile />}/>
-                <Route path='edit' element={<CreateTenants edit={true} />}/>
-                <Route path='maintenance' element={<Maintenance />}/>
-                <Route path='owner' element={<OwnerProfile />}/>
-                <Route path='payrent' element={<PayRent />}/>
-              </Route>
-            </Route>
-
-          </Routes>
-        </BrowserRouter>
-      </QueryClientProvider>
+            </Routes>
+          </BrowserRouter>
+        </QueryClientProvider>
       </ThemeProvider>
       {/* </UserProvider> */}
     </>
