@@ -25,9 +25,9 @@ function ShowTenant() {
   
   if (!data || data.length === 0)
       return (
-          <div className="w-64 h-64">
+          <div className="w-64 h-64 flex-1">
               <FaDropbox className="w-full h-full" />
-              <p className="text-center">No houses found! <Link to='create-house'> Create new house </Link></p>
+              <p className="text-center">No tenants found</p>
           </div>
       )
 

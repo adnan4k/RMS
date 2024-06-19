@@ -13,7 +13,7 @@ const showProfile = ({username, role}) => {
     const {mutate, status} = useMutation({
         mutationFn: logout,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['user'] });
+            queryClient.resetQueries();
             toast.success('Successfully Logged out!');
             navigate('/', {replace: true});
         },

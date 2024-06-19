@@ -6,7 +6,7 @@ import { getOwnerRequests, getVisitRequests } from "../controllers/VisitorContro
 import { addHouseCalendar, editHouseImages, editHouseInfo } from "../controllers/HouseController.js";
 import { addTenant, deleteTenant } from "../controllers/TenantController.js";
 import { changeStatus, getMaintenanceRequest } from "../controllers/MaintainanceRequestController.js";
-import { paymentStats, verifyPayment } from "../controllers/PaymentController.js";
+import { ownerPaymentHistory, paymentStats, verifyPayment } from "../controllers/PaymentController.js";
 
 const ownerRouter  = express.Router();
 
@@ -16,9 +16,10 @@ ownerRouter.get('/payment', verifyToken('owner'), paymentStats);
 ownerRouter.get('/houses', verifyToken('owner'), getHouses);
 ownerRouter.get('/houses/:houseid', verifyToken('owner'), getSingleHouse);
 ownerRouter.get('/requests', verifyToken('owner'), getOwnerRequests);
-ownerRouter.post('/:houseid/:paymentid', verifyToken('owner'), verifyPayment);
 ownerRouter.post('/:houseid/calendar', verifyToken('owner'), addHouseCalendar);
+ownerRouter.post('/:houseid/:paymentid', verifyToken('owner'), verifyPayment);
 ownerRouter.get('/history', verifyToken('owner'), occupancyHistory);
+ownerRouter.get('/payments', verifyToken('owner'), ownerPaymentHistory);
 ownerRouter.get('/:houseid/tenant', verifyToken('owner'), currentTenant);
 ownerRouter.delete('/:houseid/tenant', verifyToken('owner'), deleteTenant);
 ownerRouter.get('/:username', getOwner);

@@ -48,12 +48,11 @@ tenantSchema.set('toJSON', {transform: (doc, ret, options) => {
 }});
 
 tenantSchema.pre('deleteMany', {document: true, query: true}, async function(next) {
-  console.log('In delete many tenant')
   const tenants = await this.model.find(this.getQuery())
-  console.log(tenants)
   for (let index = 0; index < tenants.length; index++) {
     await removeImage(tenants[index].national_id.path)
   }
+  next()
 })
 
 export default mongoose.model("Tenant", tenantSchema);
