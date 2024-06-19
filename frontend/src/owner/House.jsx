@@ -124,23 +124,13 @@ export const SingleHouse = () => {
                     </p>
                 </div>
             </div>
-            {images.length > 1?
-
             <Slider {...settings} className="min-w-full mt-2">
                 {
                     images.map((image, idx) => 
-                        <img key={idx} src={"http://localhost:4001/"+image} className="min-h-80 max-h-80 min-w-full max-w-full dark:bg-white object-fill rounded-lg" alt="" />
+                        <img key={idx} src={"http://localhost:4001/"+image} className="min-h-80 max-h-80 min-w-fill max-w-fill dark:bg-white object-fill rounded-lg" alt="" />
                     )
                 }
             </Slider>
-            :
-            <div className="min-w-full w-full mt-2">
-                {images.map((image, idx) => 
-                        <img key={idx} src={"http://localhost:4001/"+image} className="min-h-80 max-h-80 min-w-full max-w-full dark:bg-white object-fill rounded-lg" alt="" />
-                    )
-                }
-            </div>
-            }
             <div className="mt-2 flex justify-between items-center min-w-256">
                 <div className="flex relative w-[60%] rounded h-full">
                     <div className="flex gap-2 w-full overflow-x-scroll peer" ref={housePics}>

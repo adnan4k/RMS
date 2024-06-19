@@ -24,8 +24,8 @@ const OwnerProfile = () => {
         fullname = `${data.user.firstname}  ${data.user.lastname}`
 
     let address = ''
-
-    address = `${data?.address.city}, ${data?.address.sub_city}`
+    if (data?.owner)
+        address = `${data.address.city}, ${data.address.sub_city}`
     const woreda = data? data.address.woreda : ''
     const kebele = data && data.address.kebele || ''
     if (data)

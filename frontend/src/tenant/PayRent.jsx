@@ -1,9 +1,8 @@
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
+import {useMutation, useQuery} from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react';
 import { getHouse, payrent } from '../api/tenant';
 import { Loader } from '../components/Loader';
 import { toast } from 'react-toastify';
-import { useLocation, useNavigate } from 'react-router-dom';
 
 
 const groupBy = (arr) => {
@@ -20,8 +19,6 @@ const groupBy = (arr) => {
 const icons = {
     CBE: "/images/images.jpeg",
     BOA: "/images/boaicon.png",
-    Awash: "/images/Awash_International_Bank.png",
-    Hijra: 'images/hijraicon.png',
 }
 
 function PayRent() {
@@ -31,24 +28,19 @@ function PayRent() {
         queryFn: getHouse
     });
 
-    const {state} = useLocation();
-    console.log(state)
-    const qc = useQueryClient();
-    const navigate = useNavigate();
     const {mutate, status: mstatus} = useMutation({
         mutationFn: payrent,
         onSuccess: (data) => {
             console.log(data, 'hererere');
-            qc.invalidateQueries(['tenant', 'history']);
             toast.success('Successfully initiated payment');
-            navigate('/tenant/history', {replace: true});
+            // navigate('/tenant')
         },
         onError: (error) => {
             toast.error(error.response?error.response.data.message:error.message);
             console.log(error);
         }
     })
-console.log(data)
+
     const banks = useMemo(() => groupBy(data?.bankaccounts)
     , [status]);
     
@@ -58,22 +50,16 @@ console.log(data)
     const [img, setImg] = useState(null);
     
     useEffect(() => {
-        if (state) {
-            setSelectedBank(state.paid_to.bankname);
-            setSelectedAccount(state.paid_to.accountnumber);
-            setMonths(state.month)
-        }
-        else if(data) {
+        if(data) {
             setSelectedBank(data.bankaccounts[0].bankname);
             setSelectedAccount(data.bankaccounts[0].accountnumber);
         }
     }, [status]);
 
     const onSubmit = () => {
-        if (!img && !state)
+        if (!img)
             return toast.error('Please upload the bank transaction slip photo.');
-        const id = {id: state?state._id: null}
-        mutate({month: months, paid_to: {bankname: selectedBank, accountnumber: selectedAccount}, verification: img, ...id});
+        mutate({month: months, paid_to: {bankname: selectedBank, accountnumber: selectedAccount}});
     }
 
     if(status === 'pending')
@@ -138,10 +124,10 @@ console.log(data)
                     <p id="helper-text-explanation" className="mt-2 text-sm text-gray-500 dark:text-gray-400">You can pay upto 5 months in the future at once.</p>
                 </div>
                 <p className="my-4">Please Deposit {data.rent_amount * months} ETB to {selectedBank}: {selectedAccount} and upload the reciet</p>
-                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="file_input">{state?'Change transaction photo':'Upload transaction slip'}</label>
+                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="file_input">Upload transaction slip</label>
                 <input onChange={(e) => setImg(e.target.files[0])} className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" aria-describedby="file_input_help" id="file_input" type="file" />
                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-300 mb-4" id="file_input_help">PNG, JPG or JPEG (MAX. 3MB).</p>
-                <button onClick={onSubmit} className="bg-blue-500 absolute py-1 px-6 right-2 bottom-1">{state?"Edit":"Pay"}</button>
+                <button onClick={onSubmit} className="bg-blue-500 absolute py-1 px-6 right-2 bottom-1">Pay</button>
             </div>
         </div>
     )

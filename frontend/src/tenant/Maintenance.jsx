@@ -44,7 +44,7 @@ export const Maintenance = () => {
             <button onClick={() => {setDescription(''); setSelected(null); setOpen(true); setStatus(false)}} className="focus:outline-none text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">New Request</button>
         </div>
     <div className="flow-root">
-        {!data || data.length === 0?
+        {data.length === 0?
             <div className="w-32 h-32 mx-auto dark:text-gray-300 text-gray-800">
                 <FaDropbox className="w-full h-full" />
                 <p className="text-center">No requests yet!</p>

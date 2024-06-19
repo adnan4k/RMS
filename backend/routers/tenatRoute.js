@@ -3,7 +3,7 @@ import { deleteTenant, editTenant, getHouse, getOwner, getTenant } from "../cont
 import uploader from "../utils/fileProcessing.js";
 import verifyToken from "../utils/verifyToken.js";
 import { changeStatus, createMaintainance, deleteRequest, editRequest, tenantRequests } from "../controllers/MaintainanceRequestController.js";
-import { editPayment, payRent, tenantPaymentHistory } from "../controllers/PaymentController.js";
+import { payRent } from "../controllers/PaymentController.js";
 
 const tenantRouter  = express.Router();
 tenantRouter.post('/maintenance', verifyToken('tenant'), createMaintainance);
@@ -12,8 +12,6 @@ tenantRouter.put('/maintenance/edit/:requestid', verifyToken('tenant'), changeSt
 tenantRouter.delete('/maintenance/:requestid', verifyToken('tenant'), deleteRequest);
 tenantRouter.put('/maintenance/:requestid', verifyToken('tenant'), editRequest);
 tenantRouter.post('/payrent', verifyToken('tenant'), uploader.single('verification'), payRent);
-tenantRouter.put('/payrent/:id', verifyToken('tenant'), uploader.single('verification'), editPayment);
-tenantRouter.get('/history', verifyToken('tenant'), tenantPaymentHistory);
 tenantRouter.get('/owner', verifyToken('tenant'), getOwner);
 tenantRouter.get('/house', verifyToken('tenant'), getHouse);
 tenantRouter.delete('/:id', verifyToken('owner'), deleteTenant);

@@ -48,7 +48,6 @@ export const createHouse = async (req, res, next) => {
 
         return res.status(200).json(newHouse);
     } catch (error) {
-        if (req.files?.length > 0)
         req.files.forEach(async file => await removeImage(file.destination + '/' + file.filename))
         next(error)
     }
@@ -142,6 +141,7 @@ export const getHouses = async (req, res, next) => {
             if (mongoose.Types.ObjectId.isValid(req.query.owner))
                 searchParams.owner = new mongoose.Types.ObjectId(req.query.owner)
         }
+        
         // Callculate the number of results
         const data = await House.aggregate([
             {$addFields: {
@@ -184,7 +184,7 @@ export const getHouses = async (req, res, next) => {
                 housenumebr: 0,
                 description: 0
             }}
-        ]);
+        ])
         const result = paginate(page, limit, data.length > 0?data[0].total:0, data.length>0?data[0].results:[]);
         return res.status(200).json(result);
     } catch (error) {

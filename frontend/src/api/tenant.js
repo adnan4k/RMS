@@ -49,15 +49,6 @@ export const payrent = async (payload) => {
     payload.paid_to = JSON.stringify(payload.paid_to)
     Object.entries(payload).forEach(([key, val]) => {form.append(key, val)});
     
-    let response = null;
-    if (payload.id && payload.id !== '')
-        response = await axios.put('tenant/payrent/'+payload.id, form, {headers: {'Content-Type': 'multipart/form-data'}});
-    else
-        response = await axios.post('tenant/payrent', form, {headers: {'Content-Type': 'multipart/form-data'}});
+    const response = await axios.post('tenant/payrent', form, {headers: {'Content-Type': 'multipart/form-data'}});
     return response.data;
-}
-
-export const getHistory = async () => {
-    const history = await axios.get('tenant/history');
-    return history.data
 }

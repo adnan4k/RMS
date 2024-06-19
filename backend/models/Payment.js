@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 import BankAccount from './commons/BankAccount.js';
 
-const PAYMENT_STATUS = ['pending', 'failed', 'success']
-
 const paymentSchema = new mongoose.Schema({
     date:{
         type:Date,
@@ -30,9 +28,8 @@ const paymentSchema = new mongoose.Schema({
         ref: 'Tenant'
     },
     status: {
-        type: String,
-        enum: PAYMENT_STATUS,
-        default: 'pending'
+        type: Boolean,
+        default: false
     },
     verification: {
         type: {
@@ -45,11 +42,5 @@ const paymentSchema = new mongoose.Schema({
         type: Number,
         default: 1
     }
-});
-
-paymentSchema.set('toJSON', {transform: (doc, ret, options) => {
-    ret.verification = ret.verification.url;
-    return ret
-  }});
-  
+})
 export default mongoose.model("Payment",paymentSchema)

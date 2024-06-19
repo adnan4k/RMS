@@ -27,6 +27,7 @@ const initialReferenceData = {
 } 
 
 function CreateTenants({edit}) {
+    
     if (edit) {
         const data = useOutletContext();
         initialFormData.mother_name = data.tenant.mother_name 

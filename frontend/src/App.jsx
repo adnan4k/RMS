@@ -39,8 +39,7 @@ import OwnerProfile from './tenant/OwnerProfile';
 import MyRequests from './pages/MyRequests';
 import { VisitorRequests } from './owner/VisitorRequests';
 import PayRent  from './tenant/PayRent'
-import PaymentHistory from './tenant/PaymentHistory';
-import OwnerPaymentHistory from './owner/PaymentHistory'
+
 
 // The default 404 should be done for the route
 function App() {
@@ -80,7 +79,6 @@ function App() {
               <Route path='edit' element={<EditOwner />} />
               <Route path='maintenance' element={<OwnerMaintenance />} />
               <Route path='visitors' element={<VisitorRequests />} />
-              <Route path='payments' element={<OwnerPaymentHistory />} />
               <Route path=':houseid' element={<SingleHouse />} />
               <Route path=':houseid/create-tenants' element={<CreateTenants />} />
               <Route path=':houseid/edit/general' element={<EditHouse />} />
@@ -111,7 +109,6 @@ function App() {
                 <Route path='maintenance' element={<Maintenance />}/>
                 <Route path='owner' element={<OwnerProfile />}/>
                 <Route path='payrent' element={<PayRent />}/>
-                <Route path='history' element={<PaymentHistory />}/>
               </Route>
             </Route>
 

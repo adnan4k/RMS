@@ -73,7 +73,7 @@ const Profile = () => {
                 </div>
             </div>
         )
-    console.log(status, url)
+    
     return (
         <div className="min-w-[23rem] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 self-center mx-auto px-5 text-center py-5">
             {data&&
