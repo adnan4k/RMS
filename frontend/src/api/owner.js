@@ -92,3 +92,13 @@ export const removeTenant = async (id) => {
     const response = await axios.delete('owner/'+id+'/tenant');
     return response.data;
 }
+
+export const paymentHistory = async () => {
+    const response = await axios.get('owner/payments');
+    return response.data
+}
+
+export const paymentActions = async ({hid, pid, accept}) => {
+    const response = await axios.post('owner/'+hid+'/'+pid, {accept});
+    return response.data
+}

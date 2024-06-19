@@ -39,7 +39,8 @@ import OwnerProfile from './tenant/OwnerProfile';
 import MyRequests from './pages/MyRequests';
 import { VisitorRequests } from './owner/VisitorRequests';
 import PayRent from './tenant/PayRent'
-import Contact from './pages/static-pages/Contact';
+import PaymentHistory from './tenant/PaymentHistory';
+import OwnerPaymentHistory from './owner/PaymentHistory'import Contact from './pages/static-pages/Contact';
 import Service from './pages/static-pages/Service';
 import About from './pages/static-pages/About';
 
@@ -79,17 +80,18 @@ function App() {
                 <Route path="create-house" element={<StepperForm />} />
                 <Route path="show-tenant" element={<ShowTenant />} />
 
-                <Route path='edit' element={<EditOwner />} />
-                <Route path='maintenance' element={<OwnerMaintenance />} />
-                <Route path='visitors' element={<VisitorRequests />} />
-                <Route path=':houseid' element={<SingleHouse />} />
-                <Route path=':houseid/create-tenants' element={<CreateTenants />} />
-                <Route path=':houseid/edit/general' element={<EditHouse />} />
-                <Route path=':houseid/edit/images' element={<EditImages />} />
-                <Route path=':houseid/edit/address' element={<EditHouseAddress />} />
-                <Route path=':houseid/edit/bank' element={<EditBankAccounts />} />
-                <Route path='tenant/:tenantid' element={<Tenant />} />
-              </Route>
+              <Route path='edit' element={<EditOwner />} />
+              <Route path='maintenance' element={<OwnerMaintenance />} />
+              <Route path='visitors' element={<VisitorRequests />} />
+              <Route path='payments' element={<OwnerPaymentHistory />} />
+              <Route path=':houseid' element={<SingleHouse />} />
+              <Route path=':houseid/create-tenants' element={<CreateTenants />} />
+              <Route path=':houseid/edit/general' element={<EditHouse />} />
+              <Route path=':houseid/edit/images' element={<EditImages />} />
+              <Route path=':houseid/edit/address' element={<EditHouseAddress />} />
+              <Route path=':houseid/edit/bank' element={<EditBankAccounts />} />
+              <Route path='tenant/:tenantid' element={<Tenant />} />
+            </Route>
 
 
               <Route path="/" element={<Layout />}>
@@ -114,14 +116,15 @@ function App() {
                   <Route path='requests' element={<MyRequests />} />
                 </Route>
 
-                <Route path='tenant/' element={<ProtectedRoutes role='tenant' />}>
-                  <Route index element={<TenantProfile />} />
-                  <Route path='edit' element={<CreateTenants edit={true} />} />
-                  <Route path='maintenance' element={<Maintenance />} />
-                  <Route path='owner' element={<OwnerProfile />} />
-                  <Route path='payrent' element={<PayRent />} />
-                </Route>
+              <Route path='tenant/' element={<ProtectedRoutes role='tenant'/>}>
+                <Route index element={<TenantProfile />}/>
+                <Route path='edit' element={<CreateTenants edit={true} />}/>
+                <Route path='maintenance' element={<Maintenance />}/>
+                <Route path='owner' element={<OwnerProfile />}/>
+                <Route path='payrent' element={<PayRent />}/>
+                <Route path='history' element={<PaymentHistory />}/>
               </Route>
+            </Route>
 
             </Routes>
           </BrowserRouter>
