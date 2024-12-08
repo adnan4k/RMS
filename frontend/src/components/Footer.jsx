@@ -29,12 +29,6 @@ function Footer() {
                     </a>
                   </li>
                   <li>
-                    <a
-                      href="https://tailwindcss.com/"
-                      className="hover:underline"
-                    >
-                      Tailwind CSS
-                    </a>
                   </li>
                 </ul>
               </div>

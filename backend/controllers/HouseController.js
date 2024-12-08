@@ -173,7 +173,8 @@ export const getHouses = async (req, res, next) => {
                 total: {$sum: 1}
             }},
             {$project: {_id: 0}},
-            {$skip: start},
+            // {$skip: start},
+            {$sort: {}},
             {$limit: limit},
             {$project: {
                 occupancy_history: 0,

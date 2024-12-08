@@ -40,7 +40,8 @@ import MyRequests from './pages/MyRequests';
 import { VisitorRequests } from './owner/VisitorRequests';
 import PayRent from './tenant/PayRent'
 import PaymentHistory from './tenant/PaymentHistory';
-import OwnerPaymentHistory from './owner/PaymentHistory'import Contact from './pages/static-pages/Contact';
+import OwnerPaymentHistory from './owner/PaymentHistory'
+import Contact from './pages/static-pages/Contact';
 import Service from './pages/static-pages/Service';
 import About from './pages/static-pages/About';
 

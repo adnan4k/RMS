@@ -70,13 +70,13 @@ export const createVisitorRequest = async (req, res, next) => {
         endtime.setHours(endtime.getHours()+1, endtime.getMinutes(), 0, 0)
 
         for(let index = 0; index < schedules.length; index ++) {
-            if (schedules[index].visitor === visitor._id)
+            if (schedules[index].visitor.toString() === visitor._id.toString())
                 continue
             const s = new Date(schedules[index].date);
             const e = new Date(schedules[index].date);
             e.setHours(s.getHours() + 1, s.getMinutes(), 0, 0);
             
-            if ((s<=date && date<=e) || (s<=endtime && endtime<e))
+            if ((s<date && date<e) || (s<endtime && endtime<e))
                 throw createError(400, "This time interfeers with another time!")
         }
 
