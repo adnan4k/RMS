@@ -36,7 +36,7 @@ export const FilterByLocation = ({signal}) => {
             </div>
             <Modal open={open} onClose={()=>setOpen(false)}>
                 <div className="w-[60%] mt-8 p-8 bg-gray-800 dark:border-gray-200 m-auto">
-                    <h1 className="mb-8 text-xl text-center">Find by Location</h1>
+                    <h1 className="my-8 text-xl text-center">Find by Location</h1>
                     <div className="grid md:grid-cols-2 md:gap-6">
                         <div className="relative z-0 w-full mb-5 group">
                             <input type="text" value={city} onChange={(e) => setCity(e.target.value.trim())} name="city" id="city" className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 dark:text-white border-gray-300 appearance-none dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" "/>
