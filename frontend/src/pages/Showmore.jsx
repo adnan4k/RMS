@@ -32,6 +32,7 @@ function Houses() {
             types: searchParams.getAll('types'),
             owner: searchParams.get('owner'),
             q: searchParams.get('q'),
+            page: searchParams.get('page')
         }],
         placeholderData: (data) => data,
         queryFn: () => {
@@ -52,7 +53,7 @@ function Houses() {
     }
     
     const page = searchParams.get('page') || 1
-    const limit = searchParams.get('limit') || 10
+    const limit = searchParams.get('limit') || 3
 
     if(datas)
     return (

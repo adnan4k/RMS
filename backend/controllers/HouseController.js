@@ -143,12 +143,14 @@ export const getHouses = async (req, res, next) => {
                 searchParams.owner = new mongoose.Types.ObjectId(req.query.owner)
         }
         // Callculate the number of results
+        const total = await House.countDocuments(searchParams)
         const data = await House.aggregate([
             {$addFields: {
                 area: { $multiply: ['$width', '$length'] },
                 images: "$images.url",
             }},
             {$match: searchParams},
+            
             {$lookup: {
                 from: 'users',
                 localField: 'owner',
@@ -165,16 +167,8 @@ export const getHouses = async (req, res, next) => {
                 as: 'owner',
             }},
             {$unwind: '$owner'},
-            {$group: {
-                _id: null,
-                results: {
-                    $push: '$$ROOT'
-                },
-                total: {$sum: 1}
-            }},
-            {$project: {_id: 0}},
-            // {$skip: start},
-            {$sort: {}},
+            {$sort: {createdAt: -1}},
+            {$skip: start},
             {$limit: limit},
             {$project: {
                 occupancy_history: 0,
@@ -186,7 +180,7 @@ export const getHouses = async (req, res, next) => {
                 description: 0
             }}
         ]);
-        const result = paginate(page, limit, data.length > 0?data[0].total:0, data.length>0?data[0].results:[]);
+        const result = paginate(page, limit, total, data.length>0?data:[]);
         return res.status(200).json(result);
     } catch (error) {
         return next(error);

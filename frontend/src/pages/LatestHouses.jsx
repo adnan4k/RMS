@@ -8,7 +8,7 @@ function LatestHouses() {
     // Ensure datas is always an array
     const { data: datas, status } = useQuery({
         queryKey: ['house', 'latest'],
-        queryFn: () => getHouses("limit=5&sort=createdAt")
+        queryFn: () => getHouses("limit=5")
     });
 
     if (status === 'pending')

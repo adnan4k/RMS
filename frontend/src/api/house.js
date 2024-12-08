@@ -5,7 +5,7 @@ export const createHouse = async (formData) => {
 };
 
 export const getHouses = async (query) =>{
-  const response = await axios.get('house/?'+query)
+  const response = await axios.get('house/?limit=3&'+query)
   return response.data
 }
 
