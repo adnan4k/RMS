@@ -1,21 +1,29 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { getSingleHouse, removeTenant } from "../api/owner";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import Slider from "react-slick";
-import { FaAngleLeft, FaAngleRight, FaBed, FaToilet, FaArrowsLeftRightToLine } from "react-icons/fa6";
+import { FaBed, FaToilet, FaArrowsLeftRightToLine } from "react-icons/fa6";
 import { AvailableDates } from "../components/AvailableDates";
 import { MinimalTenant } from "../components/MinimalTenant"
 import { Loader } from "../components/Loader";
 import { DisplayBankAccount } from "../components/DisplayBankAccount";
 import { Link } from "react-router-dom";
 import { MdErrorOutline } from "react-icons/md";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { ChevronDown } from "lucide-react";
 
 export const SingleHouse = () => {
     const { houseid } = useParams();
-    const housePics = useRef(null);
     const [tabIndex, setTabIndex] = useState(0);
     
     const {data, status} = useQuery({
@@ -26,31 +34,10 @@ export const SingleHouse = () => {
     const [images, setImages] = useState([]);
     const [current, setCurrent] = useState(0);
     
-    const settings = {
-        infinite: true,
-        speed: 500,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        afterChange: current => {
-            setCurrent(current);
-        },
-    };
-
-    const [hide, setHide] = useState(true)
-    
-    const handleHide = (e) => {
-        if(e.target.id !== 'editdropdown')
-            setHide(true)
-    }
-
     useEffect(() => {
         if (data) {
             setImages(data?.images)
         }
-        document.addEventListener('click', handleHide);
-        return () => {
-          document.removeEventListener('click', handleHide);
-        };
     }, [data, status]);
     
     const swipeImages = (idx, current) => {
@@ -60,142 +47,170 @@ export const SingleHouse = () => {
     
     if(status === 'pending')
         return (
-        <div className="w-full h-full flex justify-center align-center">
+        <div className="w-full min-h-screen flex justify-center items-center">
             <Loader />
         </div>
         )
 
     if (status === 'error')
         return (
-            <div className="w-full h-full flex justify-center align-center">
+            <div className="min-h-screen flex justify-center items-center">
                 <div className="w-64 h-64">
-                    <MdErrorOutline className="w-full h-full dark:red-300 red-600" />
+                    <MdErrorOutline className="w-full h-full text-red-600 dark:text-red-300" />
                     <p className="text-center">Page not found!</p>
                 </div>
             </div>
         )
 
     return (
-        <div className="w-full h-full overflow-y-scroll overflow-x-hidden p-8 pt-4 dark:bg-gray-800 mx-32 flex flex-col">
-            <div className="relative self-end">
-
-                <button onClick={()=>setHide(!hide)} id="editdropdown" data-dropdown-toggle="dropdown" className="text-white bg-blue-700 hover:bg-blue-800 mb-4 focus:outline-none  font-medium rounded-lg text-sm px-3 py-2 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 self-end max-w-64" type="button">Edit House <svg className="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4"/>
-                    </svg>
-                </button>
-
-
-                <div id="dropdown" className={`z-10 ${hide?'hidden':''} absolute right-1 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}>
-                    <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
-                    <li>
-                        <Link to="edit/general" state={data} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">General Info</Link>
-                    </li>
-                    <li>
-                        <Link to="edit/address" state={{address: data?.address, _id: data?._id}} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Address</Link>
-                    </li>
-                    <li>
-                        <Link to="edit/bank" state={{bankaccounts: data?.bankaccounts, _id: data?._id}} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Bank Accounts</Link>
-                    </li>
-                    <li>
-                        <Link to="edit/images" state={{images: data?.images, _id: data?._id}} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Images</Link>
-                    </li>
-                    </ul>
+        <div className="container mx-auto px-4 py-6 max-w-7xl">
+            <div className="flex flex-col space-y-6">
+                {/* Header with Edit Button */}
+                <div className="flex justify-between items-center">
+                    <h1 className="text-2xl font-bold">House Details</h1>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="flex items-center gap-2">
+                                Edit House <ChevronDown className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem asChild>
+                                <Link to="edit/general" state={data}>General Info</Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link to="edit/address" state={{address: data?.address, _id: data?._id}}>Address</Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link to="edit/bank" state={{bankaccounts: data?.bankaccounts, _id: data?._id}}>Bank Accounts</Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link to="edit/images" state={{images: data?.images, _id: data?._id}}>Images</Link>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
-            </div>
 
-            <div className="flex justify-between mb-4">
-                <div>
-                    <h4>
-                        House Number {data?.housenumber}
-                    </h4>
-                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        {data?.address.city}, {data?.address.sub_city}, {data?.address.woreda} {data?.address.kebele && "kebele, "+data?.address.kebele}
-                    </p>
-                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        House type: {data?.house_type.toUpperCase()}
-                    </p>
-                </div>
-                <div>
-                    <h4>
-                        {data?.rent_amount || 0} $
-                    </h4>
-                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        Per month
-                    </p>
-                </div>
-            </div>
-            {images.length > 1?
+                {/* House Info Card */}
+                <Card>
+                    <CardContent className="p-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h2 className="text-xl font-semibold">
+                                    House Number {data?.housenumber}
+                                </h2>
+                                <p className="mt-1 text-sm text-muted-foreground">
+                                    {data?.address.city}, {data?.address.sub_city}, {data?.address.woreda} 
+                                    {data?.address.kebele && ` kebele, ${data?.address.kebele}`}
+                                </p>
+                                <p className="mt-1 text-sm text-muted-foreground">
+                                    House type: {data?.house_type.toUpperCase()}
+                                </p>
+                            </div>
+                            <div className="text-right">
+                                <h2 className="text-xl font-semibold">
+                                    {data?.rent_amount || 0} $
+                                </h2>
+                                <p className="mt-1 text-sm text-muted-foreground">
+                                    Per month
+                                </p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
 
-            <Slider {...settings} className="min-w-full mt-2">
-                {
-                    images.map((image, idx) => 
-                        <img key={idx} src={"http://localhost:4001/"+image} className="min-h-80 max-h-80 min-w-full max-w-full dark:bg-white object-fill rounded-lg" alt="" />
-                    )
-                }
-            </Slider>
-            :
-            <div className="min-w-full w-full mt-2">
-                {images.map((image, idx) => 
-                        <img key={idx} src={"http://localhost:4001/"+image} className="min-h-80 max-h-80 min-w-full max-w-full dark:bg-white object-fill rounded-lg" alt="" />
-                    )
-                }
-            </div>
-            }
-            <div className="mt-2 flex justify-between items-center min-w-256">
-                <div className="flex relative w-[60%] rounded h-full">
-                    <div className="flex gap-2 w-full overflow-x-scroll peer" ref={housePics}>
-                    {
-                        images.map((image, idx) => 
-                            <img key={idx} src={"http://localhost:4001/"+image} onClick={() => swipeImages(idx, current)} className="min-h-full max-h-16 max-w-16 min-w-16 dark:bg-white rounded max-h-16 object-fill" alt="" />
-                        )
-                    }
-                    </div>
-                    <div onClick={() => housePics.current.scrollBy({
-                        left: -200,
-                        behavior: 'smooth',
-                        })}
-                        className="top-0 h-full absolute w-4 cursor-pointer flex items-center left-0 bg-gray-600 opacity-0 dark:bg-gray-800 duration-200 ease-in peer-hover:opacity-70 hover:opacity-70">
-                        <FaAngleLeft />
-                    </div>
-                    <div onClick={() => housePics.current.scrollBy({
-                        left: 200,
-                        behavior: 'smooth',
-                        })} 
-                        className="top-0 h-full cursor-pointer absolute w-4 flex items-center right-0 bg-gray-600 opacity-0 dark:bg-gray-800 duration-200 ease-in peer-hover:opacity-70 hover:opacity-70">
-                        <FaAngleRight />
-                    </div>
-                </div>
-                <div className="flex border-dashed p-2 rounded">
-                    <div className="flex flex-col items-center ml-2 mr-1 min-w-max border-gray-300 bg-gray-100 rounded-lg p-1 dark:bg-gray-700">
-                        <FaBed className="min-h-8 min-w-8"/>
-                        <span className="text-xs mt-1">{data?.no_of_rooms} bed rooms</span>
-                    </div>
-                    <div className="flex flex-col items-center mx-1 min-w-max border-gray-300 bg-gray-100 rounded-lg p-1 dark:bg-gray-700">
-                        <FaToilet className="min-h-8 min-w-8"/>
-                        <span className="text-xs mt-1">{data?.no_of_bath_rooms} bath rooms</span>
-                    </div>
-                    <div className="flex flex-col items-center mx-1 min-w-max border-gray-300 bg-gray-100 rounded-lg p-1 dark:bg-gray-700">
-                        <FaArrowsLeftRightToLine className="min-h-8 min-w-8"/>
-                        <span className="text-xs mt-1">{data?.width * data?.length} m<sup>2</sup></span>
-                    </div>
-                </div>
-            </div>
-            <div className="flex mt-4 justify-around ">
-                <div onClick={()=>setTabIndex(0)} className={`hover:bg-gray-100 hover:dark:bg-gray-700 p-2 rounded cursor-pointer ${tabIndex === 0 && 'bg-gray-100 dark:bg-gray-700'}`}>Description</div>
-                <div onClick={()=>setTabIndex(1)} className={`hover:bg-gray-100 hover:dark:bg-gray-700 p-2 rounded cursor-pointer ${tabIndex === 1 && 'bg-gray-100 dark:bg-gray-700'}`}>Calendar</div>
-                <div onClick={()=>setTabIndex(2)} className={`hover:bg-gray-100 hover:dark:bg-gray-700 p-2 rounded cursor-pointer ${tabIndex === 2 && 'bg-gray-100 dark:bg-gray-700'}`}>Tenant</div>
-                <div onClick={()=>setTabIndex(3)} className={`hover:bg-gray-100 hover:dark:bg-gray-700 p-2 rounded cursor-pointer ${tabIndex === 3 && 'bg-gray-100 dark:bg-gray-700'}`}>Bank Accounts</div>
-            </div>
-            <div className="border-t border-gray-500 w-3/4 mx-auto my-2"></div>
-            <div className="mt-6 min-h-32 mb-4">
-                {tabIndex === 0 && <ul className="px-4 font-normal list-disc list-inside">
-                        {data?.description.split('\n').map(d => 
-                            <li>{d}</li>
+                {/* Image Carousel */}
+                <Card>
+                    <CardContent className="p-6">
+                        {images.length > 1 ? (
+                            <Carousel className="w-full">
+                                <CarouselContent>
+                                    {images.map((image, idx) => (
+                                        <CarouselItem key={idx}>
+                                            <img 
+                                                src={`http://localhost:4001/${image}`}
+                                                className="w-full h-[400px] object-cover rounded-lg"
+                                                alt=""
+                                            />
+                                        </CarouselItem>
+                                    ))}
+                                </CarouselContent>
+                                <CarouselPrevious />
+                                <CarouselNext />
+                            </Carousel>
+                        ) : (
+                            <div className="w-full">
+                                {images.map((image, idx) => (
+                                    <img 
+                                        key={idx} 
+                                        src={`http://localhost:4001/${image}`} 
+                                        className="w-full h-[400px] object-cover rounded-lg" 
+                                        alt="" 
+                                    />
+                                ))}
+                            </div>
                         )}
-                </ul>}
-                {tabIndex === 1 && <AvailableDates dates={data?.calendar} houseid={data?._id} />}
-                {tabIndex === 2 && <MinimalTenant houseId={data?._id} tenant={data?.tenant} />}
-                {tabIndex === 3 && <DisplayBankAccount bankaccounts={data?.bankaccounts} />}
+
+                        {/* Thumbnail Grid */}
+                        <div className="mt-4 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
+                            {images.map((image, idx) => (
+                                <img
+                                    key={idx}
+                                    src={`http://localhost:4001/${image}`}
+                                    onClick={() => swipeImages(idx, current)}
+                                    className="h-20 w-full object-cover rounded-lg cursor-pointer hover:opacity-80 transition"
+                                    alt=""
+                                />
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* House Features */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <Card className="p-4 text-center">
+                        <FaBed className="w-8 h-8 mx-auto mb-2"/>
+                        <p className="text-sm">{data?.no_of_rooms} bed rooms</p>
+                    </Card>
+                    <Card className="p-4 text-center">
+                        <FaToilet className="w-8 h-8 mx-auto mb-2"/>
+                        <p className="text-sm">{data?.no_of_bath_rooms} bath rooms</p>
+                    </Card>
+                    <Card className="p-4 text-center">
+                        <FaArrowsLeftRightToLine className="w-8 h-8 mx-auto mb-2"/>
+                        <p className="text-sm">{data?.width * data?.length} m<sup>2</sup></p>
+                    </Card>
+                </div>
+
+                {/* Tabs Section */}
+                <Card>
+                    <CardContent className="p-6">
+                        <Tabs defaultValue={tabIndex.toString()} onValueChange={(value) => setTabIndex(parseInt(value))}>
+                            <TabsList className="grid grid-cols-4 w-full">
+                                <TabsTrigger value="0">Description</TabsTrigger>
+                                <TabsTrigger value="1">Calendar</TabsTrigger>
+                                <TabsTrigger value="2">Tenant</TabsTrigger>
+                                <TabsTrigger value="3">Bank Accounts</TabsTrigger>
+                            </TabsList>
+                            <TabsContent value="0">
+                                <ul className="list-disc list-inside space-y-2">
+                                    {data?.description.split('\n').map((d, i) => 
+                                        <li key={i}>{d}</li>
+                                    )}
+                                </ul>
+                            </TabsContent>
+                            <TabsContent value="1">
+                                <AvailableDates dates={data?.calendar} houseid={data?._id} />
+                            </TabsContent>
+                            <TabsContent value="2">
+                                <MinimalTenant houseId={data?._id} tenant={data?.tenant} />
+                            </TabsContent>
+                            <TabsContent value="3">
+                                <DisplayBankAccount bankaccounts={data?.bankaccounts} />
+                            </TabsContent>
+                        </Tabs>
+                    </CardContent>
+                </Card>
             </div>
         </div>
     )
