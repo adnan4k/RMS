@@ -1,16 +1,22 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation, useParams } from "react-router-dom";
 import { getSingleHouse } from "../api/house";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import Slider from "react-slick";
-import { FaAngleLeft, FaAngleRight, FaBed, FaToilet, FaArrowsLeftRightToLine } from "react-icons/fa6";
+import { FaBed, FaToilet, FaArrowsLeftRightToLine } from "react-icons/fa6";
 import { Loader } from "../components/Loader";
 import { MdErrorOutline } from "react-icons/md";
 import { MinimalOwner } from "../components/MinimalOwner";
 import HouseMap from "../components/HouseMap";
 import ScheduleVisit from "../components/ScheduleVisit";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const DetailHouse2 = () => {
     const {state} = useLocation();
@@ -53,107 +59,116 @@ export const DetailHouse2 = () => {
 
     if(status === 'pending')
         return (
-        <div className="w-full min-h-full flex justify-center align-center fullh">
+        <div className="w-full min-h-screen flex justify-center items-center">
             <Loader />
         </div>
         )
 
     if (status === 'error')
         return (
-        <div className="min-w-full fullh flex justify-center items-center">
+        <div className="min-h-screen flex justify-center items-center">
             <div className="w-64 h-64">
-                <MdErrorOutline className="w-full h-full dark:red-300 red-600" />
+                <MdErrorOutline className="w-full h-full text-red-600 dark:text-red-300" />
                 <p className="text-center">Page not found!</p>
             </div>
         </div>
         )
+
     return (
-        <div className="flex max-w-full px-8 py-4 fullh rounded-lg">
-
-            <div className="max-w-1/2 max-h-full overflow-y-scroll rounded-l-lg overflow-x-hidden p-8 pt-4 dark:bg-gray-800 flex flex-col">
-
-                <div className="flex justify-between mb-4">
+        <div className="container mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-screen">
+            <Card className="p-6 space-y-6 overflow-y-auto">
+                {/* Header Info */}
+                <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <h4>
+                        <h4 className="text-xl font-semibold">
                             {data.house.house_type.toUpperCase()}
                         </h4>
-                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                            {data.house.address.city}, {data.house.address.sub_city}, {data.house.address.woreda} {data.house.address.kebele && "kebele, "+data.house.address.kebele}
+                        <p className="text-sm text-muted-foreground">
+                            {data.house.address.city}, {data.house.address.sub_city}, {data.house.address.woreda} 
+                            {data.house.address.kebele && ` kebele, ${data.house.address.kebele}`}
                         </p>
                     </div>
-                    <div>
-                        <h4>
+                    <div className="text-right">
+                        <h4 className="text-xl font-semibold">
                             {data.house.rent_amount || 0} $
                         </h4>
-                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        <p className="text-sm text-muted-foreground">
                             Per month
                         </p>
                     </div>
                 </div>
-                <Slider {...settings} className="min-w-full mx-2 mt-2">
-                    {
-                        images.map((image, idx) => 
-                            
-                                <img key={idx} src={"http://localhost:4001/"+image} className="min-h-80 max-h-80 min-w-fill max-w-fill dark:bg-white object-fill rounded-lg" alt="" />
-                        )
-                    }
-                </Slider>
-                <div className="mt-2 flex justify-between items-center min-w-256">
-                    <div className="flex relative w-[60%] rounded h-full">
-                        <div className="flex gap-2 w-full overflow-x-scroll peer" ref={housePics}>
-                        {
-                            images.map((image, idx) => 
-                                <img key={idx} src={"http://localhost:4001/"+image} onClick={() => swipeImages(idx, current)} className="min-h-full max-h-16 max-w-16 min-w-16 dark:bg-white rounded max-h-16 object-fill" alt="" />
-                            )
-                        }
-                        </div>
-                        <div onClick={() => housePics.current.scrollBy({
-                            left: -200,
-                            behavior: 'smooth',
-                            })}
-                            className="top-0 h-full absolute w-4 cursor-pointer flex items-center left-0 bg-gray-600 opacity-0 dark:bg-gray-800 duration-200 ease-in peer-hover:opacity-70 hover:opacity-70">
-                            <FaAngleLeft />
-                        </div>
-                        <div onClick={() => housePics.current.scrollBy({
-                            left: 200,
-                            behavior: 'smooth',
-                            })} 
-                            className="top-0 h-full cursor-pointer absolute w-4 flex items-center right-0 bg-gray-600 opacity-0 dark:bg-gray-800 duration-200 ease-in peer-hover:opacity-70 hover:opacity-70">
-                            <FaAngleRight />
-                        </div>
-                    </div>
-                    <div className="flex border-dashed p-2 rounded">
-                        <div className="flex flex-col items-center ml-2 mr-1 min-w-max border-gray-300 bg-gray-100 rounded-lg p-1 dark:bg-gray-700">
-                            <FaBed className="min-h-8 min-w-8"/>
-                            <span className="text-xs mt-1">{data.house.no_of_rooms} bed rooms</span>
-                        </div>
-                        <div className="flex flex-col items-center mx-1 min-w-max border-gray-300 bg-gray-100 rounded-lg p-1 dark:bg-gray-700">
-                            <FaToilet className="min-h-8 min-w-8"/>
-                            <span className="text-xs mt-1">{data.house.no_of_bath_rooms} bath rooms</span>
-                        </div>
-                        <div className="flex flex-col items-center mx-1 min-w-max border-gray-300 bg-gray-100 rounded-lg p-1 dark:bg-gray-700">
-                            <FaArrowsLeftRightToLine className="min-h-8 min-w-8"/>
-                            <span className="text-xs mt-1">{data.house.width * data.house.length} m<sup>2</sup></span>
-                        </div>
-                    </div>
+
+                {/* Main Carousel */}
+                <Carousel className="w-full">
+                    <CarouselContent>
+                        {images.map((image, idx) => (
+                            <CarouselItem key={idx}>
+                                <img 
+                                    src={`http://localhost:4001/${image}`}
+                                    className="w-full h-[400px] object-cover rounded-lg"
+                                    alt=""
+                                />
+                            </CarouselItem>
+                        ))}
+                    </CarouselContent>
+                    <CarouselPrevious />
+                    <CarouselNext />
+                </Carousel>
+
+                {/* Thumbnail Grid */}
+                <div className="grid grid-cols-4 gap-2 overflow-x-auto">
+                    {images.map((image, idx) => (
+                        <img
+                            key={idx}
+                            src={`http://localhost:4001/${image}`}
+                            onClick={() => swipeImages(idx, current)}
+                            className="h-20 w-full object-cover rounded-lg cursor-pointer hover:opacity-80 transition"
+                            alt=""
+                        />
+                    ))}
                 </div>
-                <div className="flex mt-4 justify-around ">
-                    <div onClick={()=>setTabIndex(0)} className={`hover:bg-gray-100 hover:dark:bg-gray-700 p-2 rounded cursor-pointer ${tabIndex === 0 && 'bg-gray-100 dark:bg-gray-700'}`}>Description</div>
-                    <div onClick={()=>setTabIndex(1)} className={`hover:bg-gray-100 hover:dark:bg-gray-700 p-2 rounded cursor-pointer ${tabIndex === 1 && 'bg-gray-100 dark:bg-gray-700'}`}>Owner Info</div>
-                    <div onClick={()=>setTabIndex(2)} className={`hover:bg-gray-100 hover:dark:bg-gray-700 p-2 rounded cursor-pointer ${tabIndex === 2 && 'bg-gray-100 dark:bg-gray-700'}`}>Schedule visit</div>
+
+                {/* House Features */}
+                <div className="grid grid-cols-3 gap-4">
+                    <Card className="p-4 text-center">
+                        <FaBed className="w-8 h-8 mx-auto mb-2"/>
+                        <p className="text-sm">{data.house.no_of_rooms} bed rooms</p>
+                    </Card>
+                    <Card className="p-4 text-center">
+                        <FaToilet className="w-8 h-8 mx-auto mb-2"/>
+                        <p className="text-sm">{data.house.no_of_bath_rooms} bath rooms</p>
+                    </Card>
+                    <Card className="p-4 text-center">
+                        <FaArrowsLeftRightToLine className="w-8 h-8 mx-auto mb-2"/>
+                        <p className="text-sm">{data.house.width * data.house.length} m<sup>2</sup></p>
+                    </Card>
                 </div>
-                <div className="border-t border-gray-500 w-3/4 mx-auto my-2"></div>
-                <div className="mt-6 min-h-32 mb-4">
-                    {tabIndex === 0 && <ul className="px-4 font-normal min-h-64 list-disc list-inside">
-                        {data.house.description.split('\n').map(d => 
-                            <li>{d}</li>
-                        )}
-                    </ul>}
-                    {tabIndex === 1 && <MinimalOwner count={data.count} owner={data.house.owner} />}
-                    {tabIndex === 2 && <ScheduleVisit calendar={data.house.calendar} id={data.house._id}/>}
-                </div>
-            </div>
-            <div className="min-w-[550px] flex-1 max-h-full rounded-r-lg">
+
+                {/* Tabs Section */}
+                <Tabs defaultValue={tabIndex.toString()} onValueChange={(value) => setTabIndex(parseInt(value))}>
+                    <TabsList className="grid grid-cols-3 w-full">
+                        <TabsTrigger value="0">Description</TabsTrigger>
+                        <TabsTrigger value="1">Owner Info</TabsTrigger>
+                        <TabsTrigger value="2">Schedule visit</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="0">
+                        <ul className="list-disc list-inside space-y-2">
+                            {data.house.description.split('\n').map((d, i) => 
+                                <li key={i}>{d}</li>
+                            )}
+                        </ul>
+                    </TabsContent>
+                    <TabsContent value="1">
+                        <MinimalOwner count={data.count} owner={data.house.owner} />
+                    </TabsContent>
+                    <TabsContent value="2">
+                        <ScheduleVisit calendar={data.house.calendar} id={data.house._id}/>
+                    </TabsContent>
+                </Tabs>
+            </Card>
+
+            {/* Map Section */}
+            <div className="h-[calc(100vh-3rem)] rounded-lg overflow-hidden">
                 <HouseMap lat={data.house.address.latitude} lng={data.house.address.longitude} />
             </div>
         </div>
