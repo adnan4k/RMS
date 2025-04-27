@@ -78,10 +78,10 @@ export const SingleHouse = () => {
   return (
     <div className="w-full h-full overflow-y-auto overflow-x-hidden p-4 md:p-6 bg-gray-50 dark:bg-gray-800 mx-auto">
       {/* Page Container */}
-      <div className="max-w-7xl mx-auto bg-white dark:bg-gray-750 rounded-xl shadow-sm overflow-hidden">
+      <div className="max-w-7xl mx-auto bg-white dark:bg-gray-700 rounded-xl shadow-sm overflow-hidden">
         {/* Header Bar with Title and Edit Button */}
-        <div className="flex justify-between items-center px-6 py-4 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-gray-700 dark:to-gray-750 border-b dark:border-gray-600">
-          <h1 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-white flex items-center">
+        <div className="flex justify-between items-center px-6 py-4 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-gray-700 dark:to-gray-700 border-b dark:border-gray-600">
+          <h1 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-100 flex items-center">
             <FaHome className="mr-2 text-blue-500" />
             House #{data?.housenumber}
           </h1>
@@ -90,7 +90,7 @@ export const SingleHouse = () => {
             <button
               onClick={() => setHide(!hide)}
               id="editdropdown"
-              className="flex items-center text-white bg-blue-600 hover:bg-blue-700 transition-colors focus:ring-2 focus:ring-blue-300 focus:outline-none font-medium rounded-lg text-sm px-4 py-2"
+              className="flex items-center text-gray-100 bg-blue-600 hover:bg-blue-700 transition-colors focus:ring-2 focus:ring-blue-300 focus:outline-none font-medium rounded-lg text-sm px-4 py-2"
               type="button"
             >
               <FaEdit className="mr-2" />
@@ -188,7 +188,9 @@ export const SingleHouse = () => {
                 <div className="bg-blue-100 dark:bg-blue-900 p-2 rounded-full mr-3">
                   <FaHome className="text-blue-600 dark:text-blue-300 text-lg" />
                 </div>
-                <h3 className="font-semibold text-lg">{data?.house_type.toUpperCase()}</h3>
+                <h3 className="font-semibold text-lg text-gray-800 dark:text-gray-200">
+                  {data?.house_type.toUpperCase()}
+                </h3>
               </div>
               <div className="flex items-start ml-2">
                 <FaMapMarkerAlt className="text-red-500 mt-1 mr-2 flex-shrink-0" />
@@ -203,8 +205,8 @@ export const SingleHouse = () => {
             <div className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-800 p-5 rounded-lg shadow-sm text-white">
               <p className="text-sm text-blue-100 mb-2">Monthly Rent</p>
               <div className="flex items-center justify-center">
-                <FaDollarSign className="text-white text-xl mr-1" />
-                <h3 className="text-3xl font-bold">{data?.rent_amount || 0}</h3>
+                <FaDollarSign className="text-gray-100 text-xl mr-1" />
+                <h3 className="text-3xl font-bold text-gray-100">{data?.rent_amount || 0}</h3>
               </div>
             </div>
           </div>
@@ -263,7 +265,7 @@ export const SingleHouse = () => {
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="h-6 w-6 text-white"
+                        className="h-6 w-6 text-gray-100"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -288,7 +290,7 @@ export const SingleHouse = () => {
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="h-6 w-6 text-white"
+                        className="h-6 w-6 text-gray-100"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"

@@ -8,6 +8,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createHouse } from '../api/house';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { FaArrowLeft, FaArrowRight, FaSave, FaHome } from 'react-icons/fa';
 
 function StepperForm() {
   const [step, setStep] = useState(0);
@@ -47,7 +48,7 @@ function StepperForm() {
       queryClient.invalidateQueries({ queryKey: ['owner-houses'], exact: true });
       queryClient.setQueryData(['owner-houses', house._id], house);
       navigate('/owner/' + house._id);
-      toast.success('House crated successfully');
+      toast.success('House created successfully');
     },
     onError: err => {
       toast.error(err.response ? err.response.data.message : err.message);
@@ -63,7 +64,7 @@ function StepperForm() {
     }
     if (images.length < 1) {
       setDisplayError(new Set(displayError.add('images')));
-      return toast.error(`Atleast one house image is required`);
+      return toast.error(`At least one house image is required`);
     }
     if (step > 0 && Object.keys(addressErrors).length > 0) {
       Object.keys(addressErrors).forEach(key => setDisplayError(prev => new Set(prev.add(key))));
@@ -82,7 +83,7 @@ function StepperForm() {
     e.preventDefault();
 
     if (!images || images.length === 0) {
-      toast.error('You havent choosen an image');
+      toast.error("You haven't chosen an image");
       return;
     }
 
@@ -123,10 +124,26 @@ function StepperForm() {
   const houseErrors = validateForm(houseData, ['description']);
   const addressErrors = validateForm(addressData, ['longitude', 'latitude', 'woreda', 'kebele']);
 
+  const stepTitles = ['House Details', 'Location Information', 'Bank Accounts'];
+
   return (
-    <div className="p-8 flex flex-col justify-around items-center h-full">
-      <HouseProgress idx={step} />
-      <div>
+    <div className="p-4 md:p-8 w-full max-w-6xl mx-auto bg-gray-50 dark:bg-gray-700 rounded-md">
+      {/* Header */}
+      <div className="flex items-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+        <FaHome className="text-indigo-600 dark:text-indigo-400 text-xl mr-3" />
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Add New Property</h1>
+      </div>
+
+      {/* Progress indicator */}
+      <div className="mb-8">
+        <HouseProgress idx={step} />
+        <h2 className="text-xl font-semibold text-center mt-4 text-gray-800 dark:text-gray-200">
+          {stepTitles[step]}
+        </h2>
+      </div>
+
+      {/* Form container */}
+      <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg mb-6 shadow-sm border border-gray-100 dark:border-gray-700">
         {step === 0 && (
           <HouseForm
             houseData={houseData}
@@ -163,35 +180,46 @@ function StepperForm() {
             setHijra={setHijra}
           />
         )}
-        <div className="flex justify-end my-4 gap-8">
-          {step > 0 && (
-            <button
-              type="button"
-              onClick={handlePrevious}
-              className="bg-gray-500 text-white px-4 py-2 rounded"
-            >
-              Previous
-            </button>
-          )}
-          {step < 2 && (
-            <button
-              type="button"
-              onClick={handleNext}
-              className="bg-blue-500 text-white px-4 py-2 rounded"
-            >
-              Next
-            </button>
-          )}
-          {step === 2 && (
-            <button
-              type="submit"
-              onClick={handleSubmit}
-              className="bg-green-500 text-white px-4 py-2 rounded"
-            >
-              Submit
-            </button>
-          )}
-        </div>
+      </div>
+
+      {/* Navigation buttons */}
+      <div className="flex justify-end gap-4 mt-6">
+        {step > 0 && (
+          <button
+            type="button"
+            onClick={handlePrevious}
+            className="flex items-center px-5 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 font-medium rounded-lg transition-colors"
+            disabled={status === 'pending'}
+          >
+            <FaArrowLeft className="mr-2" /> Previous
+          </button>
+        )}
+        {step < 2 && (
+          <button
+            type="button"
+            onClick={handleNext}
+            className="flex items-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-gray-100 dark:text-gray-100 font-medium rounded-lg transition-colors"
+            disabled={status === 'pending'}
+          >
+            Next <FaArrowRight className="ml-2" />
+          </button>
+        )}
+        {step === 2 && (
+          <button
+            type="submit"
+            onClick={handleSubmit}
+            className="flex items-center px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-gray-100 dark:text-gray-100 font-medium rounded-lg transition-colors"
+            disabled={status === 'pending'}
+          >
+            {status === 'pending' ? (
+              'Saving...'
+            ) : (
+              <>
+                <FaSave className="mr-2" /> Save Property
+              </>
+            )}
+          </button>
+        )}
       </div>
     </div>
   );
