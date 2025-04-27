@@ -1,4 +1,3 @@
-
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
@@ -38,13 +37,12 @@ import { DetailHouse2 } from './pages/DetailPage2';
 import OwnerProfile from './tenant/OwnerProfile';
 import MyRequests from './pages/MyRequests';
 import { VisitorRequests } from './owner/VisitorRequests';
-import PayRent from './tenant/PayRent'
+import PayRent from './tenant/PayRent';
 import PaymentHistory from './tenant/PaymentHistory';
-import OwnerPaymentHistory from './owner/PaymentHistory'
+import OwnerPaymentHistory from './owner/PaymentHistory';
 import Contact from './pages/static-pages/Contact';
 import Service from './pages/static-pages/Service';
 import About from './pages/static-pages/About';
-
 
 // The default 404 should be done for the route
 function App() {
@@ -58,13 +56,12 @@ function App() {
           mode: prefersDarkMode ? 'dark' : 'light',
         },
       }),
-    [prefersDarkMode],
+    [prefersDarkMode]
   );
 
   return (
     <>
-
-      <ToastContainer className='top-[75px]' />
+      <ToastContainer className="top-[75px]" />
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <QueryClientProvider client={queryClient}>
@@ -76,57 +73,53 @@ function App() {
               <Route path="/forget" element={<ForgetPassword />} />
               <Route path="/resetpassword/:token" element={<ResetPassword />} />
 
-              <Route path='/owner/' element={<ProtectedRoutes role='owner' />}>
+              <Route path="/owner/" element={<ProtectedRoutes role="owner" />}>
                 <Route index element={<Houses />} />
                 <Route path="create-house" element={<StepperForm />} />
                 <Route path="show-tenant" element={<ShowTenant />} />
 
-              <Route path='edit' element={<EditOwner />} />
-              <Route path='maintenance' element={<OwnerMaintenance />} />
-              <Route path='visitors' element={<VisitorRequests />} />
-              <Route path='payments' element={<OwnerPaymentHistory />} />
-              <Route path=':houseid' element={<SingleHouse />} />
-              <Route path=':houseid/create-tenants' element={<CreateTenants />} />
-              <Route path=':houseid/edit/general' element={<EditHouse />} />
-              <Route path=':houseid/edit/images' element={<EditImages />} />
-              <Route path=':houseid/edit/address' element={<EditHouseAddress />} />
-              <Route path=':houseid/edit/bank' element={<EditBankAccounts />} />
-              <Route path='tenant/:tenantid' element={<Tenant />} />
-            </Route>
-
+                <Route path="edit" element={<EditOwner />} />
+                <Route path="maintenance" element={<OwnerMaintenance />} />
+                <Route path="visitors" element={<VisitorRequests />} />
+                <Route path="payments" element={<OwnerPaymentHistory />} />
+                <Route path=":houseid" element={<SingleHouse />} />
+                <Route path=":houseid/create-tenants" element={<CreateTenants />} />
+                <Route path=":houseid/edit/general" element={<EditHouse />} />
+                <Route path=":houseid/edit/images" element={<EditImages />} />
+                <Route path=":houseid/edit/address" element={<EditHouseAddress />} />
+                <Route path=":houseid/edit/bank" element={<EditBankAccounts />} />
+                <Route path="tenant/:tenantid" element={<Tenant />} />
+              </Route>
 
               <Route path="/" element={<Layout />}>
                 {/* payment routes */}
                 {/* <Route path="/payment-options" element={<paymentOpi/>} /> */}
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/service" element={<Service />} />
-                <Route path="/about" element={<About/>} />
-
-
+                <Route path="/about" element={<About />} />
 
                 <Route index element={<Home />} />
                 <Route path="/houses" element={<AllHouses />} />
                 <Route path="/houses/:houseid" element={<DetailHouse2 />} />
                 <Route path="/details" element={<DetailsHouses />} />
-                <Route path='user/:id' element={<Profile />} />
+                <Route path="user/:id" element={<Profile />} />
 
-                <Route path='profile/' element={<ProtectedRoutes />}>
+                <Route path="profile/" element={<ProtectedRoutes />}>
                   <Route index element={<Profile />} />
-                  <Route path='edit' element={<EditProfile />} />
-                  <Route path='upgrade' element={<UpgradeToOwner />} />
-                  <Route path='requests' element={<MyRequests />} />
+                  <Route path="edit" element={<EditProfile />} />
+                  <Route path="upgrade" element={<UpgradeToOwner />} />
+                  <Route path="requests" element={<MyRequests />} />
                 </Route>
 
-              <Route path='tenant/' element={<ProtectedRoutes role='tenant'/>}>
-                <Route index element={<TenantProfile />}/>
-                <Route path='edit' element={<CreateTenants edit={true} />}/>
-                <Route path='maintenance' element={<Maintenance />}/>
-                <Route path='owner' element={<OwnerProfile />}/>
-                <Route path='payrent' element={<PayRent />}/>
-                <Route path='history' element={<PaymentHistory />}/>
+                <Route path="tenant/" element={<ProtectedRoutes role="tenant" />}>
+                  <Route index element={<TenantProfile />} />
+                  <Route path="edit" element={<CreateTenants edit={true} />} />
+                  <Route path="maintenance" element={<Maintenance />} />
+                  <Route path="owner" element={<OwnerProfile />} />
+                  <Route path="payrent" element={<PayRent />} />
+                  <Route path="history" element={<PaymentHistory />} />
+                </Route>
               </Route>
-            </Route>
-
             </Routes>
           </BrowserRouter>
         </QueryClientProvider>

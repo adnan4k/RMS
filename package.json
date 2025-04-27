@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "framer-motion": "^12.9.2",
+    "react-responsive-carousel": "^3.2.23"
+  }
+}

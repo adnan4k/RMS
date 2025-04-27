@@ -2,10 +2,9 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation, useParams } from "react-router-dom";
 import { getSingleHouse } from "../api/house";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import Slider from "react-slick";
-import { FaAngleLeft, FaAngleRight, FaBed, FaToilet, FaArrowsLeftRightToLine } from "react-icons/fa6";
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { FaBed, FaToilet, FaArrowsAltH, FaMapMarkerAlt, FaHome, FaDollarSign } from "react-icons/fa";
 import { Loader } from "../components/Loader";
 import { MdErrorOutline } from "react-icons/md";
 import { MinimalOwner } from "../components/MinimalOwner";
@@ -27,16 +26,6 @@ export const DetailHouse2 = () => {
 
     const [current, setCurrent] = useState(0);
     
-    const settings = {
-        infinite: true,
-        speed: 500,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        afterChange: current => {
-            setCurrent(current);
-        },
-    };
-
     useEffect(() => {
         if (data && data.house) {
             const i = data.house.images;
@@ -53,7 +42,7 @@ export const DetailHouse2 = () => {
 
     if(status === 'pending')
         return (
-        <div className="w-full min-h-full flex justify-center align-center fullh">
+        <div className="w-full min-h-full flex justify-center items-center fullh">
             <Loader />
         </div>
         )
@@ -62,98 +51,132 @@ export const DetailHouse2 = () => {
         return (
         <div className="min-w-full fullh flex justify-center items-center">
             <div className="w-64 h-64">
-                <MdErrorOutline className="w-full h-full dark:red-300 red-600" />
-                <p className="text-center">Page not found!</p>
+                <MdErrorOutline className="w-full h-full text-red-600 dark:text-red-400" />
+                <p className="text-center font-semibold">Page not found!</p>
             </div>
         </div>
         )
     return (
-        <div className="flex max-w-full px-8 py-4 fullh rounded-lg">
+        <div className="flex max-w-full p-6 fullh rounded-lg">
+            <div className="max-w-1/2 max-h-full overflow-y-scroll rounded-lg overflow-x-hidden p-6 dark:bg-gray-800 bg-white flex flex-col">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 border-b pb-4">
+                    <div className="md:col-span-2">
+                        <div className="flex items-center mb-2">
+                            <FaHome className="text-blue-500 mr-2" />
+                            <h3 className="font-medium">{data.house.house_type.toUpperCase()}</h3>
+                        </div>
+                        <div className="flex items-center mb-2">
+                            <FaMapMarkerAlt className="text-blue-500 mr-2" />
+                            <p className="text-sm text-gray-600 dark:text-gray-300">
+                                {data.house.address.city}, {data.house.address.sub_city}, {data.house.address.woreda} {data.house.address.kebele && "kebele, "+data.house.address.kebele}
+                            </p>
+                        </div>
+                    </div>
+                    <div className="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg text-center">
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Monthly Rent</p>
+                        <div className="flex items-center justify-center">
+                            <FaDollarSign className="text-green-500" />
+                            <h3 className="text-2xl font-bold">{data.house.rent_amount || 0}</h3>
+                        </div>
+                    </div>
+                </div>
 
-            <div className="max-w-1/2 max-h-full overflow-y-scroll rounded-l-lg overflow-x-hidden p-8 pt-4 dark:bg-gray-800 flex flex-col">
+                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg overflow-hidden mb-6">
+                    <Carousel
+                        showArrows={true}
+                        onChange={setCurrent}
+                        selectedItem={current}
+                        showStatus={false}
+                        showThumbs={false}
+                        infiniteLoop={true}
+                    >
+                        {images.map((image, idx) => (
+                            <div key={idx}>
+                                <img 
+                                    src={"http://localhost:4001/"+image} 
+                                    className="h-[350px] w-full object-cover dark:bg-gray-600" 
+                                    alt={`House view ${idx+1}`} 
+                                />
+                            </div>
+                        ))}
+                    </Carousel>
+                </div>
 
-                <div className="flex justify-between mb-4">
-                    <div>
-                        <h4>
-                            {data.house.house_type.toUpperCase()}
-                        </h4>
-                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                            {data.house.address.city}, {data.house.address.sub_city}, {data.house.address.woreda} {data.house.address.kebele && "kebele, "+data.house.address.kebele}
+                <div className="flex mb-6 overflow-x-auto">
+                    <div className="flex gap-2 items-center" ref={housePics}>
+                        {images.map((image, idx) => (
+                            <img 
+                                key={idx} 
+                                src={"http://localhost:4001/"+image} 
+                                onClick={() => swipeImages(idx, current)} 
+                                className={`h-16 w-16 object-cover rounded-md cursor-pointer border-2 ${
+                                    current === idx ? 'border-blue-500' : 'border-transparent'
+                                }`} 
+                                alt="" 
+                            />
+                        ))}
+                    </div>
+                </div>
+
+                <div className="flex justify-around bg-gray-100 dark:bg-gray-700 rounded-lg p-4 mb-6">
+                    <div className="text-center">
+                        <FaBed className="mx-auto h-6 w-6 text-blue-500 mb-1" />
+                        <p className="text-sm">{data.house.no_of_rooms} Bedroom{data.house.no_of_rooms !== 1 ? 's' : ''}</p>
+                    </div>
+                    <div className="text-center">
+                        <FaToilet className="mx-auto h-6 w-6 text-blue-500 mb-1" />
+                        <p className="text-sm">{data.house.no_of_bath_rooms} Bathroom{data.house.no_of_bath_rooms !== 1 ? 's' : ''}</p>
+                    </div>
+                    <div className="text-center">
+                        <FaArrowsAltH className="mx-auto h-6 w-6 text-blue-500 mb-1" />
+                        <p className="text-sm">
+                            {data.house.width * data.house.length} m<sup>2</sup>
                         </p>
                     </div>
-                    <div>
-                        <h4>
-                            {data.house.rent_amount || 0} $
-                        </h4>
-                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                            Per month
-                        </p>
-                    </div>
                 </div>
-                <Slider {...settings} className="min-w-full mx-2 mt-2">
-                    {
-                        images.map((image, idx) => 
-                            
-                                <img key={idx} src={"http://localhost:4001/"+image} className="min-h-80 max-h-80 min-w-fill max-w-fill dark:bg-white object-fill rounded-lg" alt="" />
-                        )
-                    }
-                </Slider>
-                <div className="mt-2 flex justify-between items-center min-w-256">
-                    <div className="flex relative w-[60%] rounded h-full">
-                        <div className="flex gap-2 w-full overflow-x-scroll peer" ref={housePics}>
-                        {
-                            images.map((image, idx) => 
-                                <img key={idx} src={"http://localhost:4001/"+image} onClick={() => swipeImages(idx, current)} className="min-h-full max-h-16 max-w-16 min-w-16 dark:bg-white rounded max-h-16 object-fill" alt="" />
-                            )
-                        }
-                        </div>
-                        <div onClick={() => housePics.current.scrollBy({
-                            left: -200,
-                            behavior: 'smooth',
-                            })}
-                            className="top-0 h-full absolute w-4 cursor-pointer flex items-center left-0 bg-gray-600 opacity-0 dark:bg-gray-800 duration-200 ease-in peer-hover:opacity-70 hover:opacity-70">
-                            <FaAngleLeft />
-                        </div>
-                        <div onClick={() => housePics.current.scrollBy({
-                            left: 200,
-                            behavior: 'smooth',
-                            })} 
-                            className="top-0 h-full cursor-pointer absolute w-4 flex items-center right-0 bg-gray-600 opacity-0 dark:bg-gray-800 duration-200 ease-in peer-hover:opacity-70 hover:opacity-70">
-                            <FaAngleRight />
-                        </div>
+
+                <div className="border rounded-lg mb-6">
+                    <div className="flex border-b">
+                        <button
+                            onClick={() => setTabIndex(0)}
+                            className={`flex-1 py-3 px-4 text-center ${
+                                tabIndex === 0 ? 'bg-blue-50 text-blue-600 dark:bg-blue-900 dark:text-blue-200' : 'hover:bg-gray-50 dark:hover:bg-gray-700'
+                            }`}
+                        >
+                            Description
+                        </button>
+                        <button
+                            onClick={() => setTabIndex(1)}
+                            className={`flex-1 py-3 px-4 text-center ${
+                                tabIndex === 1 ? 'bg-blue-50 text-blue-600 dark:bg-blue-900 dark:text-blue-200' : 'hover:bg-gray-50 dark:hover:bg-gray-700'
+                            }`}
+                        >
+                            Owner Info
+                        </button>
+                        <button
+                            onClick={() => setTabIndex(2)}
+                            className={`flex-1 py-3 px-4 text-center ${
+                                tabIndex === 2 ? 'bg-blue-50 text-blue-600 dark:bg-blue-900 dark:text-blue-200' : 'hover:bg-gray-50 dark:hover:bg-gray-700'
+                            }`}
+                        >
+                            Schedule visit
+                        </button>
                     </div>
-                    <div className="flex border-dashed p-2 rounded">
-                        <div className="flex flex-col items-center ml-2 mr-1 min-w-max border-gray-300 bg-gray-100 rounded-lg p-1 dark:bg-gray-700">
-                            <FaBed className="min-h-8 min-w-8"/>
-                            <span className="text-xs mt-1">{data.house.no_of_rooms} bed rooms</span>
-                        </div>
-                        <div className="flex flex-col items-center mx-1 min-w-max border-gray-300 bg-gray-100 rounded-lg p-1 dark:bg-gray-700">
-                            <FaToilet className="min-h-8 min-w-8"/>
-                            <span className="text-xs mt-1">{data.house.no_of_bath_rooms} bath rooms</span>
-                        </div>
-                        <div className="flex flex-col items-center mx-1 min-w-max border-gray-300 bg-gray-100 rounded-lg p-1 dark:bg-gray-700">
-                            <FaArrowsLeftRightToLine className="min-h-8 min-w-8"/>
-                            <span className="text-xs mt-1">{data.house.width * data.house.length} m<sup>2</sup></span>
-                        </div>
-                    </div>
-                </div>
-                <div className="flex mt-4 justify-around ">
-                    <div onClick={()=>setTabIndex(0)} className={`hover:bg-gray-100 hover:dark:bg-gray-700 p-2 rounded cursor-pointer ${tabIndex === 0 && 'bg-gray-100 dark:bg-gray-700'}`}>Description</div>
-                    <div onClick={()=>setTabIndex(1)} className={`hover:bg-gray-100 hover:dark:bg-gray-700 p-2 rounded cursor-pointer ${tabIndex === 1 && 'bg-gray-100 dark:bg-gray-700'}`}>Owner Info</div>
-                    <div onClick={()=>setTabIndex(2)} className={`hover:bg-gray-100 hover:dark:bg-gray-700 p-2 rounded cursor-pointer ${tabIndex === 2 && 'bg-gray-100 dark:bg-gray-700'}`}>Schedule visit</div>
-                </div>
-                <div className="border-t border-gray-500 w-3/4 mx-auto my-2"></div>
-                <div className="mt-6 min-h-32 mb-4">
-                    {tabIndex === 0 && <ul className="px-4 font-normal min-h-64 list-disc list-inside">
-                        {data.house.description.split('\n').map(d => 
-                            <li>{d}</li>
+
+                    <div className="p-4 min-h-64">
+                        {tabIndex === 0 && (
+                            <ul className="list-disc list-inside space-y-2 pl-4">
+                                {data.house.description.split('\n').map((d, idx) => (
+                                    <li key={idx} className="text-gray-700 dark:text-gray-200">{d}</li>
+                                ))}
+                            </ul>
                         )}
-                    </ul>}
-                    {tabIndex === 1 && <MinimalOwner count={data.count} owner={data.house.owner} />}
-                    {tabIndex === 2 && <ScheduleVisit calendar={data.house.calendar} id={data.house._id}/>}
+                        {tabIndex === 1 && <MinimalOwner count={data.count} owner={data.house.owner} />}
+                        {tabIndex === 2 && <ScheduleVisit calendar={data.house.calendar} id={data.house._id}/>}
+                    </div>
                 </div>
             </div>
-            <div className="min-w-[550px] flex-1 max-h-full rounded-r-lg">
+            <div className="min-w-[550px] flex-1 max-h-full rounded-lg overflow-hidden shadow-md">
                 <HouseMap lat={data.house.address.latitude} lng={data.house.address.longitude} />
             </div>
         </div>
