@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation, useParams } from "react-router-dom";
 import { getSingleHouse } from "../api/house";
@@ -20,6 +20,15 @@ import { MdErrorOutline } from "react-icons/md";
 import { MinimalOwner } from "../components/MinimalOwner";
 import HouseMap from "../components/HouseMap";
 import ScheduleVisit from "../components/ScheduleVisit";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const DetailHouse2 = () => {
     const {state} = useLocation();
@@ -58,13 +67,14 @@ export const DetailHouse2 = () => {
 
     if (status === 'error')
         return (
-        <div className="min-w-full fullh flex justify-center items-center">
+        <div className="min-h-screen flex justify-center items-center">
             <div className="w-64 h-64">
                 <MdErrorOutline className="w-full h-full text-red-600 dark:text-red-400" />
                 <p className="text-center font-semibold">Page not found!</p>
             </div>
         </div>
         )
+
     return (
         <div className="w-full h-full overflow-y-auto overflow-x-hidden p-4 md:p-6 bg-gray-50 dark:bg-gray-800 mx-auto">
             {/* Main Container */}
